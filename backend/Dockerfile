@@ -14,7 +14,7 @@ CMD ["nest","start","--watch"]
 FROM dev as build
 
 # build and dependencies removal
-RUN npm run nest build
+RUN nest build
 WORKDIR /usr/src/app/dist
 
 # Clean build
