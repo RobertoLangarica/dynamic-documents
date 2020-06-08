@@ -1,4 +1,4 @@
-# This stage install all the node dependencies an the quasar CLI
+# This stage install all the node dependencies
 # This stage is sufficient for development
 FROM registry.digitalocean.com/wizard/ddocuments/backend-dependencies:latest AS dev
 # directory for the app
@@ -14,8 +14,15 @@ CMD ["nest","start","--watch"]
 FROM dev as build
 
 # build and dependencies removal
-RUN npm run build
+RUN npm run build && rm -d -r node_modules
+
+# Install only the production dependencies
+RUN npm install --production
+
+# Remove the dependencies
 WORKDIR /usr/src/app/dist
+
+
 
 # Clean build
 FROM node:14.4-alpine AS clean_build
