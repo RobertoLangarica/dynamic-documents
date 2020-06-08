@@ -16,10 +16,12 @@ FROM dev as build
 # build and dependencies removal
 RUN npm run build && rm -r node_modules
 
-# Install only the production dependencies
-RUN npm install --production
+# Install only the production dependencies and rebuild bcrypt
+RUN apk add --no-cache make gcc g++ python && \
+  npm install --production && \
+  npm rebuild bcrypt --build-from-source && \
+  apk del make gcc g++ python
 
-# Remove the dependencies
 WORKDIR /usr/src/app/dist
 
 
