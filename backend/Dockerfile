@@ -28,7 +28,7 @@ FROM node:14.4-alpine AS clean_build
 WORKDIR /usr/src/app
 
 # copy the dependencies (NestJS needs them)
-COPY --from=dev /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/node_modules ./node_modules
 
 # copy only the build
 COPY --from=build /usr/src/app/dist .
