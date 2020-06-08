@@ -1,6 +1,6 @@
 #!/bin/bash
 
-imageName="ddocuments"
+imageName="back_ddocuments"
 dependencies="registry.digitalocean.com/wizard/ddocuments/backend-dependencies"
 docker pull $dependencies:latest
 docker build -t $imageName --target dev .
