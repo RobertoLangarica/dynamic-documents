@@ -14,7 +14,7 @@ CMD ["nest","start","--watch"]
 FROM dev as build
 
 # build and dependencies removal
-RUN npm run build && rm -d -r node_modules
+RUN npm run build && rm -r node_modules
 
 # Install only the production dependencies
 RUN npm install --production
