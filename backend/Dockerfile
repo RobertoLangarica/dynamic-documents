@@ -26,4 +26,4 @@ WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/dist .
 
 # start the server
-CMD ["node","dist/src/main"]
+CMD ["node","src/main"]
