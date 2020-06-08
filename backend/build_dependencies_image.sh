@@ -12,9 +12,8 @@ WORKDIR /usr/src/app
 # Copy package and pacakge-lock
 COPY package*.json ./
 
-# install dependencies
-RUN npm install \
-    && npm install -g @quasar/cli
+# install dependencies ignoring devDependencies
+RUN npm install --production
 EOF
 built=$?
 if [ "$built" == 0 ]; then        
