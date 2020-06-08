@@ -8,9 +8,9 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start": "npm run start:db && nest start",
+    "start:dev": "npm run start:db && nest start --watch",
+    "start:debug": "npm run start:db && nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "test": "jest",
@@ -22,7 +22,8 @@
     "migrate": "npm run typeorm migration:run",
     "migration:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config database/cli-config.ts migration:create -n ",
     "migrate:revert": "npm run typeorm migration:revert",
-    "migrate:refresh": "npm run typeorm schema:drop && npm run migrate"
+    "migrate:refresh": "npm run typeorm schema:drop && npm run migrate",
+    "start:db": "./database_docker/start_db.sh"
   },
   "dependencies": {
     "@nestjs/common": "^6.7.2",
