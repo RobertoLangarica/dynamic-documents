@@ -22,10 +22,6 @@ RUN apk add --no-cache make gcc g++ python && \
   npm rebuild bcrypt --build-from-source && \
   apk del make gcc g++ python
 
-WORKDIR /usr/src/app/dist
-
-
-
 # Clean build
 FROM node:14.4-alpine AS clean_build
 
