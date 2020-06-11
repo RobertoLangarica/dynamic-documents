@@ -9,10 +9,14 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "npm run start:db && nest start",
-    "start:dev": "npm run start:db && nest start --watch",
-    "start:debug": "npm run start:db && nest start --debug --watch",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "dev":"   docker run  --rm -p 3000:3000 --name dd_back --mount type=bind,source=$(pwd),target=/usr/src/app -v /usr/src/app/node_modules registry.digitalocean.com/wizard/ddocuments/backend-dev",
+    "debug":" docker run  --rm -p 3000:3000 --name dd_back --mount type=bind,source=$(pwd),target=/usr/src/app -v /usr/src/app/node_modules registry.digitalocean.com/wizard/ddocuments/backend-dev npm run start:debug",
+    "dev":"docker-compose up && docker-compose exec db_server /init_db.sh",
+    "stop":"docker rm $(docker stop dd_back)",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -24,7 +28,8 @@
     "migration:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config database/cli-config.ts migration:create -n ",
     "migrate:revert": "npm run typeorm migration:revert",
     "migrate:refresh": "npm run typeorm schema:drop && npm run migrate",
-    "start:db": "./database_docker/start_db.sh"
+    "start:db": "./database_docker/start_db.sh",
+    "stop:db": "docker rm $(docker stop db_server)"
   },
   "dependencies": {
     "@nestjs/common": "^6.7.2",

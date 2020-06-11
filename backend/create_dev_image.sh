@@ -3,7 +3,8 @@
 imageName="back_ddocuments"
 dependencies="registry.digitalocean.com/wizard/ddocuments/backend-dependencies"
 docker pull $dependencies:latest
-docker build -t $imageName --target dev .
+context=$(dirname $BASH_SOURCE)
+docker build -t $imageName --target dev $context
 built=$?
 if [ "$built" == 0 ]; then        
     echo 'Dev image:'$imageName' creation COMPLETED'

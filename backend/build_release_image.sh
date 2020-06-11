@@ -4,7 +4,7 @@ wdir=$(pwd)
 mkdir temp
 tmpDir=$? 
 imageName="registry.digitalocean.com/wizard/ddocuments/backend"
-dependencies="registry.digitalocean.com/wizard/ddocuments/backend-dependencies"
+dependencies="registry.digitalocean.com/wizard/ddocuments/backend-dev"
 buildDirectory="dynamic-documents/backend"
 if [ "$tmpDir" == 0 ]; then
     # Clone repository in temporal directory

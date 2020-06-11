@@ -3,9 +3,14 @@ node_modules
 .git
 .gitignore
 .editorconfig
-build_release.sh
-create_dependencies.sh
-create_dev.sh
+build_development_image.sh
+build_release_image.sh
+create_dev_image.sh
+start_db.sh
 .env
 .env.*
 dist
+database_docker
+docker-compose.yml
+Dockerfile
+README.md
