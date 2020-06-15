@@ -17,8 +17,9 @@ dist
 build_commands
 database_docker
 start_db.sh
-start_dev.sh
+start_image.sh
 docker-compose.yml
 **/docker-compose.yml
 Dockerfile
 **/Dockerfile
+temp
