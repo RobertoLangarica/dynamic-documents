@@ -1,18 +1,18 @@
 #!/bin/bash
 echo "Creating custom user an database"
 
+
+# This command was designed to run inside a docker image from postgres as a step in initialization and as a docker exec for a postgress image
+
+# Avoiding race conditions when the servees is not initialized yet
+serverError=2 # 2 is the error returned when can't connect to the server
+while [ $serverError -eq 2 ]; do
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --command "\echo Server up..."
+serverError=$?
+sleep 1
+done
+
 if [ -n $DB_USERNAME ]; then
-
-    # This command was designed to run inside a docker image from postgres as a step in initialization and as a docker exec for a postgress image
-    
-    # Avoiding race conditions when the servees is not initialized yet
-    serverError=2 # 2 is the error returned when can't connect to the server
-    while [ $serverError -eq 2 ]; do
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --command "\echo Server up..."
-    serverError=$?
-    sleep 1
-    done
-
     # Creating user if not exist
     # NOT WORKING IN THE CONTAINER---> user_exist=$(psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -c "\du" | grep -w $user | wc -l)
     user_exist=0
@@ -60,3 +60,10 @@ EOSQL
 else
     echo "No credentilas provided for custom user and db."    
 fi
+
+###
+# EXTENSIONS
+###
+# echo Adding extensions
+# echo uuid-ossp
+# psql $DB_DATABASE --username "$POSTGRES_USER" -v ON_ERROR_STOP=1 -q --username "$POSTGRES_USER" -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\""

@@ -1,16 +1,24 @@
-.quasar
+
+# Ignore al markdown
+*.md
+**/.md
+
+# ignore al hidden files
+.*
+**/.*
+
+# ignore local dependencies
 node_modules
-.git
-.gitignore
-.editorconfig
-build_development_image.sh
-build_release_image.sh
-create_dev_image.sh
-start_db.sh
-.env
-.env.*
+
+# Ignore builds
 dist
+
+# Custom
+build_commands
 database_docker
+start_db.sh
+start_dev.sh
 docker-compose.yml
+**/docker-compose.yml
 Dockerfile
-README.md
+**/Dockerfile

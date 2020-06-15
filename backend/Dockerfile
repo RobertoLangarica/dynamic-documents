@@ -1,5 +1,5 @@
 # This stage install all the dependencies
-FROM node:14.4-alpine AS development
+FROM node:12.18-alpine AS development
 # directory for the app
 WORKDIR /usr/src/app
 
@@ -30,7 +30,7 @@ RUN apk add --no-cache make gcc g++ python && \
   apk del make gcc g++ python
 
 # Clean build
-FROM node:14.4-alpine AS clean_build
+FROM node:12.18-alpine AS clean_build
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
