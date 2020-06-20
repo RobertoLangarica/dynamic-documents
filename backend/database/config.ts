@@ -2,6 +2,7 @@ import {ConnectionOptions} from 'typeorm'
 import {User} from '../src/user/user.entity'
 import {Token} from '../src/auth/token.entity'
 import {Grant} from '../src/user/grant.entity'
+import {APISecret} from '../src/api_secret/api_secret.entity'
 
 const config = (): ConnectionOptions => {
   let config: ConnectionOptions = {
@@ -16,6 +17,7 @@ const config = (): ConnectionOptions => {
       User,
       Token,
       Grant,
+      APISecret
     ],
     synchronize: false
   }

@@ -6,7 +6,7 @@ import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
 import {EntityNotFoundFilter} from './common/filters/entity-not-found.filter'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {logger:['log','error','warn','debug','verbose']})
+  const app = await NestFactory.create(AppModule)
   app.setGlobalPrefix('api')
   app.useGlobalPipes(new ValidationPipe({whitelist: true}))
   app.useGlobalFilters(

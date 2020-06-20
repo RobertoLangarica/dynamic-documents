@@ -1,4 +1,4 @@
-import {HttpException, Injectable} from '@nestjs/common'
+import {HttpException, Injectable, HttpCode} from '@nestjs/common'
 import {LoginDto} from './dto/login.dto'
 import {User} from '../user/user.entity'
 import {InjectRepository} from '@nestjs/typeorm'
@@ -52,6 +52,24 @@ export class AuthService {
     }
     let token = await this.generateToken(user.id)
     return {token}
+  }
+
+  async signUp(dto: LoginDto) {
+    // Exist?
+    let exist = await this.userRepo.findOne({ where: {email:dto.email}})
+
+    if(exist){
+      throw new HttpException('User already exists', 409)
+    }
+
+    // Creating user
+    let user: User = await this.userRepo.create()
+    user.email = dto.email;
+    user.password = dto.password;
+
+    await this.userRepo.save(user)
+    
+    return {user}
   }
 
   async logout(token) {

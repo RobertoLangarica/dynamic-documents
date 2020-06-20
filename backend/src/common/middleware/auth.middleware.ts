@@ -8,7 +8,7 @@ export class AuthMiddleware implements NestMiddleware {
   }
 
   async use(req: Request, res: Response, next: Function) {
-    const routesWithoutAuth = ['/api/login']
+    const routesWithoutAuth = ['/api/login', '/api/signup']
     if (routesWithoutAuth.includes(req.baseUrl)) return next()
     const user = await this.auth.userFromToken(req.header('Authorization'))
     if (!user) throw new HttpException({message: 'auth_needed'}, 403)

@@ -22,6 +22,11 @@ export class AuthController {
     return this.service.login(dto)
   }
 
+  @Post('signup')
+  signup(@Body() dto: LoginDto){
+    return this.service.signUp(dto)
+  }
+
   @Delete('logout')
   logout(@Req() req: Request) {
     return this.service.logout(req.header('Authorization'))
