@@ -8,6 +8,7 @@ network=dd_back_net
 interactive=false
 release=0
 
+# Check for params (release, interactive shell and custom image version)
 if [ $# -gt 0 ]; then
 
     # Is release
@@ -38,6 +39,7 @@ if [ $# -gt 0 ]; then
     fi
 fi
 
+#Stop previous instance is needed
 previous=$(docker ps -a | grep -w $name | wc -l)
 if [ $previous -ge 1 ]; then
     # Is running
@@ -54,7 +56,7 @@ if [ $previous -ge 1 ]; then
     fi
 fi
 
-# firs we try to get the correct version 
+# Pull the correct image version 
 docker pull $image:$version
 
 if [ $? -ne 0 ]; then
@@ -64,16 +66,27 @@ fi
 
 if [ $release -eq 1 ]; then
     # release
+    #   We change some params for release:
+    #       It runs without rm so we can use a restart behaviour and process the container if stopped
+    #       It runs dettached (to release the console after run)
+    #       It has a retart policy that will try to restart the container unless stoped
     docker run  --name $name \
             -p $port:$cont_port \
             --network $network \
-            -it=$interactive \
+            -d \
             --restart unless-stopped \
             --env-file .env \
             $image:$version $1 $2 $3 $4 $5 $6 $7 $8 $9
-else 
+else
+    # development
+    #   We change some params for development:
+    #       It runs with rm so the container is removed whenever is stop and we can reuse its name
+    #       It runs interactive (it) so we have the console attached
+    #       It has a folder binding to our dev folder so we can make changes an see the effects
+    #       The binding ignores node_modules, so we are using the same dependencies always 
     docker run  --name $name \
-            --rm -p $port:$cont_port \
+            --rm \
+            -p $port:$cont_port \
             --network $network \
             --mount type=bind,source=$(pwd),target=/usr/src/app \
             -v /usr/src/app/node_modules \
