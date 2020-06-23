@@ -70,6 +70,7 @@ if [ $release -eq 1 ]; then
     #       It runs without rm so we can use a restart behaviour and process the container if stopped
     #       It runs dettached (to release the console after run)
     #       It has a retart policy that will try to restart the container unless stoped
+    echo " -> Starting image"
     docker run  --name $name \
             -p $port:$cont_port \
             --network $network \
@@ -84,6 +85,7 @@ else
     #       It runs interactive (it) so we have the console attached
     #       It has a folder binding to our dev folder so we can make changes an see the effects
     #       The binding ignores node_modules, so we are using the same dependencies always 
+    echo " -> Starting image"
     docker run  --name $name \
             --rm \
             -p $port:$cont_port \
@@ -92,4 +94,5 @@ else
             -v /usr/src/app/node_modules \
             -it=$interactive \
             $image:$version $1 $2 $3 $4 $5 $6 $7 $8 $9
+     
 fi
