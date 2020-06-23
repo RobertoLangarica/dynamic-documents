@@ -1,12 +1,13 @@
-import {HttpException, Injectable, HttpCode} from '@nestjs/common'
+import {HttpException, Injectable} from '@nestjs/common'
 import {LoginDto} from './dto/login.dto'
 import {User} from '../user/user.entity'
 import {InjectRepository} from '@nestjs/typeorm'
-import {Repository} from 'typeorm'
+import {Repository, getConnection} from 'typeorm'
 import * as bcrypt from 'bcrypt'
 import * as uuid from 'uuid/v4'
 import {Token} from './token.entity'
 import {classToPlain} from 'class-transformer'
+import { Grant } from 'src/user/grant.entity'
 
 const sha256 = require('sha256')
 
@@ -31,7 +32,12 @@ export class AuthService {
 
   async userFromToken(rawToken) {
     if (!rawToken) return null
-    rawToken = rawToken.split(' ')[1]
+    let splitted: string[] = rawToken.split(' ')
+    if(splitted.length < 2){
+      // Bad format
+      return null
+    }
+    rawToken = splitted[1]
     let hashed = sha256(rawToken)
     let token = await this.tokenRepo.findOne({token: hashed})
     if (!token) return null
@@ -66,9 +72,18 @@ export class AuthService {
     let user: User = await this.userRepo.create()
     user.email = dto.email;
     user.password = dto.password;
+    user.first_name = ""
+    user.last_name = ""
+    user = await this.userRepo.save(user)
 
-    await this.userRepo.save(user)
-    
+    // Permisos de usuario
+    let repo = getConnection().getRepository(Grant)
+    let grant: Grant = await repo.create()
+    grant.user_id = user.id
+    grant.name = 'user'
+    repo.save(grant);
+
+
     return {user}
   }
 
