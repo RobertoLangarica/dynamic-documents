@@ -21,16 +21,34 @@ else
     exist_credentials=0
 fi
 
-if [ $exist_credentials -eq 1 ]; then
-    DB_PASSWORD=$(grep DB_PASSWORD $file | cut -d "=" -f 2)
-    DB_USERNAME=$(grep DB_USERNAME $file | cut -d "=" -f 2)
-    DB_DATABASE=$(grep DB_DATABASE $file | cut -d "=" -f 2)
-fi
-
 POSTGRES_PASSWORD=admin
 POSTGRES_USER=postgres
 POSTGRES_DB=postgres
 PORT=5432
+
+if [ $exist_credentials -eq 1 ]; then
+    DB_PASSWORD=$(grep DB_PASSWORD $file | cut -d "=" -f 2)
+    DB_USERNAME=$(grep DB_USERNAME $file | cut -d "=" -f 2)
+    DB_DATABASE=$(grep DB_DATABASE $file | cut -d "=" -f 2)
+    PORT=$(grep DB_PORT $file | cut -d "=" -f 2)
+    
+    # Postgres credentials exist?
+    P_PASSWORD=$(grep POSTGRES_PASSWORD $file | cut -d "=" -f 2)
+    P_USER=$(grep POSTGRES_USER $file | cut -d "=" -f 2)
+    P_DB=$(grep POSTGRES_DB $file | cut -d "=" -f 2)
+
+    if [ "$P_PASSWORD" != "" ]; then 
+        POSTGRES_PASSWORD=$P_PASSWORD 
+    fi
+    if [ "$P_USER" != "" ]; then 
+        POSTGRES_USER=$P_USER 
+    fi
+    if [ "$P_DB" != "" ]; then 
+        POSTGRES_DB=$P_DB 
+    fi
+fi
+
+
 
 
 # Reading a specific network for communicatong the services
