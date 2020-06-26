@@ -96,7 +96,8 @@ export default {
         this.secret = secret;
         this.active_secret = true;
         localStorage.setItem("secret", secret);
-        this.$api.setAuthorization(secret);
+
+        this.$api.setAuthorization(secret, "APIKey");
 
         this.label = "Using Secret:";
         this.usedContent = secret;

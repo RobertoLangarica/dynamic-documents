@@ -47,12 +47,7 @@ export class APISecretService {
 
     async getUserFromSecret(req: Request, rawSecret: string): Promise<User> {
         if (!rawSecret) return null
-        let splitted: string[] = rawSecret.split(' ')
-        if (splitted.length < 2) {
-            // Bad format
-            return null
-        }
-        rawSecret = splitted[1]
+
         let api_secret = sha256(rawSecret)
         let client_ip = (req.header['x-forwarded-for'] || '').split(',').shift().trim() || req.connection.remoteAddress;
 

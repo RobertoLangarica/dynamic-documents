@@ -1,12 +1,12 @@
-import {HttpException, Injectable} from '@nestjs/common'
-import {LoginDto} from './dto/login.dto'
-import {User} from '../user/user.entity'
-import {InjectRepository} from '@nestjs/typeorm'
-import {Repository, getConnection} from 'typeorm'
+import { HttpException, Injectable } from '@nestjs/common'
+import { LoginDto } from './dto/login.dto'
+import { User } from '../user/user.entity'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository, getConnection } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 import * as uuid from 'uuid/v4'
-import {Token} from './token.entity'
-import {classToPlain} from 'class-transformer'
+import { Token } from './token.entity'
+import { classToPlain } from 'class-transformer'
 import { Grant } from 'src/user/grant.entity'
 
 const sha256 = require('sha256')
@@ -32,14 +32,9 @@ export class AuthService {
 
   async userFromToken(rawToken) {
     if (!rawToken) return null
-    let splitted: string[] = rawToken.split(' ')
-    if(splitted.length < 2){
-      // Bad format
-      return null
-    }
-    rawToken = splitted[1]
+
     let hashed = sha256(rawToken)
-    let token = await this.tokenRepo.findOne({token: hashed})
+    let token = await this.tokenRepo.findOne({ token: hashed })
     if (!token) return null
     return this.userRepo.findOne(token.user_id)
   }
@@ -51,20 +46,20 @@ export class AuthService {
   async login(dto: LoginDto) {
     let user = await this.userRepo.createQueryBuilder()
       .addSelect('User.password')
-      .where({email: dto.email.toLowerCase()})
+      .where({ email: dto.email.toLowerCase() })
       .getOne()
     if (!user || !bcrypt.compareSync(dto.password, user.password)) {
       throw new HttpException('invalid_credentials', 422)
     }
     let token = await this.generateToken(user.id)
-    return {token}
+    return { token }
   }
 
   async signUp(dto: LoginDto) {
     // Exist?
-    let exist = await this.userRepo.findOne({ where: {email:dto.email}})
+    let exist = await this.userRepo.findOne({ where: { email: dto.email } })
 
-    if(exist){
+    if (exist) {
       throw new HttpException('User already exists', 409)
     }
 
@@ -84,7 +79,7 @@ export class AuthService {
     repo.save(grant);
 
 
-    return {user}
+    return { user }
   }
 
   async logout(token) {
@@ -92,7 +87,7 @@ export class AuthService {
     let hashed = sha256(token)
     await this.tokenRepo.createQueryBuilder()
       .delete()
-      .where({token: hashed})
+      .where({ token: hashed })
       .execute()
     return {}
   }
