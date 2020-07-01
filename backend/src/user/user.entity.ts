@@ -1,26 +1,24 @@
 import {BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm'
-import {IsArray, IsDate, IsEmail, IsObject, IsString, IsUUID} from 'class-validator'
+import {IsArray, IsEmail, IsObject, IsString} from 'class-validator'
 import * as bcrypt from 'bcrypt'
 import {Exclude, Expose} from 'class-transformer'
 import {Grant} from './grant.entity'
 import { APISecret } from 'src/api_secret/api_secret.entity'
+import { BasicEntity } from 'src/common/entities/basic.entity'
 
 @Entity('users')
-export class User {
-  @PrimaryGeneratedColumn('uuid') @IsUUID()
-  id: string
+export class User extends BasicEntity {
   @Column() @IsEmail()
   email: string
+
   @Column({select: false})
   password: string
+
   @Column() @IsString()
   first_name: string
+
   @Column() @IsString()
   last_name: string
-  @Column() @IsDate()
-  created_at: string
-  @Column() @IsDate()
-  updated_at: string
 
   @Expose() @IsString()
   get name(): string {
@@ -60,6 +58,7 @@ export class User {
   @OneToMany(type => Grant, m => m.user, {eager: true})
   raw_grants: Grant[]
 
-  @OneToMany(type => APISecret, r => r.user)
-  api_secret: string;
+  @Exclude()
+  @OneToMany(type => APISecret, r => r.user, {eager:false})
+  api_secret: APISecret[];
 }
