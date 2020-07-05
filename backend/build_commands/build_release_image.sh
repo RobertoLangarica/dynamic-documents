@@ -4,7 +4,6 @@ wdir=$(pwd)
 mkdir temp
 tmpDir=$? 
 imageName="registry.digitalocean.com/wizard/ddocuments/backend"
-dependencies="registry.digitalocean.com/wizard/ddocuments/backend-dev"
 buildDirectory="dynamic-documents/backend"
 if [ "$tmpDir" == 0 ]; then
     # Clone repository in temporal directory
@@ -16,8 +15,6 @@ if [ "$tmpDir" == 0 ]; then
         version=$(grep -w -i '"version"' package.json | cut -d '"' -f 4)
         img1=$imageName:$version
         img2=$imageName
-        # First we get the newest version of dependencies
-        docker pull $dependencies
         docker build -t $img1 -t $img2 .
         built=$?
         if [ "$built" == 0 ]; then
