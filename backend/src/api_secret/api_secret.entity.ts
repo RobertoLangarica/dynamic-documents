@@ -1,13 +1,13 @@
 import { Entity, Column, ManyToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { IsUUID, IsIP, IsBoolean, IsString } from 'class-validator';
 import { User } from 'src/user/user.entity';
-import { BasicEntity } from 'src/common/entities/basic.entity';
+import { EntityWithTimeStampt } from 'src/common/entities/entity_with_timestampt.entity';
 import { isIPv4 } from 'net';
 
 const sha256 = require('sha256')
 
 @Entity('secrets')
-export class APISecret extends BasicEntity {
+export class APISecret extends EntityWithTimeStampt {
 
     @Column() @IsBoolean()
     active: boolean;
