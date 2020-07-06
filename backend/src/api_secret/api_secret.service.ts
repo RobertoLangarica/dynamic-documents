@@ -30,7 +30,7 @@ export class APISecretService {
         }
     }
 
-    async newActiveSecret(user_id: string, ip: string): Promise<void> {
+    async newActiveSecret(user_id: string, ip: string): Promise<string> {
         // disable any previous one
         await this.disableActiveSecret(user_id)
 

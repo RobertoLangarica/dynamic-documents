@@ -4,6 +4,7 @@ import { Token } from '../src/auth/token.entity'
 import { Grant } from '../src/user/grant.entity'
 import { APISecret } from '../src/api_secret/api_secret.entity'
 import { FieldType } from 'src/templates/common/field_type.entity'
+import { Validation } from 'src/validations/validation.entity'
 
 const config = (): ConnectionOptions => {
   let config: ConnectionOptions = {
@@ -14,7 +15,7 @@ const config = (): ConnectionOptions => {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     logging: false,
-    entities: [User, Token, Grant, APISecret, FieldType],
+    entities: [User, Token, Grant, APISecret, Validation],
     synchronize: false
   }
   console.log(config)

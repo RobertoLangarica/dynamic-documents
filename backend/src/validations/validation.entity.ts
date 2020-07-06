@@ -4,7 +4,6 @@ import { IsString } from "class-validator";
 
 @Entity('validations')
 export class Validation extends SimpleEntity {
-
     @Column() @IsString()
     regex: string
 

@@ -1,7 +1,7 @@
-import { Entity, Column, OneToMany, ManyToMany, JoinTable, ManyToOne } from "typeorm";
+import { Entity, Column, ManyToMany, JoinTable, ManyToOne } from "typeorm";
 import { SimpleEntity } from "src/common/entities/simple_entity.entity";
 import { IsJSON, IsArray } from "class-validator";
-import { Validation } from "./validation.entity";
+import { Validation } from "../../validations/validation.entity";
 import { Type } from "class-transformer";
 
 @Entity('field_types')

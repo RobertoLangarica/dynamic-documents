@@ -1,6 +1,6 @@
 import { IsUUID, IsNotEmpty, IsOptional, IsJSON, IsArray, IsBoolean } from "class-validator"
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
-import { Validation } from "../common/validation.entity"
+import { Validation } from "../../validations/validation.entity"
 import { FieldType } from "../common/field_type.entity"
 import { Type, Exclude } from "class-transformer"
 
