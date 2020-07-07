@@ -1,9 +1,9 @@
 import { Controller, Get, Param, Post, Body, Delete, Patch } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { FieldTypeService } from "./field_type.service";
 import { FieldTypeDto } from "./field_type.dto";
 
-
+@ApiBearerAuth()
 @ApiTags('Types')
 @Controller('types')
 export class FieldTypeController {

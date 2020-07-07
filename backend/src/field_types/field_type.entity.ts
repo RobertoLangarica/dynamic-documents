@@ -12,7 +12,7 @@ export class FieldType extends SimpleEntity {
     @Column({ type: 'jsonb', default: '{}' }) @IsJSON()
     parameters: string
 
-    @ManyToMany(type => Validation, { eager: true, onDelete: 'SET NULL' })
+    @ManyToMany(type => Validation, { eager: true, onDelete: 'CASCADE' })
     @JoinTable({
         name: 'field_types_validations',
         joinColumn: { name: 'field_type_id', referencedColumnName: 'id' },

@@ -14,7 +14,8 @@ export class AuthMiddleware implements NestMiddleware {
     if (routesWithoutAuth.includes(req.baseUrl)) return next()
 
     let authorization = req.header('Authorization')
-    let splitted: string[] = authorization.split(' ')
+    let splitted: string[] = authorization ? authorization.split(' ') : [];
+
 
     if (splitted.length < 2) {
       // Bad format

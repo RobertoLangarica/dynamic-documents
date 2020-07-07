@@ -2,7 +2,9 @@ import { Controller, Patch, Body, Post } from "@nestjs/common";
 import { User } from "src/user/user.entity";
 import { APISecretService } from "./api_secret.service";
 import { AddIPDTO } from "./dto/addip.dto";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags('Api secrets')
 @Controller('secret')
 export class APISecretController {
     constructor(private readonly secret: APISecretService) {

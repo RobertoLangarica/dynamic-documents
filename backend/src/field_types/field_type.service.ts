@@ -30,24 +30,7 @@ export class FieldTypeService {
     }
 
     async addType(data: FieldTypeDto): Promise<FieldType> {
-        if (data.validations.length > 0) {
-            // Name or IDs are supported
-            let names = []
-            let ids = []
-
-            data.validations.forEach(item => {
-                if (!isUUID(item)) {
-                    // name
-                    names.push(item)
-                } else {
-                    ids.push(item)
-                }
-            })
-
-            if (names.length > 0) {
-                data.validations = ids.concat(await this.validation_service.getIDsFromNames(names))
-            }
-        }
+        data.validations = await this.getValidationIDs(data) as any[]
 
         let type = await this.type_repo.create(data)
 
@@ -66,7 +49,50 @@ export class FieldTypeService {
     }
 
     async updateType(id: string, data: FieldTypeDto): Promise<FieldType> {
-        return null
+        this.validateUUID(id)
+
+        // the preload do a merge with the array, we avoid that and make a replacement
+        data['id'] = id;
+        let validations = await this.getValidationIDs(data)
+        data.validations = []
+        let type = await this.type_repo.preload(data)
+
+        if (!type) {
+            throw new HttpException('Unable to find the required type', HttpStatus.NOT_FOUND)
+        }
+
+        type.validations = validations as any[]
+
+        type = await this.type_repo.save(type)
+        return type
+    }
+
+    async getValidationIDs(data: FieldTypeDto): Promise<Object[]> {
+        if (data.validations.length > 0) {
+            // Name or IDs are supported
+            let names = []
+            let ids = []
+
+            data.validations.forEach(item => {
+                if (!isUUID(item)) {
+                    // name
+                    names.push(item)
+                } else {
+                    ids.push(item)
+                }
+            })
+
+            ids.map(item => {
+                return { id: item }
+            })
+
+            if (names.length > 0) {
+                ids = ids.concat(await this.validation_service.getIDsFromNames(names))
+            }
+
+            return ids
+        }
+        return []
     }
 
     validateUUID(value: string, version?: UUIDVersion) {

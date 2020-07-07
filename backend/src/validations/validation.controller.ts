@@ -1,8 +1,9 @@
 import { ValidationService } from "./validation.service";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { Controller, Get, Post, Body, Delete, Param, Patch } from "@nestjs/common";
 import { ValidationDto } from "./validation.dto";
 
+@ApiBearerAuth()
 @ApiTags('Validations')
 @Controller('validations')
 export class ValidationController {
