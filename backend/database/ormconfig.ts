@@ -3,8 +3,8 @@ import { User } from '../src/user/user.entity'
 import { Token } from '../src/auth/token.entity'
 import { Grant } from '../src/user/grant.entity'
 import { APISecret } from '../src/api_secret/api_secret.entity'
-import { FieldType } from 'src/templates/common/field_type.entity'
 import { Validation } from 'src/validations/validation.entity'
+import { FieldType } from 'src/field_types/field_type.entity'
 
 const config = (): ConnectionOptions => {
   let config: ConnectionOptions = {
@@ -15,7 +15,7 @@ const config = (): ConnectionOptions => {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     logging: false,
-    entities: [User, Token, Grant, APISecret, Validation],
+    entities: [User, Token, Grant, APISecret, Validation, FieldType],
     synchronize: false
   }
   console.log(config)

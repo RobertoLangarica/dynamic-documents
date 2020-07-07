@@ -8,6 +8,7 @@ import { AuthMiddleware } from './common/middleware/auth.middleware'
 import { StoreModule } from './store/store.module'
 import { APISecretModule } from './api_secret/api_secret.module'
 import { ValidationModule } from './validations/validation.module'
+import { FieldTypeModule } from './field_types/field_type.module'
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { ValidationModule } from './validations/validation.module'
     UserModule,
     AuthModule,
     APISecretModule,
-    ValidationModule
+    ValidationModule,
+    FieldTypeModule
   ],
 })
 export class AppModule {

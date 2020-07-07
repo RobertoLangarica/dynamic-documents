@@ -4,7 +4,7 @@ import { Controller, Get, Post, Body, Delete, Param, Patch } from "@nestjs/commo
 import { ValidationDto } from "./validation.dto";
 
 @ApiTags('Validations')
-@Controller('validation')
+@Controller('validations')
 export class ValidationController {
     constructor(private readonly service: ValidationService) { }
 

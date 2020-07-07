@@ -49,6 +49,11 @@ export class ValidationService {
 
         data['id'] = id;
         let validation = await this.validation_repo.preload(data)
+
+        if (!validation) {
+            throw new HttpException('Unable to find the required validation', HttpStatus.NOT_FOUND)
+        }
+
         validation = await this.validation_repo.save(validation)
         return validation
     }
@@ -57,5 +62,17 @@ export class ValidationService {
         if (!isUUID(value, version)) {
             throw new HttpException('The id received is not an UUID', HttpStatus.BAD_REQUEST)
         }
+    }
+
+    async getIDsFromNames(names: string[]): Promise<Object[]> {
+        let result = []
+        result = await this.validation_repo.createQueryBuilder('v')
+            .select("v.id")
+            .where("v.name = ANY(:names)", { names: names })
+            .getRawMany()
+
+        return result.map(value => {
+            return { id: value["v_id"] }
+        })
     }
 }
