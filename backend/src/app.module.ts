@@ -9,6 +9,7 @@ import { StoreModule } from './store/store.module'
 import { APISecretModule } from './api_secret/api_secret.module'
 import { ValidationModule } from './validations/validation.module'
 import { FieldTypeModule } from './field_types/field_type.module'
+import { TransformationModule } from './transformations/transformation.module'
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { FieldTypeModule } from './field_types/field_type.module'
     AuthModule,
     APISecretModule,
     ValidationModule,
-    FieldTypeModule
+    FieldTypeModule,
+    TransformationModule
   ],
 })
 export class AppModule {

@@ -51,7 +51,8 @@ export class FieldTypeService {
     async updateType(id: string, data: FieldTypeDto): Promise<FieldType> {
         this.validateUUID(id)
 
-        // the preload do a merge with the array, we avoid that and make a replacement
+        // the repository.preload make a merge between arrays.
+        // We avoid that by sending an empty array and replacing it for the new one after preload
         data['id'] = id;
         let validations = await this.getValidationIDs(data)
         data.validations = []
@@ -99,5 +100,17 @@ export class FieldTypeService {
         if (!isUUID(value, version)) {
             throw new HttpException('The id received is not an UUID', HttpStatus.BAD_REQUEST)
         }
+    }
+
+    async getIDsFromNames(names: string[]): Promise<Object[]> {
+        let result = []
+        result = await this.type_repo.createQueryBuilder('t')
+            .select("t.id")
+            .where("t.name = ANY(:names)", { names: names })
+            .getRawMany()
+
+        return result.map(value => {
+            return { id: value["t_id"] }
+        })
     }
 }
