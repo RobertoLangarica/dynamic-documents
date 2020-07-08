@@ -11,6 +11,8 @@ import { ValidationModule } from './validations/validation.module'
 import { FieldTypeModule } from './field_types/field_type.module'
 import { TransformationModule } from './transformations/transformation.module'
 import { CategoryModule } from './categories/category.module'
+import { TemplateTypeModule } from './template_types/template_type.module'
+import { TemplateModule } from './templates/template.module'
 
 @Module({
   imports: [
@@ -23,7 +25,9 @@ import { CategoryModule } from './categories/category.module'
     ValidationModule,
     FieldTypeModule,
     TransformationModule,
-    CategoryModule
+    CategoryModule,
+    TemplateTypeModule,
+    TemplateModule
   ],
 })
 export class AppModule {

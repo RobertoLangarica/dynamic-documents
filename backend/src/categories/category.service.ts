@@ -47,4 +47,38 @@ export class CategoryService {
             throw new HttpException('The id received is not an UUID', HttpStatus.BAD_REQUEST)
         }
     }
+
+    async getIDsFromNames(names: string[], create_new: boolean = false): Promise<Object[]> {
+        let result = []
+        let inserted_ids = []
+        result = await this.category_repo.createQueryBuilder('c')
+            .select("c.id, c.name")
+            .where("c.name = ANY(:names)", { names: names })
+            .getRawMany()
+
+        if (create_new && result.length < names.length) {
+            // Creating the new categories
+            let missing: Object[] = []
+
+            names.forEach(name => {
+                let index = result.findIndex(r => r.name == name)
+                if (index < 0) {
+                    missing.push({ name: name })
+                }
+            })
+
+            if (missing.length > 0) {
+                //Insert the new ones
+                let insert = await this.category_repo.createQueryBuilder()
+                    .insert()
+                    .values(missing)
+                    .execute()
+                inserted_ids = insert.identifiers
+            }
+        }
+
+        return result.map(value => {
+            return { id: value["id"] }
+        }).concat(inserted_ids)
+    }
 }

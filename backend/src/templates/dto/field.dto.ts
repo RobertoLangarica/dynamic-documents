@@ -1,8 +1,24 @@
-import { IsUUID, IsNotEmpty, IsOptional, IsJSON, IsArray, IsBoolean } from "class-validator"
+import { IsUUID, IsNotEmpty, IsOptional, IsJSON, IsArray, IsBoolean, IsString } from "class-validator"
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { Validation } from "../../validations/validation.entity"
-import { Type, Exclude } from "class-transformer"
-import { FieldType } from "src/field_types/field_type.entity"
+import { Type, Exclude, Transform, Expose } from "class-transformer"
+
+export class FDataOptions {
+    values: any[]
+    alow_multiple_selection: boolean
+    allow_other: boolean
+}
+
+export class FDataDependent {
+    on: string // field uuid
+    accepted_values: any[]
+}
+
+export class FDataReplication {
+    allow: boolean
+    min_count: number // 0 or less mean no min count
+    max_count: number //0 or less mean no max count
+}
 
 export class Field {
     @IsNotEmpty() @IsUUID() @ApiProperty()
@@ -11,9 +27,8 @@ export class Field {
     @IsOptional() @ApiPropertyOptional()
     name: string
 
-    @IsNotEmpty() @ApiProperty()
-    @Type(() => FieldType)
-    type: FieldType
+    @IsNotEmpty() @IsString() @ApiProperty({ description: 'Type name' })
+    type: string
 
     @IsOptional() @ApiPropertyOptional()
     hint: string
@@ -90,21 +105,9 @@ export class Field {
     @IsOptional() @IsArray() @ApiPropertyOptional()
     print_styles: string[]
 
-}
+    @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    deleted: boolean // If true then the field should be removed
 
-export class FDataOptions {
-    values: any[]
-    alow_multiple_selection: boolean
-    allow_other: boolean
-}
-
-export class FDataDependent {
-    on: string // field uuid
-    accepted_values: any[]
-}
-
-export class FDataReplication {
-    allow: boolean
-    min_count: number // 0 or less mean no min count
-    max_count: number //0 or less mean no max count
+    @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    is_new: boolean // If true the field should be added
 }
