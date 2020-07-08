@@ -63,7 +63,10 @@ export class Field {
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
     use_embedded: boolean //In case this field uses an embedded value
 
-    @IsNotEmpty() @ApiPropertyOptional()
+    @IsOptional() @IsArray() @ApiPropertyOptional()
+    embedded_fields: string[] // Array of uuid's referencig the fields used in the embedded form
+
+    @IsOptional() @ApiPropertyOptional()
     @Type(() => FDataReplication)
     replication: FDataReplication
 
@@ -74,6 +77,19 @@ export class Field {
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
     replicate_with: string //Cuando el campo referenciado se duplica, este campo tmb se debe duplicar
+
+    @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    show_in_capture: boolean
+
+    @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    show_in_print: boolean
+
+    @IsOptional() @IsArray() @ApiPropertyOptional()
+    capture_styles: string[]
+
+    @IsOptional() @IsArray() @ApiPropertyOptional()
+    print_styles: string[]
+
 }
 
 export class FDataOptions {
