@@ -41,8 +41,6 @@ export class TransformationService {
 
     async addTransformation(data: TransformationDto): Promise<Transformation> {
         data.supported_types = await this.getTypeIDs(data) as any[]
-        console.log(data.supported_types)
-        console.log(data)
         let transformation = await this.transformation_repo.create(data)
 
         try {

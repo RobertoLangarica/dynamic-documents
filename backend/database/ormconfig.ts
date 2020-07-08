@@ -6,6 +6,7 @@ import { APISecret } from '../src/api_secret/api_secret.entity'
 import { Validation } from 'src/validations/validation.entity'
 import { FieldType } from 'src/field_types/field_type.entity'
 import { Transformation } from 'src/transformations/transformation.entity'
+import { Category } from 'src/categories/category.entity'
 
 const config = (): ConnectionOptions => {
   let config: ConnectionOptions = {
@@ -16,7 +17,7 @@ const config = (): ConnectionOptions => {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     logging: false,
-    entities: [User, Token, Grant, APISecret, Validation, FieldType, Transformation],
+    entities: [User, Token, Grant, APISecret, Validation, FieldType, Transformation, Category],
     synchronize: false
   }
   console.log(config)

@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class FieldType1594083251552 implements MigrationInterface {
-    name = 'FieldType1594083251552'
+export class FieldType1594165459308 implements MigrationInterface {
+    name = 'FieldType1594165459308'
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.query(`CREATE TABLE "field_types" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL DEFAULT '', "controller" character varying NOT NULL, "parameters" jsonb NOT NULL DEFAULT '{}', CONSTRAINT "UQ_f402180addbf19ee29e28d5569f" UNIQUE ("name"), CONSTRAINT "PK_8feb25bdab1f9053f78b59f536d" PRIMARY KEY ("id"))`, undefined);
