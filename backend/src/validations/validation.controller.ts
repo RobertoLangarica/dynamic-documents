@@ -1,6 +1,6 @@
 import { ValidationService } from "./validation.service";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
-import { Controller, Get, Post, Body, Delete, Param, Patch } from "@nestjs/common";
+import { Controller, Get, Post, Body, Delete, Param, Patch, ParseUUIDPipe } from "@nestjs/common";
 import { ValidationDto } from "./validation.dto";
 
 @ApiBearerAuth()
@@ -10,7 +10,7 @@ export class ValidationController {
     constructor(private readonly service: ValidationService) { }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
         return this.service.findById(id)
     }
 
@@ -25,12 +25,12 @@ export class ValidationController {
     }
 
     @Patch(':id')
-    modify(@Param('id') id: string, @Body() dto: ValidationDto) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body() dto: ValidationDto) {
         return this.service.updateValidation(id, dto)
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string) {
+    delete(@Param('id', ParseUUIDPipe) id: string) {
         return this.service.deleteValidation(id)
     }
 }

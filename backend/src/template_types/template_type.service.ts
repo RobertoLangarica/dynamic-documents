@@ -1,7 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { isUUID, UUIDVersion } from "class-validator";
 import { TemplateType } from "./template_type.entity";
 import { TemplateTypeDto } from "./template_type.dto";
 
@@ -16,7 +15,6 @@ export class TemplateTypeService {
     }
 
     async findById(id: string): Promise<TemplateType> {
-        this.validateUUID(id)
         return await this.ttype_repo.findOne(id)
     }
 
@@ -33,7 +31,6 @@ export class TemplateTypeService {
     }
 
     async deleteTemplateType(id: string) {
-        this.validateUUID(id)
         await this.ttype_repo.delete({ id: id })
     }
 
@@ -55,13 +52,6 @@ export class TemplateTypeService {
     }
 
     async updateTemplateType(id: string, data: TemplateTypeDto) {
-        this.validateUUID(id)
         await this.ttype_repo.update(id, { name: data.name })
-    }
-
-    validateUUID(value: string, version?: UUIDVersion) {
-        if (!isUUID(value, version)) {
-            throw new HttpException('The id received is not an UUID', HttpStatus.BAD_REQUEST)
-        }
     }
 }

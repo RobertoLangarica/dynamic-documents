@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Patch, Delete } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body, Patch, Delete, ParseUUIDPipe } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { CategoryService } from "./category.service";
 import { CategoryDto } from "./category.dto";
@@ -20,12 +20,12 @@ export class CategoryController {
     }
 
     @Patch(':id')
-    modify(@Param('id') id: string, @Body() dto: CategoryDto) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body() dto: CategoryDto) {
         return this.service.updateCategory(id, dto)
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string) {
+    delete(@Param('id', ParseUUIDPipe) id: string) {
         return this.service.deleteCategory(id)
     }
 }

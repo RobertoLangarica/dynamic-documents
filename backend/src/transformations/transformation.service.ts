@@ -2,7 +2,7 @@ import { Injectable, HttpStatus, HttpException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { Transformation } from "./transformation.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { isUUID, UUIDVersion } from "class-validator";
+import { isUUID } from "class-validator";
 import { FieldTypeService } from "src/field_types/field_type.service";
 import { TransformationDto } from "./transformation.dto";
 
@@ -23,7 +23,6 @@ export class TransformationService {
     }
 
     async findById(id: string): Promise<Transformation> {
-        this.validateUUID(id)
         // Using query builder instead of find to avoid the eager relation between FieldType and Validations
         // return await this.transformation_repo.findOne({ id: id })
         return await this.transformation_repo.createQueryBuilder("ts")
@@ -34,8 +33,6 @@ export class TransformationService {
     }
 
     async deleteTransformation(id: string) {
-        this.validateUUID(id)
-
         await this.transformation_repo.delete({ id: id })
     }
 
@@ -58,8 +55,6 @@ export class TransformationService {
     }
 
     async updateTransformation(id: string, data: TransformationDto): Promise<Transformation> {
-        this.validateUUID(id)
-
         data['id'] = id;
         let types = await this.getTypeIDs(data)
         // the repository.preload make a merge between arrays.
@@ -105,12 +100,4 @@ export class TransformationService {
         }
         return []
     }
-
-    validateUUID(value: string, version?: UUIDVersion) {
-        if (!isUUID(value, version)) {
-            throw new HttpException('The id received is not an UUID', HttpStatus.BAD_REQUEST)
-        }
-    }
-
-
 }

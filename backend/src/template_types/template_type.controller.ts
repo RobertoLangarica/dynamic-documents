@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Patch, Delete } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body, Patch, Delete, ParseUUIDPipe } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { TemplateTypeService } from "./template_type.service";
 import { TemplateTypeDto } from "./template_type.dto";
@@ -11,7 +11,7 @@ export class TemplateTypeController {
     constructor(private readonly service: TemplateTypeService) { }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
         return this.service.findById(id)
     }
 
@@ -26,12 +26,12 @@ export class TemplateTypeController {
     }
 
     @Patch(':id')
-    modify(@Param('id') id: string, @Body() dto: TemplateTypeDto) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body() dto: TemplateTypeDto) {
         return this.service.updateTemplateType(id, dto)
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string) {
+    delete(@Param('id', ParseUUIDPipe) id: string) {
         return this.service.deleteTemplateType(id)
     }
 }

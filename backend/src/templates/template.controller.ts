@@ -1,5 +1,5 @@
 import { TemplateService } from "./template.service"
-import { Get, Controller, Post, Body, Patch, Param, Delete } from "@nestjs/common"
+import { Get, Controller, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from "@nestjs/common"
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger"
 import { TemplateDto } from "./dto/template.dto"
 
@@ -10,13 +10,13 @@ export class TemplateController {
     constructor(private readonly service: TemplateService) { }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
         return this.service.findById(id)
     }
 
     @Get()
-    find() {
-        return this.service.findAll()
+    find(@Query('categories') categories: string) {
+        return this.service.findAll(categories)
     }
 
     @Post()
@@ -25,12 +25,12 @@ export class TemplateController {
     }
 
     @Patch(':id')
-    modify(@Param('id') id: string, @Body() dto: TemplateDto) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body() dto: TemplateDto) {
         return this.service.updateTemplate(id, dto)
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string) {
+    delete(@Param('id', ParseUUIDPipe) id: string) {
         return this.service.deleteTemplate(id)
     }
 }

@@ -2,9 +2,9 @@ import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FieldType } from "./field_type.entity";
 import { Repository } from "typeorm";
-import { UUIDVersion, isUUID } from "class-validator";
 import { FieldTypeDto } from "./field_type.dto";
 import { ValidationService } from "src/validations/validation.service";
+import { isUUID } from "class-validator";
 
 @Injectable()
 export class FieldTypeService {
@@ -19,13 +19,10 @@ export class FieldTypeService {
     }
 
     async findById(id: string): Promise<FieldType> {
-        this.validateUUID(id)
         return await this.type_repo.findOne({ id: id })
     }
 
     async deleteType(id: string) {
-        this.validateUUID(id)
-
         await this.type_repo.delete({ id: id })
     }
 
@@ -49,8 +46,6 @@ export class FieldTypeService {
     }
 
     async updateType(id: string, data: FieldTypeDto): Promise<FieldType> {
-        this.validateUUID(id)
-
         // the repository.preload make a merge between arrays.
         // We avoid that by sending an empty array and replacing it for the new one after preload
         data['id'] = id;
@@ -94,12 +89,6 @@ export class FieldTypeService {
             return ids
         }
         return []
-    }
-
-    validateUUID(value: string, version?: UUIDVersion) {
-        if (!isUUID(value, version)) {
-            throw new HttpException('The id received is not an UUID', HttpStatus.BAD_REQUEST)
-        }
     }
 
     async getIDsFromNames(names: string[]): Promise<Object[]> {

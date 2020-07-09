@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { UUIDVersion, isUUID, isJSON } from "class-validator";
+import { isUUID, isJSON } from "class-validator";
 import { Template } from "./template.entity";
 import { CategoryService } from "src/categories/category.service";
 import { TemplateDto } from "./dto/template.dto";
@@ -18,17 +18,36 @@ export class TemplateService {
         private readonly template_type_service: TemplateTypeService
     ) { }
 
-    async findAll(): Promise<Template[]> {
+    async findAll(categories_query: string): Promise<Template[]> {
+
+        // filtering by category
+        if (categories_query && categories_query.length > 0) {
+            let categories: string[] = categories_query.split(',')
+
+            // Supporting names and IDS
+            let ids = categories.filter(value => {
+                return isUUID(value)
+            })
+
+            let names = categories.filter(value => {
+                return !isUUID(value)
+            })
+
+            return await this.template_repo.createQueryBuilder('t')
+                .leftJoinAndSelect('t.categories', 'c')
+                .where("(c.id = ANY(:ids)) OR (c.name = ANY(:names))", { ids: ids, names: names })
+                .getMany()
+
+        }
+
         return await this.template_repo.find()
     }
 
     async findById(id: string): Promise<Template> {
-        this.validateUUID(id)
         return await this.template_repo.findOne({ id: id })
     }
 
     async deleteTemplate(id: string) {
-        this.validateUUID(id)
         await this.template_repo.delete({ id: id })
     }
 
@@ -54,8 +73,6 @@ export class TemplateService {
     }
 
     async updateTemplate(id: string, data: TemplateDto): Promise<Template> {
-        this.validateUUID(id)
-
         let template = await this.template_repo.findOne(id)
 
         if (data.name) template.name = data.name
@@ -107,12 +124,6 @@ export class TemplateService {
         }
 
         return template
-    }
-
-    validateUUID(value: string, version?: UUIDVersion) {
-        if (!isUUID(value, version)) {
-            throw new HttpException('The id received is not an UUID', HttpStatus.BAD_REQUEST)
-        }
     }
 
     getFormattedFields(stringFormatted: any[]): Field[] {

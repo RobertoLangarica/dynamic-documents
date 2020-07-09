@@ -3,7 +3,6 @@ import { ValidationDto } from "./validation.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Validation } from "./validation.entity";
 import { Repository } from "typeorm";
-import { isUUID, UUIDVersion } from "class-validator";
 
 @Injectable()
 export class ValidationService {
@@ -17,7 +16,6 @@ export class ValidationService {
     }
 
     async findById(id: string): Promise<Validation> {
-        this.validateUUID(id)
         return await this.validation_repo.findOne({ id: id })
     }
 
@@ -39,14 +37,10 @@ export class ValidationService {
     }
 
     async deleteValidation(id: string) {
-        this.validateUUID(id)
-
         await this.validation_repo.delete({ id: id })
     }
 
     async updateValidation(id: string, data: ValidationDto): Promise<Validation> {
-        this.validateUUID(id)
-
         data['id'] = id;
         let validation = await this.validation_repo.preload(data)
 
@@ -56,12 +50,6 @@ export class ValidationService {
 
         validation = await this.validation_repo.save(validation)
         return validation
-    }
-
-    validateUUID(value: string, version?: UUIDVersion) {
-        if (!isUUID(value, version)) {
-            throw new HttpException('The id received is not an UUID', HttpStatus.BAD_REQUEST)
-        }
     }
 
     async getIDsFromNames(names: string[]): Promise<Object[]> {

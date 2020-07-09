@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Delete, Patch } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body, Delete, Patch, ParseUUIDPipe } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { TransformationService } from "./transformation.service";
 import { TransformationDto } from "./transformation.dto";
@@ -10,7 +10,7 @@ export class TransformationController {
     constructor(private readonly service: TransformationService) { }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
         return this.service.findById(id)
     }
 
@@ -25,12 +25,12 @@ export class TransformationController {
     }
 
     @Patch(':id')
-    modify(@Param('id') id: string, @Body() dto: TransformationDto) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body() dto: TransformationDto) {
         return this.service.updateTransformation(id, dto)
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string) {
+    delete(@Param('id', ParseUUIDPipe) id: string) {
         return this.service.deleteTransformation(id)
     }
 }

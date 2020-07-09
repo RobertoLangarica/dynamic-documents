@@ -2,7 +2,6 @@ import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Category } from "./category.entity";
 import { Repository } from "typeorm";
-import { isUUID, UUIDVersion } from "class-validator";
 import { CategoryDto } from "./category.dto";
 
 @Injectable()
@@ -16,7 +15,6 @@ export class CategoryService {
     }
 
     async deleteCategory(id: string) {
-        this.validateUUID(id)
         await this.category_repo.delete({ id: id })
     }
 
@@ -38,14 +36,7 @@ export class CategoryService {
     }
 
     async updateCategory(id: string, data: CategoryDto) {
-        this.validateUUID(id)
         await this.category_repo.update(id, { name: data.name })
-    }
-
-    validateUUID(value: string, version?: UUIDVersion) {
-        if (!isUUID(value, version)) {
-            throw new HttpException('The id received is not an UUID', HttpStatus.BAD_REQUEST)
-        }
     }
 
     async getIDsFromNames(names: string[], create_new: boolean = false): Promise<Object[]> {
