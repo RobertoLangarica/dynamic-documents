@@ -22,66 +22,86 @@ export class FDataReplication {
 
 export class Field {
     @IsNotEmpty() @IsUUID() @ApiProperty()
+    @Expose()
     id: string
 
     @IsOptional() @ApiPropertyOptional()
+    @Expose()
     name: string
 
     @IsNotEmpty() @IsString() @ApiProperty({ description: 'Type name' })
+    @Expose()
     type: string
 
     @IsOptional() @ApiPropertyOptional()
+    @Expose()
     hint: string
 
     @IsOptional() @ApiPropertyOptional()
+    @Expose()
     description: string
 
     @IsOptional() @ApiPropertyOptional()
+    @Expose()
     label: string
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    @Expose()
     readonly: boolean // false: No admite cambios en modo de captura
 
     @IsOptional() @ApiPropertyOptional()
+    @Expose()
     @Type(() => FDataOptions)
     value_options: FDataOptions
 
     @IsOptional() @IsJSON() @ApiPropertyOptional()
+    @Expose()
     @Type(() => FDataDependent)
     dependent: FDataDependent
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    @Expose()
     required: boolean
 
     @IsOptional() @ApiPropertyOptional()
+    @Expose()
     value: any
 
     @IsOptional() @ApiPropertyOptional()
+    @Expose()
     default_value: any
 
     @IsOptional() @IsArray() @ApiPropertyOptional()
+    @Expose()
     @Type(() => Validation)
     validations: Validation[]
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
+    @Expose()
     source_field: string // Used when this field is result of a copy from a template/document
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
+    @Expose()
     source_template: string // Used when this field is result of a copy from a template/document
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
+    @Expose()
     source_document: string // Used when this field is result of a copy from a template/document
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
+    @Expose()
     group_by: string //Id del grupo al que pertenece
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    @Expose()
     use_embedded: boolean //In case this field uses an embedded value
 
     @IsOptional() @IsArray() @ApiPropertyOptional()
+    @Expose()
     embedded_fields: string[] // Array of uuid's referencig the fields used in the embedded form
 
     @IsOptional() @ApiPropertyOptional()
+    @Expose()
     @Type(() => FDataReplication)
     replication: FDataReplication
 
@@ -91,23 +111,30 @@ export class Field {
     }
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
+    @Expose()
     replicate_with: string //Cuando el campo referenciado se duplica, este campo tmb se debe duplicar
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    @Expose()
     show_in_capture: boolean
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    @Expose()
     show_in_print: boolean
 
     @IsOptional() @IsArray() @ApiPropertyOptional()
+    @Expose()
     capture_styles: string[]
 
     @IsOptional() @IsArray() @ApiPropertyOptional()
+    @Expose()
     print_styles: string[]
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    @Expose()
     deleted: boolean // If true then the field should be removed
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    @Expose()
     is_new: boolean // If true the field should be added
 }

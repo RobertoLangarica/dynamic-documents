@@ -23,7 +23,7 @@ export class Template extends EntityWithTimeStampt {
     @Column({ default: '' }) @IsString()
     description: string
 
-    @Column({ type: 'jsonb', array: true, default: "{}" })
+    @Column({ type: 'jsonb', default: [] })
     @Type(() => Field) @IsArray()
     fields: Field[]
 

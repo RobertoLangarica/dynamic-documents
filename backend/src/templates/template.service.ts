@@ -1,21 +1,15 @@
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { isUUID, isJSON } from "class-validator";
+import { isUUID } from "class-validator";
 import { Template } from "./template.entity";
-import { CategoryService } from "src/categories/category.service";
 import { TemplateDto } from "./dto/template.dto";
-import { Field } from "./dto/field.dto";
-import { plainToClass } from "class-transformer";
-import { TemplateTypeService } from "src/template_types/template_type.service";
 
 @Injectable()
 export class TemplateService {
     constructor(
         @InjectRepository(Template)
-        private readonly template_repo: Repository<Template>,
-        private readonly category_service: CategoryService,
-        private readonly template_type_service: TemplateTypeService
+        private readonly template_repo: Repository<Template>
     ) { }
 
     async findAll(categories_query: string): Promise<Template[]> {
@@ -53,10 +47,8 @@ export class TemplateService {
 
     async addTemplate(data: TemplateDto): Promise<Template> {
         let template = await this.template_repo.create(data)
-
-        if (data.fields) template.fields = this.getFormattedFields(data.fields)
-        if (data.type) template.type = await this.getTypeByName(data.type)
-        if (data.categories) template.categories = await this.getCategoriesIDs(data) as any[]
+        if (data.type) template.type = data.type
+        if (data.categories) template.categories = data.categories
 
         try {
             template = await this.template_repo.save(template)
@@ -76,12 +68,12 @@ export class TemplateService {
         let template = await this.template_repo.findOne(id)
 
         if (data.name) template.name = data.name
-        if (data.type) template.type = await this.getTypeByName(data.type)
+        if (data.type) template.type = data.type
         if (data.description) template.description = data.description
-        if (data.categories) template.categories = await this.getCategoriesIDs(data) as any[]
-        if (data.fields) {
+        if (data.categories) template.categories = data.categories
+        if (data.fields.length > 0) {
             // Fields is only a partial update
-            let fields = this.getFormattedFields(data.fields);
+            let fields = data.fields
 
             // There could be fields to: update, delete or add
             let toUpdate = fields.filter(item => (!item.deleted && !item.is_new))
@@ -126,60 +118,4 @@ export class TemplateService {
         return template
     }
 
-    getFormattedFields(stringFormatted: any[]): Field[] {
-        let fields: Field[]
-
-        fields = stringFormatted.map((field, index) => {
-            if (!isJSON(field)) {
-                throw new HttpException(`Bad JSON format on fields[${index}]`, HttpStatus.BAD_REQUEST)
-            }
-
-            let f = plainToClass(Field, field, { excludeExtraneousValues: true })
-
-            if (!f.id) {
-                throw new HttpException(`Missing id property on fields[${index}]`, HttpStatus.BAD_REQUEST)
-            }
-
-            return f
-        })
-
-        return fields
-    }
-
-    async getTypeByName(type) {
-        if (isUUID(type)) {
-            return type
-        }
-
-        // Get or create a new type for the template
-        return await this.template_type_service.findByName(type, true)
-    }
-
-    async getCategoriesIDs(data: TemplateDto): Promise<Object[]> {
-        if (data.categories.length > 0) {
-            // Name or IDs are supported
-            let names = []
-            let ids = []
-
-            data.categories.forEach(item => {
-                if (!isUUID(item)) {
-                    // name
-                    names.push(item)
-                } else {
-                    ids.push(item)
-                }
-            })
-
-            ids.map(item => {
-                return { id: item }
-            })
-
-            if (names.length > 0) {
-                ids = ids.concat(await this.category_service.getIDsFromNames(names, true))
-            }
-
-            return ids
-        }
-        return []
-    }
 }
