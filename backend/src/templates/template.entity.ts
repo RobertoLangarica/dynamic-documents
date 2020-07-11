@@ -36,4 +36,7 @@ export class Template extends EntityWithTimeStampt {
     @Type(() => Category) @IsArray()
     categories: Category[]
 
+    @Exclude() @IsArray()
+    warnings: string[] // Not saved in the DB
+
 } 

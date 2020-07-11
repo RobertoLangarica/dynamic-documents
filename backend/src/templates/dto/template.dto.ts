@@ -1,5 +1,5 @@
-import { IsOptional, IsString, IsArray } from "class-validator"
-import { ApiPropertyOptional } from "@nestjs/swagger"
+import { IsOptional, IsString, IsArray, IsEmpty } from "class-validator"
+import { ApiPropertyOptional, ApiHideProperty } from "@nestjs/swagger"
 import { Category } from "src/categories/category.entity"
 import { Type } from "class-transformer"
 import { TemplateType } from "../../template_types/template_type.entity"
@@ -23,4 +23,7 @@ export class TemplateDto {
     @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
     @Type(() => Category)
     categories: Category[]
+
+    @IsEmpty() @ApiHideProperty()
+    warnings: string[]
 }

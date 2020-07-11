@@ -6,6 +6,14 @@ import { isUUID } from "class-validator";
 export class CategoriesFillPipe implements PipeTransform {
     constructor(private readonly category_service: CategoryService) { }
 
+    /**
+     * Read the value.categories and replace the names with ids to be stored as a relation
+     * in the DB. If instead of a name an UUID is provided, that UUID is used as is
+     * 
+     * NOTE: If a non existing name is received, then a new Category will be createdwith this name
+     * @param value 
+     * @param metadata 
+     */
     async transform(value: any, metadata: ArgumentMetadata) {
         if (!value.categories) {
             return value

@@ -5,7 +5,15 @@ import { TemplateTypeService } from "src/template_types/template_type.service";
 @Injectable()
 export class TemplateTypeFillPipe implements PipeTransform {
     constructor(private readonly template_type_service: TemplateTypeService) { }
-    // private readonly create_type_if_missing: boolean = true
+
+    /**
+     * Read the value.type and replace the name with an id to be stored as a relation
+     * in the DB. If instead of a name an UUID is provided, that UUID is used as is
+     * 
+     * NOTE: If a non existing name is received, then a new TemplateType will be created with this name
+     * @param value 
+     * @param metadata 
+     */
     async transform(value: any, metadata: ArgumentMetadata) {
         if (!value.type) {
             return value

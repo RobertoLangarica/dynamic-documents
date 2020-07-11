@@ -13,6 +13,7 @@ import { TransformationModule } from './transformations/transformation.module'
 import { CategoryModule } from './categories/category.module'
 import { TemplateTypeModule } from './template_types/template_type.module'
 import { TemplateModule } from './templates/template.module'
+import { StatusModule } from './status/status.module'
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { TemplateModule } from './templates/template.module'
     TransformationModule,
     CategoryModule,
     TemplateTypeModule,
-    TemplateModule
+    TemplateModule,
+    StatusModule
   ],
 })
 export class AppModule {

@@ -6,6 +6,13 @@ import { FieldTypeService } from "src/field_types/field_type.service";
 export class FieldTypeFillPipe implements PipeTransform {
     constructor(private readonly type_service: FieldTypeService) { }
 
+    /**
+     * Read the value.supported_types and replace the names with ids to be stored as a relation
+     * in the DB. If instead of a name an UUID is provided, that UUID is used as is
+     * 
+     * @param value 
+     * @param metadata 
+     */
     async transform(value: any, metadata: ArgumentMetadata) {
 
         if (!value.supported_types || value.supported_types.length === 0) {

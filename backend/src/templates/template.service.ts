@@ -60,6 +60,7 @@ export class TemplateService {
                 throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
             }
         }
+        template.warnings = data.warnings;
 
         return template
     }
@@ -78,7 +79,11 @@ export class TemplateService {
             // There could be fields to: update, delete or add
             let toUpdate = fields.filter(item => (!item.deleted && !item.is_new))
             let toDelete = fields.filter(item => item.deleted)
-            let toAdd = fields.filter(item => item.is_new)
+            let toAdd = fields.filter(item => item.is_new).map(item => {
+                // we remove the is_new property before save
+                delete item.is_new
+                return item
+            })
             let u = 0;
             let d = 0;
 
@@ -114,6 +119,8 @@ export class TemplateService {
                 throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
             }
         }
+
+        template.warnings = data.warnings;
 
         return template
     }

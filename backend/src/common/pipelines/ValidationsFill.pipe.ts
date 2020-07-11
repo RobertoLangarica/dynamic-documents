@@ -6,6 +6,12 @@ import { ValidationService } from "src/validations/validation.service";
 export class ValidationsFillPipe implements PipeTransform {
     constructor(private readonly validation_service: ValidationService) { }
 
+    /**
+     * Read the value.validations and replace the names with ids to be stored as a relation
+     * in the DB. If instead of a name an UUID is provided, that UUID is used as is
+     * @param value 
+     * @param metadata 
+     */
     async transform(value: any, metadata: ArgumentMetadata) {
         console.log(value)
         if (!value.validations || value.validations.length === 0) {

@@ -5,6 +5,12 @@ import { isArray } from "util";
 
 @Injectable()
 export class FieldsValidationPipe implements PipeTransform {
+    /**
+     * Read the value.fields and transform them to Field instances.
+     * If the id is missing for any of the fields then data is rejected
+     * @param value 
+     * @param metadata 
+     */
     transform(value: any, metadata: ArgumentMetadata) {
         if (!value.fields) {
             value.fields = []

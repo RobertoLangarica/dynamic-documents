@@ -5,6 +5,7 @@ import { TemplateDto } from "./dto/template.dto"
 import { FieldsValidationPipe } from "src/common/pipelines/FieldsValidation.pipe"
 import { TemplateTypeFillPipe } from "src/common/pipelines/TemplateTypeFill.pipe"
 import { CategoriesFillPipe } from "src/common/pipelines/CategoriesFill.pipe"
+import { FieldsValueValidationPipe } from "src/common/pipelines/FieldsValueValidation.pipe"
 
 @ApiBearerAuth()
 @ApiTags('Templates')
@@ -23,12 +24,12 @@ export class TemplateController {
     }
 
     @Post()
-    add(@Body(FieldsValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: TemplateDto) {
+    add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: TemplateDto) {
         return this.service.addTemplate(dto)
     }
 
     @Patch(':id')
-    modify(@Param('id', ParseUUIDPipe) id: string, @Body(FieldsValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: TemplateDto) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: TemplateDto) {
         return this.service.updateTemplate(id, dto)
     }
 
