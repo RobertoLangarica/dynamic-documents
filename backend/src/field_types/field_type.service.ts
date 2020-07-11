@@ -4,14 +4,12 @@ import { FieldType } from "./field_type.entity";
 import { Repository } from "typeorm";
 import { FieldTypeDto } from "./field_type.dto";
 import { ValidationService } from "src/validations/validation.service";
-import { isUUID } from "class-validator";
 
 @Injectable()
 export class FieldTypeService {
     constructor(
         @InjectRepository(FieldType)
-        private readonly type_repo: Repository<FieldType>,
-        private readonly validation_service: ValidationService
+        private readonly type_repo: Repository<FieldType>
     ) { }
 
     async findAll(): Promise<FieldType[]> {
@@ -27,8 +25,6 @@ export class FieldTypeService {
     }
 
     async addType(data: FieldTypeDto): Promise<FieldType> {
-        data.validations = await this.getValidationIDs(data) as any[]
-
         let type = await this.type_repo.create(data)
 
         try {
@@ -49,7 +45,7 @@ export class FieldTypeService {
         // the repository.preload make a merge between arrays.
         // We avoid that by sending an empty array and replacing it for the new one after preload
         data['id'] = id;
-        let validations = await this.getValidationIDs(data)
+        let validations = data.validations;
         data.validations = []
         let type = await this.type_repo.preload(data)
 
@@ -57,38 +53,10 @@ export class FieldTypeService {
             throw new HttpException('Unable to find the required type', HttpStatus.NOT_FOUND)
         }
 
-        type.validations = validations as any[]
+        type.validations = validations;
 
         type = await this.type_repo.save(type)
         return type
-    }
-
-    async getValidationIDs(data: FieldTypeDto): Promise<Object[]> {
-        if (data.validations.length > 0) {
-            // Name or IDs are supported
-            let names = []
-            let ids = []
-
-            data.validations.forEach(item => {
-                if (!isUUID(item)) {
-                    // name
-                    names.push(item)
-                } else {
-                    ids.push(item)
-                }
-            })
-
-            ids.map(item => {
-                return { id: item }
-            })
-
-            if (names.length > 0) {
-                ids = ids.concat(await this.validation_service.getIDsFromNames(names))
-            }
-
-            return ids
-        }
-        return []
     }
 
     async getIDsFromNames(names: string[]): Promise<Object[]> {

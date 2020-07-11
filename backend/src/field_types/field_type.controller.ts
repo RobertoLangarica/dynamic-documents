@@ -2,6 +2,7 @@ import { Controller, Get, Param, Post, Body, Delete, Patch, ParseUUIDPipe } from
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { FieldTypeService } from "./field_type.service";
 import { FieldTypeDto } from "./field_type.dto";
+import { ValidationsFillPipe } from "src/common/pipelines/ValidationsFill.pipe";
 
 @ApiBearerAuth()
 @ApiTags('Types')
@@ -20,12 +21,12 @@ export class FieldTypeController {
     }
 
     @Post()
-    add(@Body() dto: FieldTypeDto) {
+    add(@Body(ValidationsFillPipe) dto: FieldTypeDto) {
         return this.service.addType(dto)
     }
 
     @Patch(':id')
-    modify(@Param('id', ParseUUIDPipe) id: string, @Body() dto: FieldTypeDto) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body(ValidationsFillPipe) dto: FieldTypeDto) {
         return this.service.updateType(id, dto)
     }
 

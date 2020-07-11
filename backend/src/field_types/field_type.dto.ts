@@ -1,18 +1,18 @@
 import { SimpleDto } from "src/common/dto/simple_entity.dto";
-import { IsJSON, IsNotEmpty, IsArray, IsString } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { IsJSON, IsArray, IsString, IsOptional } from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Validation } from "src/validations/validation.entity";
 import { Type } from "class-transformer";
 
 export class FieldTypeDto extends SimpleDto {
 
-    @IsNotEmpty() @IsString() @ApiProperty()
+    @IsOptional() @IsString() @ApiPropertyOptional()
     controller: string;
 
-    @IsNotEmpty() @IsJSON() @ApiProperty()
+    @IsOptional() @IsJSON() @ApiPropertyOptional()
     parameters: string
 
-    @IsNotEmpty() @IsArray() @ApiProperty({ description: "Should be an array of names or ID's" })
+    @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
     @Type(() => Validation)
     validations: Validation[]
 }

@@ -1,12 +1,12 @@
 import { SimpleDto } from "src/common/dto/simple_entity.dto";
-import { IsNotEmpty, IsString, IsOptional, IsJSON } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsString, IsOptional, IsJSON } from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 export class ValidationDto extends SimpleDto {
-    @IsNotEmpty() @IsString() @ApiProperty()
+    @IsOptional() @IsString() @ApiPropertyOptional()
     action: string
 
-    @IsNotEmpty() @IsString() @ApiProperty()
+    @IsOptional() @IsString() @ApiPropertyOptional()
     error_message: string
 
     @IsOptional() @IsJSON() @ApiPropertyOptional()

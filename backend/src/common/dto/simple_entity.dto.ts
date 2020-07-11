@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsString, IsOptional, IsUUID } from "class-validator";
-import { ApiPropertyOptional, ApiProperty } from "@nestjs/swagger";
+import { IsString, IsOptional } from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 export class SimpleDto {
 
-    @IsNotEmpty() @IsString() @ApiProperty()
+    @IsOptional() @IsString() @ApiPropertyOptional()
     name: string
 
     @IsOptional() @IsString() @ApiPropertyOptional()

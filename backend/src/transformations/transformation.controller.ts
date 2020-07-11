@@ -2,6 +2,7 @@ import { Controller, Get, Param, Post, Body, Delete, Patch, ParseUUIDPipe } from
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { TransformationService } from "./transformation.service";
 import { TransformationDto } from "./transformation.dto";
+import { FieldTypeFillPipe } from "src/common/pipelines/FieldTypeFill.pipe";
 
 @ApiBearerAuth()
 @ApiTags('Transformations')
@@ -20,12 +21,12 @@ export class TransformationController {
     }
 
     @Post()
-    add(@Body() dto: TransformationDto) {
+    add(@Body(FieldTypeFillPipe) dto: TransformationDto) {
         return this.service.addTransformation(dto)
     }
 
     @Patch(':id')
-    modify(@Param('id', ParseUUIDPipe) id: string, @Body() dto: TransformationDto) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body(FieldTypeFillPipe) dto: TransformationDto) {
         return this.service.updateTransformation(id, dto)
     }
 

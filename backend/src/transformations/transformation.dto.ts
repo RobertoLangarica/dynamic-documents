@@ -1,14 +1,14 @@
 import { FieldType } from "src/field_types/field_type.entity"
 import { Type } from "class-transformer"
-import { IsNotEmpty, IsJSON, IsArray } from "class-validator"
-import { ApiProperty } from "@nestjs/swagger"
+import { IsJSON, IsArray, IsOptional } from "class-validator"
+import { ApiPropertyOptional } from "@nestjs/swagger"
 import { SimpleDto } from "src/common/dto/simple_entity.dto"
 
 export class TransformationDto extends SimpleDto {
-    @IsNotEmpty() @IsJSON() @ApiProperty()
+    @IsOptional() @IsJSON() @ApiPropertyOptional()
     parameters: string
 
-    @IsNotEmpty() @IsArray() @ApiProperty({ description: "Should be an array of names or ID's" })
+    @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
     @Type(() => FieldType)
     supported_types: FieldType[]
 }
