@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, Body } from "@nestjs/common"
+import { Injectable, HttpException, HttpStatus, Body, BadRequestException } from "@nestjs/common"
 import { Document } from "./document.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
@@ -6,6 +6,7 @@ import { isUUID } from "class-validator"
 import { DocumentDto } from "./dto/document.dto"
 import { User } from "src/user/user.entity"
 import { StatusService } from "src/status/status.service"
+import { DocumentConfig, DocumentStatus } from "./document.config"
 
 @Injectable()
 export class DocumentService {
@@ -43,7 +44,7 @@ export class DocumentService {
 
     async addDocument(data: DocumentDto): Promise<Document> {
         //Initial status
-        data.status = await this.status_service.findByName('open')
+        data.status = await this.status_service.findByName(DocumentConfig.initialState)
 
         let document = await this.doc_repo.create(data)
 
@@ -58,6 +59,26 @@ export class DocumentService {
             }
         }
         document.warnings = data.warnings;
+
+        return document
+    }
+
+    async setStatus(id: string, new_status: string) {
+        let status = await this.status_service.findByName(new_status)
+        let document
+
+        if (status) {
+            document = await this.doc_repo.findOneOrFail(id)
+            document.status = status
+            document = await this.doc_repo.save(document)
+
+            if (!DocumentConfig.canBeCaptured(new_status)) {
+                // Expire open DocumentFilters
+            }
+
+        } else {
+            throw new BadRequestException(`Status ${new_status} can't be recognized.`)
+        }
 
         return document
     }
