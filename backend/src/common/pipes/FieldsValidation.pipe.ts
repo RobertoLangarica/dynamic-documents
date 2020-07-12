@@ -27,8 +27,15 @@ export class FieldsValidationPipe implements PipeTransform {
             let f = plainToClass(Field, field, { excludeExtraneousValues: true })
 
             if (!f.id) {
-                throw new BadRequestException(`Missing id property at values[${index}]`)
+                throw new BadRequestException(`Missing id property at fields[${index}]`)
             }
+
+            // since there is no defaults we remove the undefined properties
+            Object.keys(f).forEach(key => {
+                if (f[key] === undefined) {
+                    delete f[key]
+                }
+            })
 
             return f
         })

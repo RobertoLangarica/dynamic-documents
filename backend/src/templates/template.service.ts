@@ -12,29 +12,18 @@ export class TemplateService {
         private readonly template_repo: Repository<Template>
     ) { }
 
-    async findAll(categories_query: string): Promise<Template[]> {
+    async findAll(categories_query: any): Promise<Template[]> {
 
-        // filtering by category
-        if (categories_query && categories_query.length > 0) {
-            let categories: string[] = categories_query.split(',')
+        let query = this.template_repo.createQueryBuilder('tmp')
+            .select(['tmp.id', 'tmp.name'])
+            .leftJoinAndSelect('tmp.type', 't')
+            .leftJoinAndSelect('tmp.categories', 'c')
 
-            // Supporting names and IDS
-            let ids = categories.filter(value => {
-                return isUUID(value)
-            })
-
-            let names = categories.filter(value => {
-                return !isUUID(value)
-            })
-
-            return await this.template_repo.createQueryBuilder('t')
-                .leftJoinAndSelect('t.categories', 'c')
-                .where("(c.id = ANY(:ids)) OR (c.name = ANY(:names))", { ids: ids, names: names })
-                .getMany()
-
+        if (categories_query) {
+            query.andWhere("(c.name = ANY(:cnames) OR c.id = ANY(:cids))", { cnames: categories_query.names, cids: categories_query.ids })
         }
 
-        return await this.template_repo.find()
+        return await query.getMany()
     }
 
     async findById(id: string): Promise<Template> {
@@ -47,8 +36,6 @@ export class TemplateService {
 
     async addTemplate(data: TemplateDto): Promise<Template> {
         let template = await this.template_repo.create(data)
-        if (data.type) template.type = data.type
-        if (data.categories) template.categories = data.categories
 
         try {
             template = await this.template_repo.save(template)
@@ -66,16 +53,16 @@ export class TemplateService {
     }
 
     async updateTemplate(id: string, data: TemplateDto): Promise<Template> {
-        let template = await this.template_repo.findOne(id)
+        // avoiding the override of the existing fields by using preload
+        let fields = data.fields;
+        delete data.fields
+        data['id'] = id
+        let template = await this.template_repo.preload(data)
 
-        if (data.name) template.name = data.name
-        if (data.type) template.type = data.type
-        if (data.description) template.description = data.description
         if (data.categories) template.categories = data.categories
-        if (data.fields.length > 0) {
-            // Fields is only a partial update
-            let fields = data.fields
 
+        if (fields.length > 0) {
+            // Fields is only a partial update
             // There could be fields to: update, delete or add
             let toUpdate = fields.filter(item => (!item.deleted && !item.is_new))
             let toDelete = fields.filter(item => item.deleted)
@@ -90,7 +77,7 @@ export class TemplateService {
             for (let i = 0; i < template.fields.length; i++) {
                 // Is there something to update?
                 if (u < toUpdate.length && template.fields[i].id === toUpdate[u].id) {
-                    template.fields[i] = toUpdate[u];
+                    template.fields[i] = Object.assign(template.fields[i], toUpdate[u])
                     u++;
                 }
 

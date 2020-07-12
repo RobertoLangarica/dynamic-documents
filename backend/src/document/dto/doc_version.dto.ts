@@ -15,9 +15,9 @@ export class DocumentChange {
     deleted: boolean
 }
 
-export class DocumentVersionDto {
+export class DocumentVersion {
     @IsOptional() @IsString() @Expose()
-    created_at: string
+    readonly created_at: string = new Date(Date.now()).toISOString()
 
     @IsOptional() @IsUUID() @Expose()
     source_user: string
@@ -30,5 +30,5 @@ export class DocumentVersionDto {
 
     @IsOptional() @IsArray() @Expose()
     @Type(() => DocumentChange)
-    changes: DocumentChange[]
+    changes: DocumentChange[] = []
 }

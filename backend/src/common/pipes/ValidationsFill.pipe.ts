@@ -13,7 +13,6 @@ export class ValidationsFillPipe implements PipeTransform {
      * @param metadata 
      */
     async transform(value: any, metadata: ArgumentMetadata) {
-        console.log(value)
         if (!value.validations || value.validations.length === 0) {
             return value;
         }

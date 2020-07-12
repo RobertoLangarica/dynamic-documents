@@ -10,6 +10,7 @@ import { Category } from 'src/categories/category.entity'
 import { TemplateType } from 'src/template_types/template_type.entity'
 import { Template } from 'src/templates/template.entity'
 import { Status } from 'src/status/status.entity'
+import { Document } from 'src/document/document.entity'
 
 const config = (): ConnectionOptions => {
   let config: ConnectionOptions = {
@@ -21,7 +22,7 @@ const config = (): ConnectionOptions => {
     database: process.env.DB_DATABASE,
     logging: false,
     entities: [User, Token, Grant, APISecret, Validation, FieldType, Transformation, Category, TemplateType, Template,
-      Status],
+      Status, Document],
     synchronize: false
   }
   console.log(config)

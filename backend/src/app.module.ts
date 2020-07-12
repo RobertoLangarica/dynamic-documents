@@ -14,6 +14,7 @@ import { CategoryModule } from './categories/category.module'
 import { TemplateTypeModule } from './template_types/template_type.module'
 import { TemplateModule } from './templates/template.module'
 import { StatusModule } from './status/status.module'
+import { DocumentModule } from './document/document.module'
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { StatusModule } from './status/status.module'
     CategoryModule,
     TemplateTypeModule,
     TemplateModule,
-    StatusModule
+    StatusModule,
+    DocumentModule
   ],
 })
 export class AppModule {

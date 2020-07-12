@@ -2,7 +2,7 @@ import { Controller, Get, Param, Post, Body, Delete, Patch, ParseUUIDPipe } from
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { TransformationService } from "./transformation.service";
 import { TransformationDto } from "./transformation.dto";
-import { FieldTypeFillPipe } from "src/common/pipelines/FieldTypeFill.pipe";
+import { FieldTypeFillPipe } from "src/common/pipes/FieldTypeFill.pipe";
 
 @ApiBearerAuth()
 @ApiTags('Transformations')

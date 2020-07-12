@@ -14,6 +14,10 @@ export class StatusService {
         return await this.status_repo.find()
     }
 
+    async findByName(name: string): Promise<Status> {
+        return await this.status_repo.findOne({ name: name })
+    }
+
     async deleteStatus(id: string) {
         await this.status_repo.delete({ id: id })
     }

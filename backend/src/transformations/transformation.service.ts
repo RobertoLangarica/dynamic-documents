@@ -51,18 +51,15 @@ export class TransformationService {
     }
 
     async updateTransformation(id: string, data: TransformationDto): Promise<Transformation> {
-        // the repository.preload make a merge between arrays.
-        // We avoid that by sending an empty array and replacing it for the new one after preload
-        let types = data.supported_types;
-        data.supported_types = []
         data['id'] = id;
         let transformation = await this.transformation_repo.preload(data)
+        // overriding the incoming validations (since validations are a relation the preload do a merge instead of a replacement)
+        transformation.supported_types = data.supported_types
 
         if (!transformation) {
             throw new HttpException('Unable to find the required transformation', HttpStatus.NOT_FOUND)
         }
 
-        transformation.supported_types = types;
 
         transformation = await this.transformation_repo.save(transformation)
         return transformation

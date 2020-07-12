@@ -42,18 +42,14 @@ export class FieldTypeService {
     }
 
     async updateType(id: string, data: FieldTypeDto): Promise<FieldType> {
-        // the repository.preload make a merge between arrays.
-        // We avoid that by sending an empty array and replacing it for the new one after preload
         data['id'] = id;
-        let validations = data.validations;
-        data.validations = []
         let type = await this.type_repo.preload(data)
+        // overriding the incoming validations (since validations are a relation the preload do a merge instead of a replacement)
+        type.validations = data.validations;
 
         if (!type) {
             throw new HttpException('Unable to find the required type', HttpStatus.NOT_FOUND)
         }
-
-        type.validations = validations;
 
         type = await this.type_repo.save(type)
         return type
