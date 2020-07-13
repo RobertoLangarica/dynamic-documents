@@ -29,6 +29,11 @@ export class DocumentController {
         return this.service.findAll(categories, status)
     }
 
+    @Get('clone/:from')
+    clone(@Param('from', ParseUUIDPipe) id_from: string) {
+        return this.service.clone(id_from)
+    }
+
     @Post()
     add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: DocumentDto) {
         return this.service.addDocument(dto)

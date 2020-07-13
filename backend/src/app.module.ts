@@ -15,6 +15,7 @@ import { TemplateTypeModule } from './template_types/template_type.module'
 import { TemplateModule } from './templates/template.module'
 import { StatusModule } from './status/status.module'
 import { DocumentModule } from './document/document.module'
+import { DocumentFilterModule } from './document_filter/doc_filter.module'
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { DocumentModule } from './document/document.module'
     TemplateTypeModule,
     TemplateModule,
     StatusModule,
-    DocumentModule
+    DocumentModule,
+    DocumentFilterModule
   ],
 })
 export class AppModule {
