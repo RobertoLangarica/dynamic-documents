@@ -9,7 +9,7 @@ export class FieldTypeDto extends SimpleDto {
     @IsOptional() @IsString() @ApiPropertyOptional()
     controller: string;
 
-    @IsOptional() @IsJSON() @ApiPropertyOptional()
+    @IsOptional() @ApiPropertyOptional()
     parameters: string
 
     @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
