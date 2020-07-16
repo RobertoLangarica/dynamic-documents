@@ -21,11 +21,11 @@ export class FDataReplication {
 }
 
 export class Field {
-    @IsNotEmpty() @IsUUID() @ApiProperty()
+    @IsNotEmpty() @IsString() @ApiProperty()
     @Expose()
     id: string
 
-    @IsOptional() @ApiPropertyOptional()
+    @IsOptional() @IsString() @ApiPropertyOptional()
     @Expose()
     name: string
 
@@ -33,15 +33,15 @@ export class Field {
     @Expose()
     type: string
 
-    @IsOptional() @ApiPropertyOptional()
+    @IsOptional() @IsString() @ApiPropertyOptional()
     @Expose()
     hint: string
 
-    @IsOptional() @ApiPropertyOptional()
+    @IsOptional() @IsString() @ApiPropertyOptional()
     @Expose()
     description: string
 
-    @IsOptional() @ApiPropertyOptional()
+    @IsOptional() @IsString() @ApiPropertyOptional()
     @Expose()
     label: string
 
@@ -137,4 +137,8 @@ export class Field {
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
     @Expose()
     is_new: boolean // If true the field should be added
+
+    @IsOptional() @IsString() @ApiPropertyOptional()
+    @Expose()
+    map_id: boolean // If true the field should be ad
 }

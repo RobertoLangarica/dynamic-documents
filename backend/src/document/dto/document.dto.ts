@@ -1,6 +1,6 @@
 import { TemplateDto } from "src/templates/dto/template.dto"
-import { IsEmpty } from "class-validator"
-import { ApiHideProperty } from "@nestjs/swagger"
+import { IsEmpty, IsOptional, IsUUID } from "class-validator"
+import { ApiHideProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { Status } from "src/status/status.entity"
 import { Type } from "class-transformer"
 import { DocumentVersion } from "./doc_version.dto"
@@ -14,4 +14,10 @@ export class DocumentDto extends TemplateDto {
     @IsEmpty() @ApiHideProperty()
     @Type(() => Status)
     status: Status
+
+    @IsOptional() @IsUUID() @ApiPropertyOptional()
+    template_source: string
+
+    @IsOptional() @IsUUID() @ApiPropertyOptional()
+    document_source: string
 }

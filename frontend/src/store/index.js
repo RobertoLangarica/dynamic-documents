@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 // import example from './module-example'
-
+import login from './login'
+import dd from './dynamic-documents'
 Vue.use(Vuex)
 
 /*
@@ -17,7 +18,8 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      // example
+      login,
+      dd
     },
 
     // enable strict mode (adds overhead!)

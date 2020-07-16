@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsArray, IsEmpty } from "class-validator"
+import { IsOptional, IsString, IsArray, IsEmpty, IsUUID } from "class-validator"
 import { ApiPropertyOptional, ApiHideProperty } from "@nestjs/swagger"
 import { Category } from "src/categories/category.entity"
 import { Type } from "class-transformer"
@@ -6,6 +6,9 @@ import { TemplateType } from "../../template_types/template_type.entity"
 import { Field } from "./field.dto"
 
 export class TemplateDto {
+    @IsOptional() @IsUUID() @ApiPropertyOptional()
+    id: string
+
     @IsOptional() @IsString() @ApiPropertyOptional()
     name: string
 

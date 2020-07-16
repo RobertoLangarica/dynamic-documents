@@ -1,8 +1,18 @@
 <template>
   <div class="row justify-center">
-    <div class="row q-col-gutter-y-md col-8 justify-center">
+    <div class="row q-col-gutter-y-md col-12 justify-center">
       <h1 class="col-12 text-center">Login</h1>
-      <nq-input v-model="email" class="col-8" label="email" hint="Correo para ingresar" />
+      <nq-input v-model="token" class="col-8" label="Token" />
+      <div class="col-8 row">
+        <q-btn label="Use Token" class="col-4" color="primary" @click="useToken" />
+      </div>
+
+      <nq-input v-model="secret" class="col-8 q-mt-xl" label="API Secret" />
+      <div class="col-8 row">
+        <q-btn label="Use API Secret" class="col-4" color="green" @click="useSecret" />
+      </div>
+
+      <!-- <nq-input v-model="email" class="col-8" label="email" hint="Correo para ingresar" />
       <nq-input
         v-model="password"
         class="col-8"
@@ -10,7 +20,7 @@
         label="password"
         hint="Contraseña"
       />
-      <q-btn color="primary" label="login" @click="onSend" class="col-8 q-mt-lg" />
+      <q-btn color="primary" label="login" @click="onSend" class="col-8 q-mt-lg" />-->
     </div>
   </div>
 </template>
@@ -26,7 +36,36 @@ export default {
       password: "roberto.langarica"
     };
   },
+  mounted() {
+    this.$store.commit("init");
+  },
+  computed: {
+    token: {
+      get: function() {
+        return this.$store.state.login.token;
+      },
+      set: function(value) {
+        this.$store.commit("token", value);
+      }
+    },
+    secret: {
+      get: function() {
+        return this.$store.state.login.secret;
+      },
+      set: function(value) {
+        this.$store.commit("secret", value);
+      }
+    }
+  },
   methods: {
+    useToken() {
+      this.$api.setAuthorization(this.token);
+      this.$router.push({ name: "documents" });
+    },
+    useSecret() {
+      this.$api.setAuthorization(this.secret, "APIKey");
+      this.$router.push({ name: "documents" });
+    },
     async onSend() {
       let result = await this.$api.post("/login", {
         email: this.email,
