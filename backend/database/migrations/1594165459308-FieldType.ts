@@ -11,7 +11,41 @@ export class FieldType1594165459308 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "field_types_validations" ADD CONSTRAINT "FK_0aefbdc337c5dd66e04cc1c2453" FOREIGN KEY ("field_type_id") REFERENCES "field_types"("id") ON DELETE CASCADE ON UPDATE NO ACTION`, undefined);
         await queryRunner.query(`ALTER TABLE "field_types_validations" ADD CONSTRAINT "FK_f6b301a274b10ac6d0e1a837c37" FOREIGN KEY ("validation_id") REFERENCES "validations"("id") ON DELETE CASCADE ON UPDATE NO ACTION`, undefined);
 
-        // await queryRunner.query(`INSERT INTO "field_types" (name, description, component, parameters) VALUES (“Entero”, “Un número entero”,”Input”, {}),(“Decimal”, “Un número con decimales”,”Input”, {}),(“Porcentaje”, “Un número con el postfijo %”,”Input”,{“postfix”:”%”}),(“Moneda”, “Un número con el formato $000.00”,”Input”,{“prefix”:”$”}),(“MXN”, “Un número con el formato MXN$000.00”,”Input”,{“prefix”:”MXN$”}),(“USD”, “Un número con el formato USD$000.00”,”Input”,{“prefix”:”USD$”}),(“Email”, “Texto con formato de correo electrónico”,”Input”,{}),(“Teléfono”, “Texto con formato de número telefónico”,”Input”,{}),(“Fecha”, “Texto con formato de fecha”,”InputDate”,{}),(“URL”, “Texto con formato de dirección web”,”Input”,{}),(“Opciones”, “Listado de opciones para elegir una”,”Select”,{}),(“Verdadero/Falso”, “Casillas de selección para verdadero y falso”,”Options”,{}),(“Selección múltiple”, “Casillas de selección para elegir más de una opción”,”Select”,{“multipleChoice”:true}),(“Párrafo”, “Campo de texto para un párrafo”,”TextArea”,{}),(“Grupo”, “Campo que contiene a otros campos”,”Group”,{})`)
+        // Default values
+        let values = [
+            { name: 'Entero', description: 'Un número entero', component: 'Input', parameters: {} },
+            { name: 'Decimal', description: 'Un número con decimales', component: 'Input', parameters: {} },
+            { name: 'Porcentaje', description: 'Un número con el postfijo %', component: 'Input', parameters: { postfix: '%' } },
+            { name: 'Moneda', description: 'Un número con el formato $000.00', component: 'Input', parameters: { prefix: '$' } },
+            { name: 'MXN', description: 'Un número con el formato MXN$000.00', component: 'Input', parameters: { prefix: 'MXN$' } },
+            {
+                name: 'USD', description: 'Un número con el formato USD$000.00', component: 'Input', parameters: { prefix: 'USD$' }
+            },
+            { name: 'Email', description: 'Texto con formato de correo electrónico', component: 'Input', parameters: {} },
+            { name: 'Teléfono', description: 'Texto con formato de número telefónico', component: 'Input', parameters: {} },
+            { name: 'Fecha', description: 'Texto con formato de fecha', component: 'InputDate', parameters: {} },
+            { name: 'URL', description: 'Texto con formato de dirección web', component: 'Input', parameters: {} },
+            { name: 'Opciones', description: 'Listado de opciones para elegir una', component: 'Select', parameters: {} },
+            { name: 'Verdadero / Falso', description: 'Casillas de selección para verdadero y falso', component: 'Options', parameters: {} },
+            { name: 'Selección múltiple', description: 'Casillas de selección para elegir más de una opción', component: 'Select', parameters: { multipleChoice: true } },
+            { name: 'Párrafo', description: 'Campo de texto para un párrafo', component: 'TextArea', parameters: {} },
+            { name: 'Grupo', description: 'Campo que contiene a otros campos', component: 'Group', parameters: {} }
+
+        ]
+
+        let valuesString = "";
+        values.forEach(item => {
+            let r = "(";
+            r += `'${item.name}'`
+            r += `,'${item.description}'`
+            r += `,'${item.component}'`
+            r += `,'${JSON.stringify(item.parameters)}'`
+            r += `)`
+
+            valuesString = valuesString.length > 0 ? valuesString + ',' + r : r
+        })
+
+        await queryRunner.query(`INSERT INTO "field_types" (name, description, component, parameters) VALUES ${valuesString}`)
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

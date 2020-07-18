@@ -113,7 +113,7 @@ fi
 if [[ $run -eq 0 && $exist_credentials -eq 1 ]]; then
     # docker exec $name /docker-entrypoint-initdb.d/init_db.sh
 
-    CONNECTION=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:$PORT/$DB_DATABASE
+    CONNECTION=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:$PORT
 
     # Waiting for the server
     serverError=2 # 2 is the error returned when the server is down
@@ -122,6 +122,7 @@ if [[ $run -eq 0 && $exist_credentials -eq 1 ]]; then
     serverError=$?
     sleep 1
     done
+
 
     printf "\n\n--------------------------------\n-> CREATING: Custom user an database\n\n"
     ######## USER and DATABASE
@@ -163,6 +164,9 @@ EOSQL
 
     printf "\n--------------------------------\n-> ADDING: DB extensions\n"
     
+    # The extension goes directly in the DB
+    CONNECTION=$CONNECTION/$DB_DATABASE
+
     # Usage getExtension $extensions $index
     # $extensions is a comma separated value
     # $index starting at 1

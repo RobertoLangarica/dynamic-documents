@@ -1,30 +1,36 @@
 <template>
 <nq-page title="Documents" max-width="lg">
     <template slot="aside" >
-      <TemplateMenu :objects="templates" title="Plantillas" @select="onSelectedTemplate"/>
-      <TemplateMenu :objects="documents" title="Documentos" @select="onSelectedDocument"/>
+      <TemplateMenu :objects="templates" title="Plantillas" @select="onSelectedTemplate" @add="onShowCreation(true)"/>
+      <TemplateMenu :objects="documents" title="Documentos" @select="onSelectedDocument" @add="onShowCreation(false)"/>
     </template>
 
     <DocumentEditorScreen v-if="exist" :manager="manager"/>
 
+    <q-dialog v-model="show_creation" persistent>
+      <TemplateCreationDialog :isTemplate="creating_template"/>
+    </q-dialog>
 </nq-page>
 </template>
 
 <script>
 /* eslint-disable */
 
-import TemplateMenu from 'components/TemplateMenu'
+import TemplateMenu from 'src/dynamic-documents/components/TemplateMenu'
 import { DocumentEditionManager } from 'src/dynamic-documents/src/DocumentEditionManager'
 import DocumentEditorScreen  from 'src/dynamic-documents/components/DocumentEditorScreen'
+import TemplateCreationDialog from 'src/dynamic-documents/components/TemplateCreationDialog'
 
 export default {
-  components: { TemplateMenu, DocumentEditorScreen},
+  components: { TemplateMenu, DocumentEditorScreen, TemplateCreationDialog},
   data () {
     return {
         using_doc:false,
         selected_id:"",
         type:"",
-        manager:null
+        manager:null,
+        show_creation:false,
+        creating_template:false
     }
   },
   mounted () {
@@ -88,6 +94,10 @@ export default {
           this.manager.isTemplate = isTemplate
           this.manager.isDocument = !isTemplate
         })
+      },
+      onShowCreation(isTemplate){
+        this.creating_template = isTemplate;
+        this.show_creation = true
       }
   }
 }

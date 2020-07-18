@@ -287,6 +287,7 @@ export class DocumentEditionManager {
     static createFromRemoteObject (remote) {
       let manager = new DocumentEditionManager()
       Object.assign(manager, remote)
+      manager.fields = manager.fields.concat() // Copy instead of reference to avoid mutation errors
 
       return manager
     }

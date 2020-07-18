@@ -34,15 +34,18 @@ export default {
         // DocumentEditionManager
         return {}
       }
+    },
+    groupId: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   data () {
     return {
-      fields: []
     }
   },
   mounted () {
-    this.fields = this.manager.fields
     this.manager.store = this.$store
   },
   computed: {
@@ -53,6 +56,13 @@ export default {
       set: function (value) {
         this.manager.name = value
       }
+    },
+    fields () {
+      if (this.groupId !== '') {
+        return this.manager.fields.filter(f => f.id === this.groupId || f.group_by === this.groupId)
+      }
+
+      return this.manager.fields
     }
   },
   methods: {
@@ -63,10 +73,10 @@ export default {
       this.manager.deleteField(field)
 
       // The field is not necessary son of this screen
-      let i = this.fields.findIndex(f => f.id === field.id)
-      if (i >= 0) {
-        this.fields.splice(i, 1)
-      }
+      // let i = this.fields.findIndex(f => f.id === field.id)
+      // if (i >= 0) {
+      //   this.fields.splice(i, 1)
+      // }
     },
     onFieldAdded (field) {
       this.manager.addField(field)

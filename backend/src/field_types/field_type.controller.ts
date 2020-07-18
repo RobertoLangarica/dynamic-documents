@@ -6,7 +6,7 @@ import { ValidationsFillPipe } from "src/common/pipes/ValidationsFill.pipe";
 
 @ApiBearerAuth()
 @ApiTags('Types')
-@Controller('types')
+@Controller('field_types')
 export class FieldTypeController {
     constructor(private readonly service: FieldTypeService) { }
 

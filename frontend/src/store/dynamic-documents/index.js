@@ -77,8 +77,8 @@ export default {
       }
     },
     async updateTypes ({ commit }) {
-      console.log('GET', `/types`)
-      let result = await api.get(`/types`)
+      console.log('GET', `/field_types`)
+      let result = await api.get(`/field_types`)
       if (result.success) {
         commit('types', result.data)
       }

@@ -1,6 +1,9 @@
 <template>
     <div class="row">
-        <h6 class="q-mb-none">{{title}}</h6>
+        <div class="col-12 row justify-between items-center">
+          <h6>{{title}}</h6>
+          <div><q-btn round icon="add_circle" flat @click="$emit('add')"/></div>
+        </div>
         <div v-for="item in objects" :key="item.id" class="row col-12">
             <q-btn class="col-12" :label="item.name" @click="$emit('select',item.id)" color="primary" flat/>
         </div>

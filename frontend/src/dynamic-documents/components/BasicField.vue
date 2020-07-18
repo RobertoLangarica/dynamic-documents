@@ -4,6 +4,8 @@
         <h3>{{name}}</h3>
         <div><q-btn round :icon="!editMode ? 'edit':'close'" color="primary" flat @click="editMode=!editMode"/></div>
     </div>
+    <q-btn v-if="editMode" icon="delete" color="negative" flat @click="deleted" label="Borrar"/>
+
     <nq-input v-if="editMode" class="col-12" v-model="name" dense label="Nombre" :debounce="1000"/>
     <nq-input v-if="editMode" class="col-12" v-model="value" dense :hint="type" label="Valor" :debounce="1000"/>
     <span v-if="!editMode" class="col-12">{{value}}</span>
