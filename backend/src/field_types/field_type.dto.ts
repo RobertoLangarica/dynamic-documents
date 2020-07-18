@@ -7,7 +7,7 @@ import { Type } from "class-transformer";
 export class FieldTypeDto extends SimpleDto {
 
     @IsOptional() @IsString() @ApiPropertyOptional()
-    controller: string;
+    component: string;
 
     @IsOptional() @ApiPropertyOptional()
     parameters: string
