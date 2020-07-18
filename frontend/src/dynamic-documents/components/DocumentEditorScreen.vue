@@ -4,17 +4,22 @@
 
         <FieldTypeSelector class="col-12  q-mb-lg" @selected="onTypeSelected"/>
 
-        <nq-input v-for="item in fields" :key="item.id" :value="item.name" disable/>
+        <BasicField class="col-12" v-for="item in fields" :key="item.id" :field="item"
+            @dd_updated="onFieldUpdated(item)"
+            @dd_deleted="onFielDeleted(item)"
+            @dd_added="onFieldAdded(item)"
+            />
     </div>
 </template>
 
 <script>
 import FieldTypeSelector from './FieldTypeSelector'
+import BasicField from './BasicField'
 import { DDField } from '../src/DDField'
 
 export default {
   components: {
-    FieldTypeSelector
+    FieldTypeSelector, BasicField
   },
   props: {
     captureMode: {

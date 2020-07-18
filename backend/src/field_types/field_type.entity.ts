@@ -7,7 +7,7 @@ import { Type } from "class-transformer";
 @Entity('field_types')
 export class FieldType extends SimpleEntity {
     @Column() @IsString()
-    controller: string;
+    component: string;
 
     @Column({ type: 'jsonb', default: '{}' }) @IsJSON()
     parameters: string

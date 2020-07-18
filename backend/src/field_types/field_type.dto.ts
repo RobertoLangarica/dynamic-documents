@@ -1,5 +1,5 @@
 import { SimpleDto } from "src/common/dto/simple_entity.dto";
-import { IsJSON, IsArray, IsString, IsOptional } from "class-validator";
+import { IsArray, IsString, IsOptional } from "class-validator";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Validation } from "src/validations/validation.entity";
 import { Type } from "class-transformer";
