@@ -10,9 +10,9 @@ jobs:
     name: Frontend build and deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Instalando dependencias
-      uses: actions/checkout@v2
-      run: |
+      - uses: actions/checkout@v2
+        name: Instalando dependencias
+      - run: |
         pwd
         git checkout
         ls
