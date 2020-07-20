@@ -6,11 +6,11 @@ on:
     branches:
       - staging_front
 jobs:
-  build:
+  front_build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Getting latest version
+        name: Getting latest version
 #        run: git checkout .
       - run: ls
       - name: Instalando dependencias
