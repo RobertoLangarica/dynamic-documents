@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Instalando dependencias
-      - uses: actions/checkout@v2
-      - run: |
-          pwd
-          git checkout
-          ls
-          node -v
-          npm -v
+      uses: actions/checkout@v2
+      run: |
+        pwd
+        git checkout
+        ls
+        node -v
+        npm -v
