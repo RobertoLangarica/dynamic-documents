@@ -1,6 +1,6 @@
 name: Frontend-STAGING deployment
 
-# Trigger on push
+# Trigger on push filter by branch
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        name: Getting latest version
+      - name: Getting latest version
         run: git checkout .
         run: ls
       - id: Instalando dependencias
