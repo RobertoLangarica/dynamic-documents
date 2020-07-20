@@ -127,3 +127,6 @@ dist
 
 # Local Netlify folder
 .netlify
+
+# compiled output
+/public
