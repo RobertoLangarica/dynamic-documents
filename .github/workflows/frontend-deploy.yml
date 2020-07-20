@@ -7,7 +7,7 @@ on:
       - staging_front
 jobs:
   build:
-    runs-on: node:12.18-alpine
+    runs-on: ubuntu-18.04
   - uses: actions/checkout@v2
     steps:
     - checkout
