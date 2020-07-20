@@ -11,9 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Getting latest version
-        run: git checkout .
+#        run: git checkout .
       - run: ls
-      - id: Instalando-dependencias
+      - name: Instalando dependencias
         run: |
           pwd
           ls
