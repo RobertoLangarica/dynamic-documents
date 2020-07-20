@@ -13,8 +13,8 @@ jobs:
       - uses: actions/checkout@v2
         name: Instalando dependencias
       - run: |
-        pwd
-        git checkout
-        ls
-        node -v
-        npm -v
+          pwd
+          git checkout
+          ls
+          node -v
+          npm -v
