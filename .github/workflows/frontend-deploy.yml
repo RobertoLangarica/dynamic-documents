@@ -7,14 +7,15 @@ on:
       - staging_front
 jobs:
   build:
-    name: Frontend build and deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        name: Instalando dependencias
-      - run: |
+        name: Getting latest version
+        run: git checkout .
+        run: ls
+      - id: Instalando dependencias
+        run: |
           pwd
-          git checkout
           ls
           node -v
           npm -v
