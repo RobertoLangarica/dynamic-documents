@@ -42,6 +42,14 @@ export default {
     },
     document: (state) => (id) => {
       return state.documents.find(t => t.id === id)
+    },
+    owner: (state) => (id) => {
+      let owner = state.templates.find(t => t.id === id)
+      if (!owner) {
+        owner = state.documents.find(t => t.id === id)
+      }
+
+      return owner
     }
   },
   actions: {
@@ -101,8 +109,6 @@ export default {
       console.log('POST', `/documents/`)
       let result = await api.post(`/documents/`, data)
       if (result.success) {
-        console.log('Added: ', data.id)
-        console.log('Remote: ', result.data.id)
         commit('addDocument', result.data)
       }
     },
@@ -110,8 +116,6 @@ export default {
       console.log('POST', `/templates/`)
       let result = await api.post(`/templates/`, data)
       if (result.success) {
-        console.log('Added: ', data.id)
-        console.log('Remote: ', result.data.id)
         commit('addTemplate', result.data)
       }
     }

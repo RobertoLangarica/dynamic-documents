@@ -13,23 +13,25 @@ export class FieldType1594165459308 implements MigrationInterface {
 
         // Default values
         let values = [
-            { name: 'Entero', description: 'Un número entero', component: 'Input', parameters: {} },
-            { name: 'Decimal', description: 'Un número con decimales', component: 'Input', parameters: {} },
-            { name: 'Porcentaje', description: 'Un número con el postfijo %', component: 'Input', parameters: { postfix: '%' } },
-            { name: 'Moneda', description: 'Un número con el formato $000.00', component: 'Input', parameters: { prefix: '$' } },
-            { name: 'MXN', description: 'Un número con el formato MXN$000.00', component: 'Input', parameters: { prefix: 'MXN$' } },
+            { name: 'Entero', description: 'Un número entero', component: 'nq-input-number', parameters: { pattern: '0,0' }, validations: ['integer'] },
+            { name: 'Número', description: 'Un número con decimales', component: 'nq-input-number', parameters: { pattern: '0,0.000' }, validations: ['decimal'] },
+            { name: 'Porcentaje', description: 'Un número decimal con el postfijo %', component: 'nq-input-percentage', parameters: { pattern: '0,0.00' }, validations: ['decimal'] },
+            { name: 'Moneda', description: 'Una cantidad con el formato $000.00', component: 'nq-input-currency', parameters: {}, validations: ['decimal'] },
+            { name: 'MXN', description: 'Una cantidad con el formato MXN$000.00', component: 'nq-input-currency', parameters: { currency: "MXN" }, validations: ['decimal'] },
             {
-                name: 'USD', description: 'Un número con el formato USD$000.00', component: 'Input', parameters: { prefix: 'USD$' }
+                name: 'USD', description: 'Un número con el formato USD$000.00', component: 'nq-input-currency', parameters: { currency: "USD" }
+                , validations: ['decimal']
             },
-            { name: 'Email', description: 'Texto con formato de correo electrónico', component: 'Input', parameters: {} },
-            { name: 'Teléfono', description: 'Texto con formato de número telefónico', component: 'Input', parameters: {} },
-            { name: 'Fecha', description: 'Texto con formato de fecha', component: 'InputDate', parameters: {} },
-            { name: 'URL', description: 'Texto con formato de dirección web', component: 'Input', parameters: {} },
-            { name: 'Opciones', description: 'Listado de opciones para elegir una', component: 'Select', parameters: {} },
-            { name: 'Verdadero / Falso', description: 'Casillas de selección para verdadero y falso', component: 'Options', parameters: {} },
-            { name: 'Selección múltiple', description: 'Casillas de selección para elegir más de una opción', component: 'Select', parameters: { multipleChoice: true } },
-            { name: 'Párrafo', description: 'Campo de texto para un párrafo', component: 'TextArea', parameters: {} },
-            { name: 'Grupo', description: 'Campo que contiene a otros campos', component: 'Group', parameters: {} }
+            { name: 'Email', description: 'Texto con formato de correo electrónico', component: 'nq-input', parameters: {}, validations: ['email'] },
+            { name: 'Teléfono', description: 'Texto con formato de número telefónico', component: 'nq-input', parameters: {}, validations: ['numeric'] },
+            { name: 'Fecha', description: 'Texto con formato de fecha', component: 'nq-date-time', parameters: { 'null-text': 'Fecha no definida', 'no-time': true }, validations: [] },
+            { name: 'URL', description: 'Texto con formato de dirección web', component: 'nq-input', parameters: {}, validations: ['url'] },
+            { name: 'Opciones', description: 'Listado de opciones para elegir una', component: 'nq-select', parameters: {}, validations: [] },
+            { name: 'Verdadero / Falso', description: 'Casillas de selección para verdadero y falso', component: 'dd-true-false', parameters: {}, validations: [] },
+            { name: 'Selección múltiple', description: 'Casillas de selección para elegir más de una opción', component: 'nq-select', parameters: { multiple: true }, validations: [] },
+            { name: 'Párrafo', description: 'Campo de texto para un párrafo', component: 'nq-input', parameters: { type: 'textarea' }, validations: [] },
+            { name: 'Grupo', description: 'Campo que contiene a otros campos', component: 'dd-group', parameters: {}, validations: [] },
+            { name: 'Texto', description: 'Campo para captura de texto', component: 'nq-input', parameters: {}, validations: [] }
 
         ]
 
@@ -46,6 +48,26 @@ export class FieldType1594165459308 implements MigrationInterface {
         })
 
         await queryRunner.query(`INSERT INTO "field_types" (name, description, component, parameters) VALUES ${valuesString}`)
+
+        // Fill the validations
+        for (let i = 0; i < values.length; i++) {
+            let item = values[i]
+
+            if (item.validations && item.validations.length > 0) {
+                let f = await queryRunner.query('SELECT id FROM field_types WHERE name=$1', [item.name])
+                f = f[0].id
+
+                let validations = await queryRunner.query('SELECT id FROM validations WHERE action=ANY($1)', [item.validations])
+                let values = "";
+                validations.forEach(v => {
+                    let toInsert = `('${f}','${v.id}')`
+                    values = values.length > 0 ? `${values},${toInsert}` : `${toInsert}`
+                })
+
+                await queryRunner.query(`INSERT INTO field_types_validations (field_type_id,validation_id) VALUES ${values}`)
+
+            }
+        }
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

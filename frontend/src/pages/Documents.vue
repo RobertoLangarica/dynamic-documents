@@ -1,14 +1,14 @@
 <template>
 <nq-page title="Documents" max-width="lg">
     <template slot="aside" >
-      <TemplateMenu :objects="templates" title="Plantillas" @select="onSelectedTemplate" @add="onShowCreation(true)"/>
-      <TemplateMenu :objects="documents" title="Documentos" @select="onSelectedDocument" @add="onShowCreation(false)"/>
+      <template-menu :objects="templates" title="Plantillas" @select="onSelectedTemplate" @add="onShowCreation(true)"/>
+      <template-menu :objects="documents" title="Documentos" @select="onSelectedDocument" @add="onShowCreation(false)"/>
     </template>
 
-    <DocumentEditorScreen v-if="exist" :manager="manager"/>
+    <document-editor v-if="exist" :manager="manager"/>
 
     <q-dialog v-model="show_creation" persistent>
-      <TemplateCreationDialog :isTemplate="creating_template"/>
+      <template-creation-dialog :isTemplate="creating_template"/>
     </q-dialog>
 </nq-page>
 </template>
@@ -16,13 +16,9 @@
 <script>
 /* eslint-disable */
 
-import TemplateMenu from 'src/dynamic-documents/components/TemplateMenu'
 import { DocumentEditionManager } from 'src/dynamic-documents/src/DocumentEditionManager'
-import DocumentEditorScreen  from 'src/dynamic-documents/components/DocumentEditorScreen'
-import TemplateCreationDialog from 'src/dynamic-documents/components/TemplateCreationDialog'
 
 export default {
-  components: { TemplateMenu, DocumentEditorScreen, TemplateCreationDialog},
   data () {
     return {
         using_doc:false,

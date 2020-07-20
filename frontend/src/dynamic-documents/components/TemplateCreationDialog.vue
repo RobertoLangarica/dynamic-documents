@@ -20,6 +20,7 @@
 
 <script>
 export default {
+  name: 'template-creation-dialog',
   props: {
     isTemplate: {
       type: Boolean,
