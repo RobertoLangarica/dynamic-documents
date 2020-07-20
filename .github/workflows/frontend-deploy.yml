@@ -1,13 +1,14 @@
 name: Frontend-STAGING deployment
 
 # Trigger on push
-on: push
+on:
   push:
     branches:
       - staging_front
 jobs:
   build:
     runs-on: node:12.18-alpine
+    # Para poder usar checkput
   - uses: actions/checkout@v2
     steps:
     - checkout
