@@ -14,5 +14,7 @@ jobs:
     - name: Instalando dependencias
       run: ls
       run: pwd
+      run: node -v
+      run: npm -v
 
     
