@@ -1,0 +1,17 @@
+name: Frontend-STAGING deployment
+
+# Trigger on push
+on: push
+  push:
+    branches:
+      - staging_front
+jobs:
+  build:
+    runs-on: node:12.18-alpine
+  - uses: actions/checkout@v2
+    steps:
+    - checkout
+    - name: Instalando dependencias
+      run: ls
+
+    
