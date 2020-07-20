@@ -8,11 +8,11 @@ on:
 jobs:
   build:
     runs-on: node:12.18-alpine
-    # Para poder usar checkput
   - uses: actions/checkout@v2
     steps:
     - checkout
     - name: Instalando dependencias
       run: ls
+      run: pwd
 
     
