@@ -51,6 +51,10 @@ export class DDField {
     is_new = false // If true the field should be added
     map_id = undefined
 
+    // ## EDITOR PROPERTIES ##
+    initInEdition = false
+    // #######################
+
     static createFromType (type) {
       let field = new DDField()
       field.name = type.name

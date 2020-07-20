@@ -2,25 +2,22 @@
     <div class="row q-col-gutter-md">
         <h2 class="col-12">{{name}}</h2>
 
-        <FieldTypeSelector class="col-12  q-mb-lg" @selected="onTypeSelected"/>
+        <field-type-selector class="col-12  q-mb-lg" @selected="onTypeSelected"/>
 
-        <BasicField class="col-12" v-for="item in fields" :key="item.id" :field="item"
-            @dd_updated="onFieldUpdated(item)"
-            @dd_deleted="onFielDeleted(item)"
-            @dd_added="onFieldAdded(item)"
+        <basic-field class="col-12" v-for="item in fields" :key="item.id" :field="item" :all_fields="manager.fields"
+            @f-updated="onFieldUpdated"
+            @f-deleted="onFieldDeleted"
+            @f-added="onFieldAdded"
             />
+
     </div>
 </template>
 
 <script>
-import FieldTypeSelector from './FieldTypeSelector'
-import BasicField from './BasicField'
 import { DDField } from '../src/DDField'
 
 export default {
-  components: {
-    FieldTypeSelector, BasicField
-  },
+  name: 'document-editor',
   props: {
     captureMode: {
       type: Boolean,
@@ -34,11 +31,6 @@ export default {
         // DocumentEditionManager
         return {}
       }
-    },
-    groupId: {
-      type: String,
-      required: false,
-      default: ''
     }
   },
   data () {
@@ -58,31 +50,22 @@ export default {
       }
     },
     fields () {
-      if (this.groupId !== '') {
-        return this.manager.fields.filter(f => f.id === this.groupId || f.group_by === this.groupId)
-      }
-
-      return this.manager.fields
+      return this.manager.fields.filter(f => f.group_by === '')
     }
   },
   methods: {
     onFieldUpdated (field) {
       this.manager.updateField(field)
     },
-    onFielDeleted (field) {
+    onFieldDeleted (field) {
       this.manager.deleteField(field)
-
-      // The field is not necessary son of this screen
-      // let i = this.fields.findIndex(f => f.id === field.id)
-      // if (i >= 0) {
-      //   this.fields.splice(i, 1)
-      // }
     },
     onFieldAdded (field) {
       this.manager.addField(field)
     },
     onTypeSelected (type) {
       let field = DDField.createFromType(type)
+      field.initInEdition = true
       this.manager.addField(field)
     }
   }

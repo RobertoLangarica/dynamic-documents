@@ -287,7 +287,16 @@ export class DocumentEditionManager {
     static createFromRemoteObject (remote) {
       let manager = new DocumentEditionManager()
       Object.assign(manager, remote)
-      manager.fields = manager.fields.concat() // Copy instead of reference to avoid mutation errors
+      // TODO validate what happen with the categories and the reactivity
+
+      // To avoid mutation errors we need copies of the fields instead of references
+      manager.fields = remote.fields.map(item => {
+        let obj = {}
+        // TODO validate what happen with the properties passed as reference between Objects
+        Object.assign(obj, item)
+        return obj
+      })
+      manager.toUpdate = []
 
       return manager
     }

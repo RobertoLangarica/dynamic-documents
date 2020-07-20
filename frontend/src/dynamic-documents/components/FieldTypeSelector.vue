@@ -1,9 +1,10 @@
 <template>
-    <nq-select v-model="type"
+    <q-select v-model="type"
         option-label="name"
         option-value="name"
         :options="$store.state.dd.types"
         dropdown-icon="add_circle"
+        behavior="dialog"
         @input="onInput"
        >
         <template v-slot:option="scope">
@@ -20,11 +21,12 @@
         <template v-slot:selected-item>
             {{label}}
         </template>
-    </nq-select>
+    </q-select>
 </template>
 
 <script>
 export default {
+  name: 'field-type-selector',
   props: {
     label: {
       type: String,
