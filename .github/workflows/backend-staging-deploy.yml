@@ -31,8 +31,8 @@ jobs:
           mkdir ~/.ssh
           echo > ~/.ssh/known_hosts
           ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
-      - run: ssh-add -l
-      - run: ssh "$SERVER" "pwd"
+      - run: eval `ssh-agent` && ssh-add -l
+      - run: eval `ssh-agent` && ssh "$SERVER" "pwd"
       - name: Deleting last build on the server
         run: |
           ssh "$SERVER" \
