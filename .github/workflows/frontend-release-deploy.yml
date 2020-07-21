@@ -1,0 +1,39 @@
+name: Frontend-STAGING deployment
+
+# Trigger on push filter by branch
+on:
+  push:
+    branches:
+      - release_front
+jobs:
+  front_build:
+    runs-on: ubuntu-latest
+    env:
+      SERVER: fid@68.183.171.182
+      REMOTE_DIR: ~/dd/production
+    steps:
+      - uses: actions/checkout@v2
+      - name: Getting latest version
+        run: git checkout
+      - name: Instalando dependencias
+        run: |
+          cd frontend
+          npm install
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+          cd dist
+          ls
+      - name: Sending build via ssh + scp
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          mkdir ~/.ssh
+          echo > ~/.ssh/known_hosts
+          ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR" && \
+          yes | rm -r public"
+          cd frontend/dist
+          scp -r ./spa "$SERVER":"$REMOTE_DIR"/public
