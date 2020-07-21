@@ -15,7 +15,7 @@ jobs:
       - run: ls
       - name: Instalando dependencias
         run: |
-          pwd
-          ls
-          node -v
-          npm -v
+          cd dynamic-documents
+          npm install
+      - name: Build
+        run: npm run build
