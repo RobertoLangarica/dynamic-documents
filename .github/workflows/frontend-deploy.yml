@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        name: Getting latest version
-#        run: git checkout .
-      - run: ls
+      - name: Getting latest version
+        run: git checkout
+      - name: check folder
+        run: ls
       - name: Instalando dependencias
         run: |
           pwd
