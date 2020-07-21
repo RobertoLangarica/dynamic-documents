@@ -64,7 +64,9 @@ jobs:
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
           "cd "$REMOTE_DIR"/backend && npm run migration:run"
-      # - name: Restart pm2
-      #   run: |
-      #     ssh "$SERVER" \
-      #     "cd "$REMOTE_DIR" && pm2 restart all"
+      - name: Restart pm2
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "pm2 restart all"
