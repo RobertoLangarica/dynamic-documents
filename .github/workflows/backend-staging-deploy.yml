@@ -24,7 +24,7 @@ jobs:
         run: |
           cd backend
           npm run build
-      - name: Adding SSH credentials
+      - name: Adding SSH basics
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
@@ -35,9 +35,6 @@ jobs:
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
-          mkdir ~/.ssh
-          echo > ~/.ssh/known_hosts
-          ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
           ssh "$SERVER" \
           "cd "$REMOTE_DIR"/backend && \
           yes | rm -r dist"
@@ -45,9 +42,6 @@ jobs:
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
-          mkdir ~/.ssh
-          echo > ~/.ssh/known_hosts
-          ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
           cd backend
           scp -r ./dist "$SERVER":"$REMOTE_DIR"/backend/dist
       # - name: Install dependencies on the backend
