@@ -11,29 +11,30 @@ jobs:
     env:
       SERVER: fid@68.183.171.182
       REMOTE_DIR: ~/dd/staging
+      BRANCH: staging_back
     steps:
       - name: Getting latest version on the server
-        run: echo $GITHUB_REF
-      - run: echo $GITHUB_EVENT_PATH
-      # - name: Instalando dependencias
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          mkdir ~/.ssh
+          echo > ~/.ssh/known_hosts
+          ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR" && \
+          git fetch && \
+          git checkout origin/"$BRANCH""
+      - name: Install dependencies on the backend
+        run: |
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR"/backend && \
+          npm install --only=production"
+      # - name: Run DB migrations
       #   run: |
-      #     cd frontend
-      #     npm install
-      # - name: Build
-      #   run: |
-      #     cd frontend
-      #     npm run build
-      #     cd dist
-      #     ls
-      # - name: Sending build via ssh + scp
-      #   run: |
-      #     eval `ssh-agent`
-      #     ssh-add - <<< "${{secrets.DO_KEY}}"
-      #     mkdir ~/.ssh
-      #     echo > ~/.ssh/known_hosts
-      #     ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
       #     ssh "$SERVER" \
-      #     "cd "$REMOTE_DIR" && \
-      #     yes | rm -r public"
-      #     cd frontend/dist
-      #     scp -r ./spa "$SERVER":"$REMOTE_DIR"/public
+      #     "cd "$REMOTE_DIR"/backend && \
+      #     npm run migration:run"
+      # - name: Run DB migrations
+      #   run: |
+      #     ssh "$SERVER" \
+      #     "cd "$REMOTE_DIR" && pm2 restart all"
