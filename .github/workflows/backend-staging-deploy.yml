@@ -13,22 +13,38 @@ jobs:
       REMOTE_DIR: ~/dd/staging
       BRANCH: staging_back
     steps:
-      - name: Getting latest version on the server
+      - uses: actions/checkout@v2
+      - name: Getting latest version
+        run: git checkout
+      - name: Instalando dependencias
+        run: |
+          cd backend
+          npm install
+      - name: Build
+        run: |
+          cd backend
+          npm run build
+      - name: Adding SSH credentials
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           mkdir ~/.ssh
           echo > ~/.ssh/known_hosts
           ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
-          ssh "$SERVER" \
-          "cd "$REMOTE_DIR" && \
-          git fetch && \
-          git checkout "$BRANCH""
-      - name: Install dependencies on the backend
+      - name: Deleting last build on the server
         run: |
           ssh "$SERVER" \
           "cd "$REMOTE_DIR"/backend && \
-          npm install --only=production"
+          yes | rm -r dist"
+      - name: Sending new build to the server
+        run: |
+          cd backend
+          scp -r ./dist "$SERVER":"$REMOTE_DIR"/backend/dist
+      # - name: Install dependencies on the backend
+      #   run: |
+      #     ssh "$SERVER" \
+      #     "cd "$REMOTE_DIR"/backend && \
+      #     npm install --only=production"
       # - name: Run DB migrations
       #   run: |
       #     ssh "$SERVER" \
