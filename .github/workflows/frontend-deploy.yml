@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SERVER: fid@68.183.171.182
+      REMOTE_DIR: ~/dd/staging
     steps:
       - uses: actions/checkout@v2
       - name: Getting latest version
@@ -32,7 +33,7 @@ jobs:
           echo > ~/.ssh/known_hosts
           ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
           ssh "$SERVER" \
-          "cd ~/dd/staging && \
+          "cd "$REMOTE_DIR" && \
           yes | rm -r public"
           cd frontend/dist
-          scp -r ./spa "$SERVER":~/dd/staging/public
+          scp -r ./spa "$SERVER":"$REMOTE_DIR"/public
