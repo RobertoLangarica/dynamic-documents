@@ -16,7 +16,7 @@ jobs:
       #   run: eval `ssh-agent -s`
       - name: Adding ssh
         env:
-          SSH_ASKPASS: HOLA_MUNDO
+          SSH_ASKPASS: ${{secrets.DO_KEY_PASS}}
         run: |
           eval `ssh-agent`
           echo $SSH_ASKPASS
