@@ -19,7 +19,7 @@ jobs:
           SSH_ASKPASS: ${{secrets.DO_KEY_PASS}}
         run: |
           eval `ssh-agent`
-          ssh-add - <<< "${{secrets.DO_KEY}}"
+          $SSH_ASKPASS | ssh-add - <<< "${{secrets.DO_KEY}}"
       # - name: Instalando dependencias
       #   run: |
       #     cd frontend
