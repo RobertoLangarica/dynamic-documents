@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       env:
-        SERVER: fid@68.183.171.182
+        SERVER: HOLA
       - uses: actions/checkout@v2
       - name: Getting latest version
         run: git checkout
