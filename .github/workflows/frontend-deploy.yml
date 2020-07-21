@@ -24,9 +24,8 @@ jobs:
           cd dist
           ls
       - run: ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
-      - run:
-          name: Deleting previous files
-          command: |
+      - name: Deleting previous files
+        run: |
             ssh fid@68.183.171.182 \
             "cd ~/dd/staging && \
             yes | rm -r public"
