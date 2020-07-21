@@ -19,6 +19,7 @@ jobs:
           npm install
       - name: Build
         run: |
+          cd frontend
           npm run build
           cd dist
           ls
