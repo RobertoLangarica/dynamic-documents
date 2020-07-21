@@ -18,6 +18,8 @@ jobs:
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
+          echo | ~/.ssh/known_hosts
+          ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
       - name: Probando ssh 
         run: |
           echo $SERVER
