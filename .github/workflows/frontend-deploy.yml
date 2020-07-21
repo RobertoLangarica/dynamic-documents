@@ -23,9 +23,6 @@ jobs:
           npm run build
           cd dist
           ls
-      - add_ssh_keys:
-          fingerprints:
-            - "48:52:f1:2a:86:3a:fe:a8:5b:c9:25:fd:3e:c3:d2:c1"
       - run: ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
       - run:
           name: Deleting previous files
