@@ -12,10 +12,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Getting latest version
         run: git checkout
+      - name: Starting ssh-agent
+        run: eval `ssh-agent -s`
       - name: Adding ssh
-        run: |
-          eval `ssh-agent -s`
-          echo "${{secrets.DO_KEY}}" | ssh-add
+        run: echo "${{secrets.DO_KEY}}" | ssh-add
       # - name: Instalando dependencias
       #   run: |
       #     cd frontend
