@@ -23,7 +23,7 @@ jobs:
           ssh "$SERVER" \
           "cd "$REMOTE_DIR" && \
           git fetch && \
-          git checkout origin/"$BRANCH""
+          git checkout "$BRANCH""
       - name: Install dependencies on the backend
         run: |
           ssh "$SERVER" \
