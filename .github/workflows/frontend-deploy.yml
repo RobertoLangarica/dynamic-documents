@@ -12,24 +12,25 @@ jobs:
       - uses: actions/checkout@v2
       - name: Getting latest version
         run: git checkout
-      - run: ls
-      - name: Instalando dependencias
-        run: |
-          cd frontend
-          npm install
-      - name: Build
-        run: |
-          cd frontend
-          npm run build
-          cd dist
-          ls
-      - run: ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
-      - name: Deleting previous files
-        run: |
-            ssh fid@68.183.171.182 \
-            "cd ~/dd/staging && \
-            yes | rm -r public"
-      - name: Sending front static files to server
-        run: |
-          cd frontend/dist
-          scp -r ./spa fid@68.183.171.182:~/dd/staging/public
+      - name: Adding ssh
+        run: echo ${{secrets.DO_KEY}}
+      # - name: Instalando dependencias
+      #   run: |
+      #     cd frontend
+      #     npm install
+      # - name: Build
+      #   run: |
+      #     cd frontend
+      #     npm run build
+      #     cd dist
+      #     ls
+      # - run: ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
+      # - name: Deleting previous files
+      #   run: |
+      #       ssh fid@68.183.171.182 \
+      #       "cd ~/dd/staging && \
+      #       yes | rm -r public"
+      # - name: Sending front static files to server
+      #   run: |
+      #     cd frontend/dist
+      #     scp -r ./spa fid@68.183.171.182:~/dd/staging/public
