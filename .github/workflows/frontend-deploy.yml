@@ -14,38 +14,25 @@ jobs:
       - uses: actions/checkout@v2
       - name: Getting latest version
         run: git checkout
-      - name: Adding ssh
+      - name: Instalando dependencias
         run: |
-          eval `ssh-agent`
-          ssh-add - <<< "${{secrets.DO_KEY}}"
-          mkdir ~/.ssh
-          echo > ~/.ssh/known_hosts
-          ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
-          ssh "$SERVER" \
-          "pwd"
-      - name: Probando ssh 
+          cd frontend
+          npm install
+      - name: Build
         run: |
-          echo $SERVER
-          echo "$SERVER"
-          ssh "$SERVER" \
-          "pwd"
-      # - name: Instalando dependencias
-      #   run: |
-      #     cd frontend
-      #     npm install
-      # - name: Build
-      #   run: |
-      #     cd frontend
-      #     npm run build
-      #     cd dist
-      #     ls
-      # - run: ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
-      # - name: Deleting previous files
-      #   run: |
-      #       ssh fid@68.183.171.182 \
-      #       "cd ~/dd/staging && \
-      #       yes | rm -r public"
-      # - name: Sending front static files to server
-      #   run: |
-      #     cd frontend/dist
-      #     scp -r ./spa fid@68.183.171.182:~/dd/staging/public
+          cd frontend
+          npm run build
+          cd dist
+          ls
+      - name: Sending build via ssh + scp
+      run: |
+        eval `ssh-agent`
+        ssh-add - <<< "${{secrets.DO_KEY}}"
+        mkdir ~/.ssh
+        echo > ~/.ssh/known_hosts
+        ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
+        ssh "$SERVER" \
+        "cd ~/dd/staging && \
+        yes | rm -r public"
+        cd frontend/dist
+        scp -r ./spa "$SERVER":~/dd/staging/public
