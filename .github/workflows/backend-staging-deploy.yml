@@ -12,6 +12,7 @@ jobs:
       SERVER: fid@68.183.171.182
       REMOTE_DIR: ~/dd/staging
       BRANCH: staging_back
+      PROCESS_NAME: DD_staging
     steps:
       - uses: actions/checkout@v2
       - name: Getting latest version
@@ -69,4 +70,4 @@ jobs:
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
-          "pm2 restart all"
+          "pm2 restart "$PROCESS_NAME""
