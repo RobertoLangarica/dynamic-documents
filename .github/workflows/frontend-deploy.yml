@@ -8,9 +8,9 @@ on:
 jobs:
   front_build:
     runs-on: ubuntu-latest
+    env:
+      SERVER: fid@68.183.171.182
     steps:
-      env:
-        SERVER: HOLA
       - uses: actions/checkout@v2
       - name: Getting latest version
         run: git checkout
