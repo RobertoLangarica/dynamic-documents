@@ -4,7 +4,7 @@ name: Frontend-STAGING deployment
 on:
   push:
     branches:
-      - staging_backend
+      - staging_back
 jobs:
   front_build:
     runs-on: ubuntu-latest
