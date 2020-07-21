@@ -1,4 +1,4 @@
-name: Frontend-STAGING deployment
+name: Backend-STAGING deployment
 
 # Trigger on push filter by branch
 on:
