@@ -44,27 +44,27 @@ jobs:
           ssh-add - <<< "${{secrets.DO_KEY}}"
           cd backend
           scp -r ./dist "$SERVER":"$REMOTE_DIR"/backend/dist
-      - name: Install production dependencies
-        run: |
-          cd backend
-          npm install --only=production
-      - name: Deleting bcrypt
-        run: |
-          cd backend
-          yes | rm -r node_modules/bcrypt
-          yes | rm -r node_modules/bcrypt-pbkdf
-      - name: Sending dependencies to the server
+      - name: Getting last repo version on the server
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
-          cd backend
-          scp -r ./node_modules "$SERVER":"$REMOTE_DIR"/backend/dist/node_modules
-      # - name: Run DB migrations
-      #   run: |
-      #     ssh "$SERVER" \
-      #     "cd "$REMOTE_DIR"/backend && \
-      #     npm run migration:run"
-      # - name: Run DB migrations
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR" && \
+          git fetch && \
+          git checkout origin/"$BRANCH""
+      - name: Installing dependencies
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR"/backend && npm install"
+      - name: Run DB migrations
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR"/backend && npm run migration:run"
+      # - name: Restart pm2
       #   run: |
       #     ssh "$SERVER" \
       #     "cd "$REMOTE_DIR" && pm2 restart all"
