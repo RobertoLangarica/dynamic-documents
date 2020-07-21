@@ -20,6 +20,8 @@ jobs:
           ssh-add - <<< "${{secrets.DO_KEY}}"
       - name: Probando ssh 
         run: |
+          echo $env:SERVER
+          echo "$env:SERVER"
           ssh "$env:SERVER" \
           "pwd"
       # - name: Instalando dependencias
