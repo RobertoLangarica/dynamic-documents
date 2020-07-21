@@ -9,15 +9,19 @@ jobs:
   front_build:
     runs-on: ubuntu-latest
     steps:
+      env:
+        SERVER: fid@68.183.171.182
       - uses: actions/checkout@v2
       - name: Getting latest version
         run: git checkout
-      # - name: Starting ssh-agent
-      #   run: eval `ssh-agent -s`
       - name: Adding ssh
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
+      - name: Probando ssh 
+        run: |
+          ssh "$env:SERVER" \
+          "pwd"
       # - name: Instalando dependencias
       #   run: |
       #     cd frontend
