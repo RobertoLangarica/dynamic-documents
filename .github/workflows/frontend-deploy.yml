@@ -25,14 +25,14 @@ jobs:
           cd dist
           ls
       - name: Sending build via ssh + scp
-      run: |
-        eval `ssh-agent`
-        ssh-add - <<< "${{secrets.DO_KEY}}"
-        mkdir ~/.ssh
-        echo > ~/.ssh/known_hosts
-        ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
-        ssh "$SERVER" \
-        "cd ~/dd/staging && \
-        yes | rm -r public"
-        cd frontend/dist
-        scp -r ./spa "$SERVER":~/dd/staging/public
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          mkdir ~/.ssh
+          echo > ~/.ssh/known_hosts
+          ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
+          ssh "$SERVER" \
+          "cd ~/dd/staging && \
+          yes | rm -r public"
+          cd frontend/dist
+          scp -r ./spa "$SERVER":~/dd/staging/public
