@@ -15,12 +15,9 @@ jobs:
       # - name: Starting ssh-agent
       #   run: eval `ssh-agent -s`
       - name: Adding ssh
-        env:
-          SSH_ASKPASS: ${{secrets.DO_KEY_PASS}}
         run: |
           eval `ssh-agent`
-          
-          echo "${{secrets.DO_KEY_PASS}}" | ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh-add - <<< "${{secrets.DO_KEY}}"
       # - name: Instalando dependencias
       #   run: |
       #     cd frontend
