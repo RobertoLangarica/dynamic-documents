@@ -22,7 +22,7 @@ jobs:
         run: |
           echo $SERVER
           echo "$SERVER"
-          ssh "$env:SERVER" \
+          ssh "$SERVER" \
           "pwd"
       # - name: Instalando dependencias
       #   run: |
