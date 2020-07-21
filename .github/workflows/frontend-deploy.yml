@@ -13,7 +13,7 @@ jobs:
       - name: Getting latest version
         run: git checkout
       - name: Adding ssh
-        run: echo ${{secrets.DO_KEY}}
+        run: echo ${{secrets.DO_KEY}} | ssh-add
       # - name: Instalando dependencias
       #   run: |
       #     cd frontend
