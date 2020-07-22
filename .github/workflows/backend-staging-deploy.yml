@@ -1,0 +1,73 @@
+name: Backend-STAGING deployment
+
+# Trigger on push filter by branch
+on:
+  push:
+    branches:
+      - staging_back
+jobs:
+  back_build:
+    runs-on: ubuntu-latest
+    env:
+      SERVER: fid@68.183.171.182
+      REMOTE_DIR: ~/dd/staging
+      BRANCH: staging_back
+      PROCESS_NAME: DD_staging
+    steps:
+      - uses: actions/checkout@v2
+      - name: Getting latest version
+        run: git checkout
+      - name: Instalando dependencias
+        run: |
+          cd backend
+          npm install
+      - name: Build
+        run: |
+          cd backend
+          npm run build
+      - name: Adding SSH basics
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          mkdir ~/.ssh
+          echo > ~/.ssh/known_hosts
+          ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
+      - name: Deleting last build on the server
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR"/backend && \
+          yes | rm -r dist"
+      - name: Sending new build to the server
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          cd backend
+          scp -r ./dist "$SERVER":"$REMOTE_DIR"/backend/dist
+      - name: Getting last repo version on the server
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR" && \
+          git fetch && \
+          git checkout origin/"$BRANCH""
+      - name: Installing dependencies
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR"/backend && npm install"
+      - name: Run DB migrations
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR"/backend && npm run migration:run"
+      - name: Restart pm2
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "pm2 restart "$PROCESS_NAME""

@@ -1,8 +1,8 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm'
+import { MigrationInterface, QueryRunner, Table } from 'typeorm'
 import * as uuid from 'uuid/v4'
 import * as bcrypt from 'bcrypt'
 
-export class random_admin0000000000004 implements MigrationInterface {
+export class random_admin0000000000005 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<any> {
     // Generate a random admin
