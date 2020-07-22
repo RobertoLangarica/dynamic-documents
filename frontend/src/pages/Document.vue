@@ -35,8 +35,7 @@ export default {
     }
   },
   async mounted () {
-    let d = await this.$store.dispatch('getDocument', this.$route.params.id)
-    console.log(d)
+    await this.$store.dispatch('getDocument', this.$route.params.id)
   }
 }
 </script>
