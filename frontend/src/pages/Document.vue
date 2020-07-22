@@ -4,8 +4,8 @@
       <q-radio v-for="view in views" v-model="currentView" :val="view.value" :label="view.label" :key="view.value" />
     </div>
     <h1>Doc</h1>
-    <div v-if="$store.state.dd.document">
-      <div v-for="field in $store.state.dd.document.fields" :key="field.id">
+    <div v-if="exists">
+      <div v-for="field in currentDoc.fields" :key="field.id">
         {{field.name}}
       </div>
     </div>
@@ -31,11 +31,17 @@ export default {
         { label: 'Capturar', value: VIEW_CAPTURE },
         { label: 'Previsualizar', value: VIEW_PREVIEW }
       ],
-      currentView: VIEW_EDIT
+      currentView: VIEW_EDIT,
+      currentDoc: null
+    }
+  },
+  computed: {
+    exists () {
+      return !!this.currentDoc
     }
   },
   async mounted () {
-    await this.$store.dispatch('getDocument', this.$route.params.id)
+    this.currentDoc = await this.$store.dispatch('getDocument', this.$route.params.id)
   }
 }
 </script>

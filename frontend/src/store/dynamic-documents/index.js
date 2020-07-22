@@ -5,7 +5,6 @@ export default {
   state: {
     documents: [],
     templates: [],
-    document: {},
     types: []
   },
   mutations: {
@@ -21,19 +20,22 @@ export default {
     addDocument (state, value) {
       state.documents.push(value)
     },
-    updateCurrentDocument (state, value) {
-      state.document = value
-    },
     updateDocument (state, value) {
       let ind = state.documents.findIndex(item => item.id === value.id)
       if (ind >= 0) {
         state.documents[ind] = value
+      } else {
+        // new
+        state.documents.push(value)
       }
     },
     updateTemplate (state, value) {
       let ind = state.templates.findIndex(item => item.id === value.id)
       if (ind >= 0) {
         state.templates[ind] = value
+      } else {
+        // new
+        state.templates.push(value)
       }
     },
     types (state, value) {
@@ -73,12 +75,21 @@ export default {
         commit('documents', result.data)
       }
     },
-    async getDocument ({ commit }, id) {
-      console.log('GET', `/documents/${id}`)
-      let result = await api.get(`/documents/${id}`)
-      if (result.success) {
-        commit('updateCurrentDocument', result.data)
-      }
+    async getDocument ({ getters, dispatch }, id) {
+      let result = getters.document(id)
+
+      // If the property fields is missing, then an update is needed
+      if (result && result.fields) return result
+
+      return dispatch('updateDocument', id)
+    },
+    async getTemplate ({ getters, dispatch }, id) {
+      let result = getters.template(id)
+
+      // If the property fields is missing, then an update is needed
+      if (result && result.fields) return result
+
+      return dispatch('updateTemplate', id)
     },
     async updateDocument ({ commit }, id) {
       console.log('GET', `/documents/${id}`)
@@ -86,6 +97,7 @@ export default {
 
       if (result.success) {
         commit('updateDocument', result.data)
+        return result.data
       }
     },
     async updateTemplate ({ commit }, id) {
@@ -93,6 +105,7 @@ export default {
       let result = await api.get(`/templates/${id}`)
       if (result.success) {
         commit('updateTemplate', result.data)
+        return result.data
       }
     },
     async updateTypes ({ commit }) {
@@ -100,6 +113,7 @@ export default {
       let result = await api.get(`/field_types`)
       if (result.success) {
         commit('types', result.data)
+        return result.data
       }
     },
     async setDocument ({ commit }, data) {
