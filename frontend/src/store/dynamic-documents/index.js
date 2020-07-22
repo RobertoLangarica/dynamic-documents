@@ -5,6 +5,7 @@ export default {
   state: {
     documents: [],
     templates: [],
+    document: {},
     types: []
   },
   mutations: {
@@ -19,6 +20,9 @@ export default {
     },
     addDocument (state, value) {
       state.documents.push(value)
+    },
+    updateCurrentDocument (state, value) {
+      state.document = value
     },
     updateDocument (state, value) {
       let ind = state.documents.findIndex(item => item.id === value.id)
@@ -67,6 +71,13 @@ export default {
 
       if (result.success) {
         commit('documents', result.data)
+      }
+    },
+    async getDocument ({ commit }, id) {
+      console.log('GET', `/documents/${id}`)
+      let result = await api.get(`/documents/${id}`)
+      if (result.success) {
+        commit('updateCurrentDocument', result.data)
       }
     },
     async updateDocument ({ commit }, id) {
