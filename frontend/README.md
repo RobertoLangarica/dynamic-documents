@@ -1,6 +1,6 @@
-# NeQu Frontend (nequ-frontend)
+# Dynamic Documents (nequ-frontend)
 
-NeQu Frontend boilerplate
+Dynamic Documents boilerplate
 
 ## Install the dependencies
 ```bash

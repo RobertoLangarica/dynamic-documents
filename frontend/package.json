@@ -1,8 +1,8 @@
 {
   "name": "nequ-frontend",
   "version": "0.0.1",
-  "description": "NeQu Frontend boilerplate",
-  "productName": "NeQu Frontend",
+  "description": "Dynamic Documents boilerplate",
+  "productName": "Dynamic Documents",
   "cordovaId": "",
   "capacitorId": "",
   "author": "Ramses <ramses@cuatromedios.com>",

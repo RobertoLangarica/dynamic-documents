@@ -105,9 +105,9 @@ module.exports = function (ctx) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'NeQu Frontend',
-        short_name: 'NeQu Frontend',
-        description: 'NeQu Frontend boilerplate',
+        name: 'Dynamic Documents',
+        short_name: 'Dynamic Documents',
+        description: 'Dynamic Documents boilerplate',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
