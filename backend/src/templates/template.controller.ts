@@ -1,5 +1,5 @@
 import { TemplateService } from "./template.service"
-import { Get, Controller, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from "@nestjs/common"
+import { Get, Controller, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, UseGuards } from "@nestjs/common"
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger"
 import { TemplateDto } from "./dto/template.dto"
 import { FieldsValidationPipe } from "src/common/pipes/FieldsValidation.pipe"
@@ -7,10 +7,12 @@ import { TemplateTypeFillPipe } from "src/common/pipes/TemplateTypeFill.pipe"
 import { CategoriesFillPipe } from "src/common/pipes/CategoriesFill.pipe"
 import { FieldsValueValidationPipe } from "src/common/pipes/FieldsValueValidation.pipe"
 import { SplitNamesFromIDsPipe } from "src/common/pipes/SplitNamesFromIDs.pipe"
+import { AuthGuard } from "src/common/guards/Auth.guard"
 
 @ApiBearerAuth()
 @ApiTags('Templates')
 @Controller('templates')
+@UseGuards(AuthGuard)
 export class TemplateController {
     constructor(private readonly service: TemplateService) { }
 

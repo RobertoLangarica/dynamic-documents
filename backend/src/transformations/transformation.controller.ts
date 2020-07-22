@@ -1,12 +1,14 @@
-import { Controller, Get, Param, Post, Body, Delete, Patch, ParseUUIDPipe } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body, Delete, Patch, ParseUUIDPipe, UseGuards } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { TransformationService } from "./transformation.service";
 import { TransformationDto } from "./transformation.dto";
 import { FieldTypeFillPipe } from "src/common/pipes/FieldTypeFill.pipe";
+import { AuthGuard } from "src/common/guards/Auth.guard";
 
 @ApiBearerAuth()
 @ApiTags('Transformations')
 @Controller('transformations')
+@UseGuards(AuthGuard)
 export class TransformationController {
     constructor(private readonly service: TransformationService) { }
 

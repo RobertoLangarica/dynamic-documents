@@ -12,15 +12,18 @@ import { DocumentStatusGuard } from "src/common/guards/DocumentStatus.guard"
 import { AllowedStatus } from "src/common/guards/decorators/AllowedStatus"
 import { SplitNamesFromIDsPipe } from "src/common/pipes/SplitNamesFromIDs.pipe"
 import { DocumentStatus } from "./document.config"
+import { AuthGuard } from "src/common/guards/Auth.guard"
+import { Grants } from "src/common/guards/decorators/Grants.decorator"
 
 @ApiBearerAuth()
 @ApiTags('Documents')
 @Controller('documents')
+@UseGuards(AuthGuard)
 export class DocumentController {
     constructor(private readonly service: DocumentService) { }
 
     @Get(':id')
-    findOne(@Param('id', ParseUUIDPipe) id: string) {
+    findOne(@Param('id', ParseUUIDPipe) id: string,) {
         return this.service.findById(id)
     }
 
@@ -28,12 +31,6 @@ export class DocumentController {
     find(@Query('categories', SplitNamesFromIDsPipe) categories: string, @Query('status', SplitNamesFromIDsPipe) status: string) {
         return this.service.findAll(categories, status)
     }
-
-    // DEPRECATED
-    // @Get('clone/:from')
-    // clone(@Param('from', ParseUUIDPipe) id_from: string) {
-    //     return this.service.clone(id_from)
-    // }
 
     @Post()
     add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: DocumentDto) {

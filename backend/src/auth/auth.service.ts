@@ -70,6 +70,7 @@ export class AuthService {
     user.first_name = ""
     user.last_name = ""
     user = await this.userRepo.save(user)
+    delete user.password; // Avoid returning this data
 
     // Permisos de usuario
     let repo = getConnection().getRepository(Grant)
