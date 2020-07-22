@@ -1,16 +1,27 @@
 <template>
-  <div>
-    <h1>Documentos dinamicos</h1>
-    <ul>
-      <li><a href="/login">Login</a></li>
-      <li><a href="/documents">Testing de documentos</a></li>
-      <li><a href="/API">API</a></li>
-    </ul>
-  </div>
+  <article>
+    <div>
+      <q-radio v-for="view in views" v-model="currentView" :val="view.value" :label="view.label" :key="view.value" />
+    </div>
+    <h1>Doc</h1>
+  </article>
 </template>
 
 <script>
+let VIEW_EDIT = 'edit'
+let VIEW_CAPTURE = 'capture'
+let VIEW_PREVIEW = 'preview'
 export default {
-  name: 'PageIndex'
+  name: 'PageIndex',
+  data () {
+    return {
+      views: [
+        { label: 'Editar', value: VIEW_EDIT },
+        { label: 'Capturar', value: VIEW_CAPTURE },
+        { label: 'Previsualizar', value: VIEW_PREVIEW }
+      ],
+      currentView: VIEW_EDIT
+    }
+  }
 }
 </script>
