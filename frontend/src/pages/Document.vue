@@ -34,8 +34,8 @@ export default {
       currentView: VIEW_EDIT
     }
   },
-  mounted () {
-    let d = this.$store.dispatch('getDocument', this.$route.params.id)
+  async mounted () {
+    let d = await this.$store.dispatch('getDocument', this.$route.params.id)
     console.log(d)
   }
 }
