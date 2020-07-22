@@ -5,7 +5,8 @@
           <div><q-btn round icon="add_circle" flat @click="$emit('add')"/></div>
         </div>
         <div v-for="item in objects" :key="item.id" class="row col-12">
-            <q-btn class="col-12" :label="item.name" @click="$emit('select',item.id)" color="primary" flat/>
+            <q-btn class="col-12" :label="item.name" @click="$emit('select',item.id)" color="primary" outline/>
+            <q-btn class="col-6" label="embed" :to="{ name: 'embed-document', params: { id: item.id} }" color="primary"/>
         </div>
     </div>
 </template>

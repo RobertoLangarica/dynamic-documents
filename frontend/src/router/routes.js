@@ -11,6 +11,13 @@ const routes = [
       { path: 'secrets', name: "secrets", component: () => import('pages/Secrets.vue') },
       { path: 'documents', name: "documents", component: () => import('pages/Documents.vue') }
     ]
+  },
+  {
+    path: '/embed',
+    component: () => import('layouts/EmbedLayout.vue'),
+    children: [
+      { path: 'document/:id', name: "embed-document", component: () => import('pages/Document.vue') },
+    ]
   }
 ]
 
