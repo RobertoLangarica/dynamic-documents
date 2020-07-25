@@ -1,6 +1,6 @@
-# Dynamic Documents (nequ-frontend)
+# Documentos Dinamicos (dynamic-documents)
 
-Dynamic Documents boilerplate
+Interfaz para Documentos Dinámicos
 
 ## Install the dependencies
 ```bash

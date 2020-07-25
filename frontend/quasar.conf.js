@@ -1,15 +1,32 @@
+/*
+ * This file runs in a Node context (it's NOT transpiled by Babel), so use only
+ * the ES6 features that are supported by your Node version. https://node.green/
+ */
+
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
-const package = require('./package.json')
-module.exports = function (ctx) {
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { configure } = require('quasar/wrappers')
+
+module.exports = configure(function (ctx) {
   return {
+    // https://quasar.dev/quasar-cli/supporting-ts
+    supportTS: {
+      tsCheckerConfig: {
+        eslint: true
+      }
+    },
+
+    // https://quasar.dev/quasar-cli/prefetch-feature
+    // preFetch: true,
+
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
-    // https://quasar.dev/quasar-cli/cli-documentation/boot-files
+    // https://quasar.dev/quasar-cli/boot-files
     boot: [
-      'i18n',
-      'axios',
-      'dynamic_documents'
+
+      'i18n'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -20,7 +37,7 @@ module.exports = function (ctx) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      // 'mdi-v4',
+      // 'mdi-v5',
       // 'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
@@ -31,64 +48,60 @@ module.exports = function (ctx) {
       'material-icons' // optional, you are not bound to it
     ],
 
-    // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
-    framework: {
-      iconSet: 'material-icons', // Quasar icon set
-      lang: 'en-us', // Quasar language pack
-
-      // Possible values for "all":
-      // * 'auto' - Auto-import needed Quasar components & directives
-      //            (slightly higher compile time; next to minimum bundle size; most convenient)
-      // * false  - Manually specify what to import
-      //            (fastest compile time; minimum bundle size; most tedious)
-      // * true   - Import everything from Quasar
-      //            (not treeshaking Quasar; biggest bundle size; convenient)
-      all: 'auto',
-
-      components: [],
-      directives: [],
-
-      // Quasar plugins
-      plugins: ['Notify']
-    },
-
-    // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
-    supportIE: false,
-
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      env: {
-        VERSION: `"V${package.version}"`,
-        API_URL: JSON.stringify(process.env.API_URL ? process.env.API_URL : ctx.dev ? 'http://127.0.0.1:3000/api' : '/api')
-      },
-      scopeHoisting: true,
-      vueRouterMode: 'history', // available values: 'hash', 'history'
-      showProgress: true,
-      gzip: false,
-      analyze: false,
+      vueRouterMode: 'hash', // available values: 'hash', 'history'
+
+      // transpile: false,
+
+      // Add dependencies for transpiling with Babel (Array of string/regex)
+      // (from node_modules, which are by default not transpiled).
+      // Applies only if "transpile" is set to true.
+      // transpileDependencies: [],
+
+      // rtl: false, // https://quasar.dev/options/rtl-support
+      // preloadChunks: true,
+      // showProgress: false,
+      // gzip: true,
+      // analyze: true,
+
       // Options below are automatically set depending on the env, set them if you want to override
-      // preloadChunks: false,
       // extractCSS: false,
 
-      // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
+      // https://quasar.dev/quasar-cli/handling-webpack
       extendWebpack (cfg) {
-        cfg.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/,
-          options: {
-            formatter: require('eslint').CLIEngine.getFormatter('stylish')
-          }
-        })
+        // linting is slow in TS projects, we execute it only for production builds
+        if (ctx.prod) {
+          cfg.module.rules.push({
+            enforce: 'pre',
+            test: /\.(js|vue)$/,
+            loader: 'eslint-loader',
+            exclude: /node_modules/
+          })
+        }
       }
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       https: false,
-      port: 3001,
+      port: 8080,
       open: true // opens browser window automatically
+    },
+
+    // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
+    framework: {
+      iconSet: 'material-icons', // Quasar icon set
+      lang: 'en-us', // Quasar language pack
+      config: {},
+
+      // Possible values for "importStrategy":
+      // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
+      // * 'all'  - Manually specify what to import
+      importStrategy: 'auto',
+
+      // Quasar plugins
+      plugins: []
     },
 
     // animations: 'all', // --- includes all animations
@@ -105,38 +118,38 @@ module.exports = function (ctx) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Dynamic Documents',
-        short_name: 'Dynamic Documents',
-        description: 'Dynamic Documents boilerplate',
+        name: 'Documentos Dinamicos',
+        short_name: 'Documentos Dinamicos',
+        description: 'Interfaz para Documentos Dinámicos',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
         theme_color: '#027be3',
         icons: [
           {
-            'src': 'statics/icons/icon-128x128.png',
-            'sizes': '128x128',
-            'type': 'image/png'
+            src: 'icons/icon-128x128.png',
+            sizes: '128x128',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/icon-192x192.png',
-            'sizes': '192x192',
-            'type': 'image/png'
+            src: 'icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/icon-256x256.png',
-            'sizes': '256x256',
-            'type': 'image/png'
+            src: 'icons/icon-256x256.png',
+            sizes: '256x256',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/icon-384x384.png',
-            'sizes': '384x384',
-            'type': 'image/png'
+            src: 'icons/icon-384x384.png',
+            sizes: '384x384',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/icon-512x512.png',
-            'sizes': '512x512',
-            'type': 'image/png'
+            src: 'icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
           }
         ]
       }
@@ -145,7 +158,6 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/developing-cordova-apps/configuring-cordova
     cordova: {
       // noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
-      id: ''
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-capacitor-apps/configuring-capacitor
@@ -173,16 +185,16 @@ module.exports = function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'nequ-frontend'
+        appId: 'dynamic-documents'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
       nodeIntegration: true,
 
-      extendWebpack (cfg) {
+      extendWebpack (/* cfg */) {
         // do something with Electron main process Webpack cfg
         // chainWebpack also available besides this extendWebpack
       }
     }
   }
-}
+})
