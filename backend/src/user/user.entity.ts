@@ -56,10 +56,10 @@ export class User extends EntityWithTimeStampt {
   }
 
   @Exclude()
-  @OneToMany(type => Grant, m => m.user, { eager: true })
+  @OneToMany(type => Grant, m => m.user, { eager: true, onDelete: 'CASCADE' })
   raw_grants: Grant[]
 
   @Exclude()
-  @OneToMany(type => APISecret, r => r.user, { eager: false })
+  @OneToMany(type => APISecret, r => r.user, { eager: false, onDelete: 'CASCADE' })
   api_secret: APISecret[];
 }
