@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 
 // import example from './module-example';
 // import { ExampleStateInterface } from './module-example/state';
+import login from './login'
+import dd from './dynamic-documents'
 
 /*
  * If not building with SSR mode, you can
@@ -20,9 +22,7 @@ export default store(function ({ Vue }) {
   Vue.use(Vuex)
 
   const Store = new Vuex.Store<StateInterface>({
-    modules: {
-      // example
-    },
+    modules: { dd, login },
 
     // enable strict mode (adds overhead!)
     // for dev mode only

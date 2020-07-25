@@ -50,7 +50,10 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
+      env: {
+        API_URL: (process.env.API_URL ? process.env.API_URL : ctx.dev ? 'http://127.0.0.1:3000/api' : '/api')
+      },
 
       // transpile: false,
 
@@ -86,7 +89,7 @@ module.exports = configure(function (ctx) {
     devServer: {
       https: false,
       port: 8080,
-      open: true // opens browser window automatically
+      open: false // opens browser window automatically
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -101,7 +104,7 @@ module.exports = configure(function (ctx) {
       importStrategy: 'auto',
 
       // Quasar plugins
-      plugins: []
+      plugins: ['LocalStorage']
     },
 
     // animations: 'all', // --- includes all animations

@@ -1,12 +1,12 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
-  </q-page>
+  <div>
+    <h1>Documentos dinámicos</h1>
+    <ul>
+      <li><router-link :to="{ name: 'login' }">Login</router-link></li>
+      <li><a href="/documents">Testing de documentos</a></li>
+      <li><a href="http://localhost:3000/docs" target="_blank">API</a></li>
+    </ul>
+  </div>
 </template>
 
 <script lang="ts">

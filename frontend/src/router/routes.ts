@@ -3,9 +3,12 @@ import { RouteConfig } from 'vue-router'
 const routes: RouteConfig[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/ExternalLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
+      { name: 'index', path: '', component: () => import('pages/Index.vue') },
+      { name: 'login', path: 'login', component: () => import('pages/Login.vue') },
+      { name: 'documents', path: 'documents', component: () => import('pages/Documents.vue') },
+      { name: 'embed-document', path: 'document/:id', component: () => import('pages/Document.vue') }
     ]
   },
 
