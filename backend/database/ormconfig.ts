@@ -24,9 +24,12 @@ const config = (): ConnectionOptions => {
     logging: false,
     entities: [User, Token, Grant, APISecret, Validation, FieldType, Transformation, Category, TemplateType, Template,
       Status, Document, DocumentFilter],
-    synchronize: false
+    // NEVER use synchronize in production
+    synchronize: process.env.NODE_ENV === 'test'
   }
-  console.log(config)
+
+  if (process.env.NODE_ENV !== 'test') console.log(config)
+
   return config;
 }
 

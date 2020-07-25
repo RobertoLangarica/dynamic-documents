@@ -48,6 +48,7 @@ export class AuthService {
       .addSelect('User.password')
       .where({ email: dto.email.toLowerCase() })
       .getOne()
+
     if (!user || !bcrypt.compareSync(dto.password, user.password)) {
       throw new HttpException('invalid_credentials', 422)
     }
