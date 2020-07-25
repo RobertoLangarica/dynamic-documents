@@ -4,9 +4,12 @@
       <q-radio v-for="view in views" v-model="currentView" :val="view.value" :label="view.label" :key="view.value" />
     </div>
     <h1>Doc</h1>
-    <div v-if="exists">
-      <div v-for="field in currentDoc.fields" :key="field.id">
-        {{field.name}}
+    <div v-if="docExists">
+      <div v-for="field in currentDoc.fields" :key="field.id" class="field-container">
+        <div class="fieldC-controls">
+        </div>
+        <div class="field-content">
+        </div>
       </div>
     </div>
     <q-spinner
@@ -36,7 +39,7 @@ export default {
     }
   },
   computed: {
-    exists () {
+    docExists () {
       return !!this.currentDoc
     }
   },
