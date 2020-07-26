@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common'
+import { HttpException, Injectable, HttpStatus } from '@nestjs/common'
 import { LoginDto } from './dto/login.dto'
 import { User } from '../user/user.entity'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -61,7 +61,7 @@ export class AuthService {
     let exist = await this.userRepo.findOne({ where: { email: dto.email } })
 
     if (exist) {
-      throw new HttpException('User already exists', 409)
+      throw new HttpException('User already exists', HttpStatus.CONFLICT)
     }
 
     // Creating user

@@ -2,19 +2,15 @@ import { getRepository } from 'typeorm'
 import { User } from '../src/user/user.entity'
 import { build, Suite, user1 } from './test-utils'
 import { NoTokenProfile, NoTokenDelete, UserCanSignUp, NoDuplicatedSignup, PasswordOmittedInSignupResponse, UserCanLogin, LoginWrongPassword, LoginWrongEmail, NoCredentialsSignup, UserRetrieveProfile, ProfileWithNoPassword, UserCanLogout, LogoutAfterLogout, ProfileAfterLogout } from './auth.test'
-import { NoUserGetAll, NoUserGetOne, NoUserCreate, NoUserUpdate, AllValidations } from './validations.test'
+import { NoUserGetAll, NoUserGetOne, NoUserCreate, NoUserUpdate, AllValidations, AllEmptyValidations, GetOneValidation, ValidationWrongID, ValidationMalformedUUID, UpdateValidationWrongID, UpdateValidationMalformedUUID, UpdateValidationDuplicatedName, CreateIncompleteValidation, CreateValidation, CreateDuplicatedValidation, UpdateValidation, DeleteValidationWrongID, DeleteValidationMalformedUUID, DeleteValidation } from './validations.test'
 
 describe('End2End tests', () => {
   let suite: Suite
 
   // APP and DB start
-  beforeAll(async () => {
-    suite = await build()
-    // Migrations
-    await suite.db.runMigrations()
-  })
+  beforeAll(async () => { suite = await build() })
 
-  // Adding a user to login
+  // Adding a user to login with
   beforeAll(() => {
     // Add user 1
     const repo = getRepository(User, suite.db.name)
@@ -59,6 +55,20 @@ describe('End2End tests', () => {
     test('Update one without user should fail', async () => await NoUserUpdate(suite))
     test('Delete one without user should fail', async () => await NoUserUpdate(suite))
     test('Get all validations', async () => await AllValidations(suite))
+    test('Get all validations when there is none, should return an empty array', async () => await AllEmptyValidations(suite))
+    test('Get one validation', async () => await GetOneValidation(suite))
+    test('Get one with wrong ID should fail', async () => await ValidationWrongID(suite))
+    test('Get one with malformed UUID should fail', async () => await ValidationMalformedUUID(suite))
+    test('Update with wrong ID should fail', async () => await UpdateValidationWrongID(suite))
+    test('Update with malformed UUID should fail', async () => await UpdateValidationMalformedUUID(suite))
+    test('Update with duplicated name should fail', async () => await UpdateValidationDuplicatedName(suite))
+    test('Update validation', async () => await UpdateValidation(suite))
+    test('Create incomplete validation should fail', async () => await CreateIncompleteValidation(suite))
+    test('Create validation', async () => await CreateValidation(suite))
+    test('Create with duplicated name should fail', async () => await CreateDuplicatedValidation(suite))
+    test('Delete with wrong ID should fail', async () => await DeleteValidationWrongID(suite))
+    test('Delete with malformed UUID should fail', async () => await DeleteValidationMalformedUUID(suite))
+    test('Delete validation', async () => await DeleteValidation(suite))
   })
   /************************/
 

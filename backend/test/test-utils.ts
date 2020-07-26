@@ -31,6 +31,9 @@ export async function build(): Promise<Suite> {
   suite.runner = suite.db.createQueryRunner('master')
   await suite.app.init()
 
+  await suite.db.dropDatabase()
+  await suite.db.runMigrations()
+
   return suite
 }
 
