@@ -1,7 +1,7 @@
 import * as request from 'supertest'
 import { HttpStatus } from "@nestjs/common"
 import { Suite, getValiduserToken } from './test-utils'
-import { v4 as uuidv4 } from 'uuid'
+import * as uuidv4 from 'uuid/v4'
 
 
 const getRandomValidation = () => {
@@ -50,11 +50,12 @@ export let NoUserDelete = async (suite: Suite) => {
 export let AllValidations = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
 
-    console.log(await suite.runner.query('SELECT * from validations'))
-
+    let count = await suite.runner.query('SELECT COUNT(*) from validations')
+    count = parseInt(count[0].count)
     return await request(suite.app.getHttpServer())
         .get(`/api/validations/`)
         .set({ 'Authorization': `Bearer ${token}` })
         .expect(HttpStatus.OK)
-        .expect(res => expect(res.body).toBe(Array))
+        .expect(res => expect(Array.isArray(res.body)).toBe(true))
+        .expect(res => expect(res.body).toHaveLength(count))
 }
