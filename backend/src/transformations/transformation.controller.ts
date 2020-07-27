@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, Body, Delete, Patch, ParseUUIDPipe, UseGuards } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { TransformationService } from "./transformation.service";
-import { TransformationDto } from "./transformation.dto";
+import { TransformationDto, CreateTransformationDto } from "./transformation.dto";
 import { FieldTypeFillPipe } from "src/common/pipes/FieldTypeFill.pipe";
 import { AuthGuard } from "src/common/guards/Auth.guard";
 
@@ -23,7 +23,7 @@ export class TransformationController {
     }
 
     @Post()
-    add(@Body(FieldTypeFillPipe) dto: TransformationDto) {
+    add(@Body(FieldTypeFillPipe) dto: CreateTransformationDto) {
         return this.service.addTransformation(dto)
     }
 

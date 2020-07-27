@@ -11,6 +11,11 @@ import { AuthGuard } from "src/common/guards/Auth.guard";
 export class CategoryController {
     constructor(private readonly service: CategoryService) { }
 
+    @Get(':id')
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
+        return this.service.findById(id)
+    }
+
     @Get()
     find() {
         return this.service.findAll()

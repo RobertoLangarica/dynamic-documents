@@ -4,6 +4,8 @@ import { build, Suite, user1 } from './test-utils'
 import { NoTokenProfile, NoTokenDelete, UserCanSignUp, NoDuplicatedSignup, PasswordOmittedInSignupResponse, UserCanLogin, LoginWrongPassword, LoginWrongEmail, NoCredentialsSignup, UserRetrieveProfile, ProfileWithNoPassword, UserCanLogout, LogoutAfterLogout, ProfileAfterLogout } from './auth.test'
 import { NoUserGetAllValidations, NoUserGetOneValidation, NoUserCreateValidation, NoUserUpdateValidation, AllValidations, AllEmptyValidations, GetOneValidation, ValidationWrongID, ValidationMalformedUUID, UpdateValidationWrongID, UpdateValidationMalformedUUID, UpdateValidationDuplicatedName, CreateIncompleteValidation, CreateValidation, CreateDuplicatedValidation, UpdateValidation, DeleteValidationWrongID, DeleteValidationMalformedUUID, DeleteValidation } from './validations.test'
 import { NoUserGetAllFieldType, NoUserGetOneFieldType, NoUserCreateFieldType, NoUserUpdateFieldType, NoUserDeleteFieldType, AllFieldTypes, AllEmptyFieldTypes, GetOneFieldType, FieldTypeWrongID, FieldTypeMalformedUUID, UpdateFieldType, UpdateFieldTypeDuplicatedName, UpdateFieldTypeMalformedUUID, UpdateFieldTypeWrongID, CreateDuplicatedFieldType, CreateIncompleteFieldType, CreateFieldType, DeleteFieldType, DeleteFieldTypeMalformedUUID, DeleteFieldTypeWrongID, addFieldTypesWithRelations, GetAllFieldTypesWithValidations, GetOneFieldTypeincludingValidations, UpdateFieldTypeWithValidations, UpdatingFieldTypeNoValidationsOverwrite, CreateWithValidations, CreateWithNoDuplicatedValidations, UpdateWithValidationsNameOrID, UpdateWithNoDuplicatedValidations, UpdateToRemoveValidations, CreateWithNonExistingValidations, UpdatewithNonExistingValidations, NoOrphanValidations } from './field_type.test'
+import { addTransformationsWithRelations, T_NoUserGetAll, T_NoUserGetOne, T_NoUserCreate, T_NoUserUpdate, T_NoUserDelete, T_GetAll, T_GetAllEmpty, T_GetOne, T_GetOneWrongID, T_GetOneMalformedUUID, T_UpdateWrongID, T_UpdateMalformedUUID, T_UpdateDuplicatedName, T_Update, T_CreateIncomplete, T_Create, T_CreateDuplicated, T_DeleteWrongID, T_DeleteMalformedUUID, T_Delete, T_GetAllWithRelations, T_GetOneWithRelations, T_UpdateWithRelations, T_UpdateNoRelationsOverwrite, T_CreateWithRelations, T_CreateWithNoDuplicatedRelations, T_UpdateWithNoDuplicatedRelations, T_UpdateWithRelationsNameOrID, T_UpdateToRemoveRelations, T_UpdateWithNonExistingRelations, T_CreateWithNonExistingRelations, T_NoOrphanRelations } from './transformation.test'
+import { addCategories, C_NoUserGetAll, C_NoUserGetOne, C_NoUserCreate, C_NoUserUpdate, C_NoUserDelete, C_GetAll, C_GetAllEmpty, C_GetOne, C_GetOneWrongID, C_GetOneMalformedUUID, C_UpdateWrongID, C_UpdateMalformedUUID, C_UpdateDuplicatedName, C_Update, C_CreateIncomplete, C_Create, C_CreateDuplicated, C_DeleteWrongID, C_DeleteMalformedUUID, C_Delete } from './categories.test'
 
 describe('End2End tests', () => {
   let suite: Suite
@@ -110,6 +112,72 @@ describe('End2End tests', () => {
     test('Update with non existing validations', async () => await UpdatewithNonExistingValidations(suite))
     test('Create with non existing validations', async () => await CreateWithNonExistingValidations(suite))
     test('No orphan relations with validations', async () => await NoOrphanValidations(suite))
+  })
+  /************************/
+
+  /****TRANSFORMATION CONTROLLER*****/
+  describe('Transformations test', () => {
+    beforeAll(() => addTransformationsWithRelations(suite))
+
+    test('Get all without user should fail', async () => await T_NoUserGetAll(suite))
+    test('Get one without user should fail', async () => await T_NoUserGetOne(suite))
+    test('Create one without user should fail', async () => await T_NoUserCreate(suite))
+    test('Update one without user should fail', async () => await T_NoUserUpdate(suite))
+    test('Delete one without user should fail', async () => await T_NoUserDelete(suite))
+    test('Get all', async () => await T_GetAll(suite))
+    test('Get all when there is none, should return an empty array', async () => await T_GetAllEmpty(suite))
+    test('Get one', async () => await T_GetOne(suite))
+    test('Get one with wrong ID should fail', async () => await T_GetOneWrongID(suite))
+    test('Get one with malformed UUID should fail', async () => await T_GetOneMalformedUUID(suite))
+    test('Update with wrong ID should fail', async () => await T_UpdateWrongID(suite))
+    test('Update with malformed UUID should fail', async () => await T_UpdateMalformedUUID(suite))
+    test('Update with duplicated name should fail', async () => await T_UpdateDuplicatedName(suite))
+    test('Update', async () => await T_Update(suite))
+    test('Create with incomplete data should fail', async () => await T_CreateIncomplete(suite))
+    test('Create', async () => await T_Create(suite))
+    test('Create with duplicated name should fail', async () => await T_CreateDuplicated(suite))
+    test('Delete with wrong ID should fail', async () => await T_DeleteWrongID(suite))
+    test('Delete with malformed UUID should fail', async () => await T_DeleteMalformedUUID(suite))
+    test('Delete', async () => await T_Delete(suite))
+    test('Get all, should include the related entities', async () => await T_GetAllWithRelations(suite))
+    test('Get one, should include the related relations', async () => await T_GetOneWithRelations(suite))
+    test('Update one, with related relations should include the full relations on return', async () => await T_UpdateWithRelations(suite))
+    test('Update properties without sending relations should not overwrite the existing relations', async () => await T_UpdateNoRelationsOverwrite(suite))
+    test('Create with relations should work with id or name and should retrieve full relations', async () => await T_CreateWithRelations(suite))
+    test('Create with no duplicated relations', async () => await T_CreateWithNoDuplicatedRelations(suite))
+    test('Update with no duplicated relations', async () => await T_UpdateWithNoDuplicatedRelations(suite))
+    test('Update with relations should support names or ids', async () => await T_UpdateWithRelationsNameOrID(suite))
+    test('Update could empty the related relations', async () => await T_UpdateToRemoveRelations(suite))
+    test('Update with non existing relations', async () => await T_UpdateWithNonExistingRelations(suite))
+    test('Create with non existing relations', async () => await T_CreateWithNonExistingRelations(suite))
+    test('No orphan relations with relations', async () => await T_NoOrphanRelations(suite))
+  })
+  /************************/
+
+  /****CATEGORY CONTROLLER*****/
+  describe('Categories test', () => {
+    beforeAll(() => addCategories(suite))
+
+    test('Get all without user should fail', async () => await C_NoUserGetAll(suite))
+    test('Get one without user should fail', async () => await C_NoUserGetOne(suite))
+    test('Create one without user should fail', async () => await C_NoUserCreate(suite))
+    test('Update one without user should fail', async () => await C_NoUserUpdate(suite))
+    test('Delete one without user should fail', async () => await C_NoUserDelete(suite))
+    test('Get all', async () => await C_GetAll(suite))
+    test('Get all when there is none, should return an empty array', async () => await C_GetAllEmpty(suite))
+    test('Get one', async () => await C_GetOne(suite))
+    test('Get one with wrong ID should fail', async () => await C_GetOneWrongID(suite))
+    test('Get one with malformed UUID should fail', async () => await C_GetOneMalformedUUID(suite))
+    test('Update with wrong ID should fail', async () => await C_UpdateWrongID(suite))
+    test('Update with malformed UUID should fail', async () => await C_UpdateMalformedUUID(suite))
+    test('Update with duplicated name should fail', async () => await C_UpdateDuplicatedName(suite))
+    test('Update', async () => await C_Update(suite))
+    test('Create with incomplete data should fail', async () => await C_CreateIncomplete(suite))
+    test('Create', async () => await C_Create(suite))
+    test('Create with duplicated name should fail', async () => await C_CreateDuplicated(suite))
+    test('Delete with wrong ID should fail', async () => await C_DeleteWrongID(suite))
+    test('Delete with malformed UUID should fail', async () => await C_DeleteMalformedUUID(suite))
+    test('Delete', async () => await C_Delete(suite))
   })
   /************************/
 
