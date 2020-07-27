@@ -38,7 +38,16 @@ export class ValidationsFillPipe implements PipeTransform {
             ids = ids.concat(await this.validation_service.getIDsFromNames(names))
         }
 
-        value.validations = ids;
+        // Removing duplicates
+        let existing = {}
+        value.validations = ids.filter(i => {
+            if (!existing[i.id]) {
+                existing[i.id] = true
+                return true
+            }
+
+            return false
+        });
 
         return value
     }

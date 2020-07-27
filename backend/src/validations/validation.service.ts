@@ -58,7 +58,7 @@ export class ValidationService {
             // Prevent duplicated names
             let duplicated = await this.validation_repo.createQueryBuilder('v')
                 .select("v.id")
-                .where("v.name = :name AND id != :id ", { name: data.name, id: id })
+                .where("v.name = :name AND v.id != :id ", { name: data.name, id: id })
                 .getRawOne()
 
             if (duplicated) {

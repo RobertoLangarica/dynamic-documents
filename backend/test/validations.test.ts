@@ -15,33 +15,33 @@ const getRandomValidation = () => {
     }
 }
 
-export let NoUserGetAll = async (suite: Suite) => {
+export let NoUserGetAllValidations = async (suite: Suite) => {
     return await request(suite.app.getHttpServer())
         .get('/api/validations/')
         .expect(HttpStatus.FORBIDDEN)
 }
 
-export let NoUserGetOne = async (suite: Suite) => {
+export let NoUserGetOneValidation = async (suite: Suite) => {
     let uuid = uuidv4()
     return await request(suite.app.getHttpServer())
         .get(`/api/validations/${uuid}`)
         .expect(HttpStatus.FORBIDDEN)
 }
 
-export let NoUserCreate = async (suite: Suite) => {
+export let NoUserCreateValidation = async (suite: Suite) => {
     return await request(suite.app.getHttpServer())
         .post(`/api/validations/`)
         .expect(HttpStatus.FORBIDDEN)
 }
 
-export let NoUserUpdate = async (suite: Suite) => {
+export let NoUserUpdateValidation = async (suite: Suite) => {
     let uuid = uuidv4()
     return await request(suite.app.getHttpServer())
         .patch(`/api/validations/${uuid}`)
         .expect(HttpStatus.FORBIDDEN)
 }
 
-export let NoUserDelete = async (suite: Suite) => {
+export let NoUserDeleteValidation = async (suite: Suite) => {
     let uuid = uuidv4()
     return await request(suite.app.getHttpServer())
         .delete(`/api/validations/${uuid}`)

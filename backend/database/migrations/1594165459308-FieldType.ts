@@ -12,6 +12,7 @@ export class FieldType1594165459308 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "field_types_validations" ADD CONSTRAINT "FK_f6b301a274b10ac6d0e1a837c37" FOREIGN KEY ("validation_id") REFERENCES "validations"("id") ON DELETE CASCADE ON UPDATE NO ACTION`, undefined);
 
         // Default values
+        // TODO change the validation to be referenced by name since the action is not unique (and it shouldn't be unique)
         let values = [
             { name: 'Entero', description: 'Un número entero', component: 'nq-input-number', parameters: { pattern: '0,0' }, validations: ['integer'] },
             { name: 'Número', description: 'Un número con decimales', component: 'nq-input-number', parameters: { pattern: '0,0.000' }, validations: ['decimal'] },
