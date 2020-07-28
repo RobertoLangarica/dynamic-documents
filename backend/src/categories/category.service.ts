@@ -15,13 +15,13 @@ export class CategoryService {
     }
 
     async findById(id: string): Promise<Category> {
-        let transform = await this.category_repo.findOne(id)
+        let category = await this.category_repo.findOne(id)
 
-        if (!transform) {
+        if (!category) {
             throw new NotFoundException()
         }
 
-        return transform
+        return category
     }
 
     async deleteCategory(id: string) {

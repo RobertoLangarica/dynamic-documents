@@ -11,6 +11,11 @@ import { AuthGuard } from "src/common/guards/Auth.guard";
 export class StatusController {
     constructor(private readonly service: StatusService) { }
 
+    @Get(':id')
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
+        return this.service.findById(id)
+    }
+
     @Get()
     find() {
         return this.service.findAll()

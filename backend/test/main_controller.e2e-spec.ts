@@ -7,6 +7,7 @@ import { NoUserGetAllFieldType, NoUserGetOneFieldType, NoUserCreateFieldType, No
 import { addTransformationsWithRelations, T_NoUserGetAll, T_NoUserGetOne, T_NoUserCreate, T_NoUserUpdate, T_NoUserDelete, T_GetAll, T_GetAllEmpty, T_GetOne, T_GetOneWrongID, T_GetOneMalformedUUID, T_UpdateWrongID, T_UpdateMalformedUUID, T_UpdateDuplicatedName, T_Update, T_CreateIncomplete, T_Create, T_CreateDuplicated, T_DeleteWrongID, T_DeleteMalformedUUID, T_Delete, T_GetAllWithRelations, T_GetOneWithRelations, T_UpdateWithRelations, T_UpdateNoRelationsOverwrite, T_CreateWithRelations, T_CreateWithNoDuplicatedRelations, T_UpdateWithNoDuplicatedRelations, T_UpdateWithRelationsNameOrID, T_UpdateToRemoveRelations, T_UpdateWithNonExistingRelations, T_CreateWithNonExistingRelations, T_NoOrphanRelations } from './transformation.test'
 import { addCategories, C_NoUserGetAll, C_NoUserGetOne, C_NoUserCreate, C_NoUserUpdate, C_NoUserDelete, C_GetAll, C_GetAllEmpty, C_GetOne, C_GetOneWrongID, C_GetOneMalformedUUID, C_UpdateWrongID, C_UpdateMalformedUUID, C_UpdateDuplicatedName, C_Update, C_CreateIncomplete, C_Create, C_CreateDuplicated, C_DeleteWrongID, C_DeleteMalformedUUID, C_Delete } from './categories.test'
 import { addTemplateTypes, TT_NoUserGetAll, TT_NoUserGetOne, TT_NoUserCreate, TT_NoUserUpdate, TT_NoUserDelete, TT_GetAll, TT_GetAllEmpty, TT_GetOne, TT_GetOneWrongID, TT_GetOneMalformedUUID, TT_UpdateWrongID, TT_UpdateMalformedUUID, TT_UpdateDuplicatedName, TT_Update, TT_CreateIncomplete, TT_Create, TT_CreateDuplicated, TT_DeleteWrongID, TT_DeleteMalformedUUID, TT_Delete } from './template_type.test'
+import { addStatuses, S_NoUserGetAll, S_NoUserGetOne, S_NoUserCreate, S_NoUserUpdate, S_NoUserDelete, S_GetAll, S_GetAllEmpty, S_GetOne, S_GetOneWrongID, S_GetOneMalformedUUID, S_UpdateWrongID, S_UpdateMalformedUUID, S_UpdateDuplicatedName, S_Update, S_CreateIncomplete, S_Create, S_CreateDuplicated, S_DeleteWrongID, S_DeleteMalformedUUID, S_Delete } from './status.test'
 
 describe('End2End tests', () => {
   let suite: Suite
@@ -207,6 +208,34 @@ describe('End2End tests', () => {
     test('Delete with wrong ID should fail', async () => await TT_DeleteWrongID(suite))
     test('Delete with malformed UUID should fail', async () => await TT_DeleteMalformedUUID(suite))
     test('Delete', async () => await TT_Delete(suite))
+  })
+  /************************/
+
+
+  /****STATUS CONTROLLER*****/
+  describe('Status test', () => {
+    beforeAll(() => addStatuses(suite))
+
+    test('Get all without user should fail', async () => await S_NoUserGetAll(suite))
+    test('Get one without user should fail', async () => await S_NoUserGetOne(suite))
+    test('Create one without user should fail', async () => await S_NoUserCreate(suite))
+    test('Update one without user should fail', async () => await S_NoUserUpdate(suite))
+    test('Delete one without user should fail', async () => await S_NoUserDelete(suite))
+    test('Get all', async () => await S_GetAll(suite))
+    test('Get all when there is none, should return an empty array', async () => await S_GetAllEmpty(suite))
+    test('Get one', async () => await S_GetOne(suite))
+    test('Get one with wrong ID should fail', async () => await S_GetOneWrongID(suite))
+    test('Get one with malformed UUID should fail', async () => await S_GetOneMalformedUUID(suite))
+    test('Update with wrong ID should fail', async () => await S_UpdateWrongID(suite))
+    test('Update with malformed UUID should fail', async () => await S_UpdateMalformedUUID(suite))
+    test('Update with duplicated name should fail', async () => await S_UpdateDuplicatedName(suite))
+    test('Update', async () => await S_Update(suite))
+    test('Create with incomplete data should fail', async () => await S_CreateIncomplete(suite))
+    test('Create', async () => await S_Create(suite))
+    test('Create with duplicated name should fail', async () => await S_CreateDuplicated(suite))
+    test('Delete with wrong ID should fail', async () => await S_DeleteWrongID(suite))
+    test('Delete with malformed UUID should fail', async () => await S_DeleteMalformedUUID(suite))
+    test('Delete', async () => await S_Delete(suite))
   })
   /************************/
 
