@@ -8,6 +8,7 @@ import { addTransformationsWithRelations, T_NoUserGetAll, T_NoUserGetOne, T_NoUs
 import { addCategories, C_NoUserGetAll, C_NoUserGetOne, C_NoUserCreate, C_NoUserUpdate, C_NoUserDelete, C_GetAll, C_GetAllEmpty, C_GetOne, C_GetOneWrongID, C_GetOneMalformedUUID, C_UpdateWrongID, C_UpdateMalformedUUID, C_UpdateDuplicatedName, C_Update, C_CreateIncomplete, C_Create, C_CreateDuplicated, C_DeleteWrongID, C_DeleteMalformedUUID, C_Delete } from './categories.test'
 import { addTemplateTypes, TT_NoUserGetAll, TT_NoUserGetOne, TT_NoUserCreate, TT_NoUserUpdate, TT_NoUserDelete, TT_GetAll, TT_GetAllEmpty, TT_GetOne, TT_GetOneWrongID, TT_GetOneMalformedUUID, TT_UpdateWrongID, TT_UpdateMalformedUUID, TT_UpdateDuplicatedName, TT_Update, TT_CreateIncomplete, TT_Create, TT_CreateDuplicated, TT_DeleteWrongID, TT_DeleteMalformedUUID, TT_Delete } from './template_type.test'
 import { addStatuses, S_NoUserGetAll, S_NoUserGetOne, S_NoUserCreate, S_NoUserUpdate, S_NoUserDelete, S_GetAll, S_GetAllEmpty, S_GetOne, S_GetOneWrongID, S_GetOneMalformedUUID, S_UpdateWrongID, S_UpdateMalformedUUID, S_UpdateDuplicatedName, S_Update, S_CreateIncomplete, S_Create, S_CreateDuplicated, S_DeleteWrongID, S_DeleteMalformedUUID, S_Delete } from './status.test'
+import { addTemplates, Tmp_NoUserGetAll, Tmp_NoUserGetOne, Tmp_NoUserCreate, Tmp_NoUserUpdate, Tmp_NoUserDelete, Tmp_GetAll, Tmp_GetAllEmpty, Tmp_GetOne, Tmp_GetOneWrongID, Tmp_GetOneMalformedUUID, Tmp_UpdateWrongID, Tmp_UpdateMalformedUUID, Tmp_UpdateDuplicatedName, Tmp_CreateIncomplete, Tmp_Update, Tmp_Create, Tmp_CreateDuplicated, Tmp_DeleteWrongID, Tmp_DeleteMalformedUUID, Tmp_Delete } from './template/template_CRUD.test'
 
 describe('End2End tests', () => {
   let suite: Suite
@@ -236,6 +237,35 @@ describe('End2End tests', () => {
     test('Delete with wrong ID should fail', async () => await S_DeleteWrongID(suite))
     test('Delete with malformed UUID should fail', async () => await S_DeleteMalformedUUID(suite))
     test('Delete', async () => await S_Delete(suite))
+  })
+  /************************/
+
+  /********TEMPLATE********/
+  describe('TEMPLATES', () => {
+    beforeAll(() => addTemplates(suite))
+
+    describe('crud', () => {
+      test('Get all without user should fail', async () => await Tmp_NoUserGetAll(suite))
+      test('Get one without user should fail', async () => await Tmp_NoUserGetOne(suite))
+      test('Create one without user should fail', async () => await Tmp_NoUserCreate(suite))
+      test('Update one without user should fail', async () => await Tmp_NoUserUpdate(suite))
+      test('Delete one without user should fail', async () => await Tmp_NoUserDelete(suite))
+      test('Get all', async () => await Tmp_GetAll(suite))
+      test('Get all when there is none, should return an empty array', async () => await Tmp_GetAllEmpty(suite))
+      test('Get one', async () => await Tmp_GetOne(suite))
+      test('Get one with wrong ID should fail', async () => await Tmp_GetOneWrongID(suite))
+      test('Get one with malformed UUID should fail', async () => await Tmp_GetOneMalformedUUID(suite))
+      test('Update with wrong ID should fail', async () => await Tmp_UpdateWrongID(suite))
+      test('Update with malformed UUID should fail', async () => await Tmp_UpdateMalformedUUID(suite))
+      test('Update with duplicated name should fail', async () => await Tmp_UpdateDuplicatedName(suite))
+      test('Update', async () => await Tmp_Update(suite))
+      test('Create with incomplete data should fail', async () => await Tmp_CreateIncomplete(suite))
+      test('Create', async () => await Tmp_Create(suite))
+      test('Create with duplicated name should fail', async () => await Tmp_CreateDuplicated(suite))
+      test('Delete with wrong ID should fail', async () => await Tmp_DeleteWrongID(suite))
+      test('Delete with malformed UUID should fail', async () => await Tmp_DeleteMalformedUUID(suite))
+      test('Delete', async () => await Tmp_Delete(suite))
+    })
   })
   /************************/
 

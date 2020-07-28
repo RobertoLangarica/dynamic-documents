@@ -70,7 +70,7 @@ export class CategoryService {
         return category
     }
 
-    async getIDsFromNames(names: string[], create_new: boolean = false): Promise<Object[]> {
+    async getIDsFromNamesOrCreate(names: string[], create_new: boolean = false): Promise<Object[]> {
         let result = []
         let inserted_ids = []
         result = await this.category_repo.createQueryBuilder('c')
