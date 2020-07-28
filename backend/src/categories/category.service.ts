@@ -10,6 +10,10 @@ export class CategoryService {
     private readonly category_repo: Repository<Category>
     ) { }
 
+    async findAll(): Promise<Object> {
+        return { items: await this.category_repo.find() }
+    }
+
     async findById(id: string): Promise<Category> {
         let transform = await this.category_repo.findOne(id)
 
@@ -18,10 +22,6 @@ export class CategoryService {
         }
 
         return transform
-    }
-
-    async findAll(): Promise<Object> {
-        return { items: await this.category_repo.find() }
     }
 
     async deleteCategory(id: string) {
