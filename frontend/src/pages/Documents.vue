@@ -21,9 +21,9 @@ import Component from 'vue-class-component'
 @Component
 export default class Documents extends Vue {
   mounted () {
-    this.$store.commit("init");
+    this.$store.commit('init')
     // TODO remove this override for authorization
-    this.$api.setAuthorization(this.$store.state.login.token);
+    this.$api.setAuthorization(this.$store.state.login.token)
     this.$store.dispatch('getDocuments')
   }
 }
