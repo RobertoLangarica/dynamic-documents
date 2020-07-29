@@ -29,14 +29,15 @@ jobs:
       - name: Checkout last version
         uses: actions/checkout@v2
       
-        # Performs a clean installation of all dependencies in the `package.json` file
+      # Performs a clean installation of all dependencies in the `package.json` file
       # For more information, see https://docs.npmjs.com/cli/ci.html
       - name: Install dependencies
+        working-directory: ./backend
         run: npm ci
       - name: Connect to PostgresSQL
+        working-directory: ./backend
         run: pwd
-      - run: cat ./test/.env | grep 
-      - run: ls
+      - run: cat ./backend/test/.env | grep 
       - run: exit 1
   back_build:
     needs: back_test
