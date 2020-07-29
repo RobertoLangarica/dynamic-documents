@@ -161,32 +161,4 @@ EOSQL
         fi
         #########################################
     fi
-
-    printf "\n--------------------------------\n-> ADDING: DB extensions\n"
-    
-    # The extension goes directly in the DB
-    CONNECTION=$CONNECTION/$DB_DATABASE
-
-    # Usage getExtension $extensions $index
-    # $extensions is a comma separated value
-    # $index starting at 1
-    function getExtension () {
-        echo $(echo $1 | cut -d , -f $2)
-    }
-
-    extensions=uuid-ossp
-    length=1 #Extension count
-    index=1
-    while [ $index -le $length ]
-    do
-        echo extensions[$index]=$(getExtension $extensions $index)
-        extension=$(getExtension $extensions $index)
-        
-        echo " -> Adding: $extension"
-        
-        psql $CONNECTION -v ON_ERROR_STOP=1 -q <<-EOSQL
-        CREATE EXTENSION IF NOT EXISTS "$extension"
-EOSQL
-        index=$((index+1))
-    done
 fi

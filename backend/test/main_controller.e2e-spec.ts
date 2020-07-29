@@ -16,7 +16,9 @@ describe('End2End tests', () => {
   let suite: Suite
 
   // APP and DB start
-  beforeAll(async () => { suite = await build() })
+  beforeAll(() => {
+    return build().then(res => suite = res)
+  })
 
   // Adding a user to login with
   beforeAll(() => {
@@ -26,7 +28,7 @@ describe('End2End tests', () => {
     return repo.save(user)
   })
 
-  afterAll(async () => await suite.app.close())
+  afterAll(() => suite.app.close())
 
   // Cleanup
   afterAll(() => suite.runner.query(' DELETE FROM users;'))

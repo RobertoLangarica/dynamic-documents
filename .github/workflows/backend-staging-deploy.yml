@@ -34,6 +34,9 @@ jobs:
       - name: Install dependencies
         working-directory: ./backend
         run: npm ci
+      - name: Create test database
+        working-directory: ./backend/test
+        run: ./init_test_db.sh
       - name: Run tests
         working-directory: ./backend
         run: npm run test:e2e
