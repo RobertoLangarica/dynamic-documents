@@ -18,3 +18,6 @@ pgclient.connect().
             if (err) throw err
         })
     })
+    .catch(e => {
+        console.log(e)
+    })
