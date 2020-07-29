@@ -95,12 +95,19 @@ jobs:
           git fetch && \
           git checkout origin/"$BRANCH""
 
-      - name: Installing dependencies on remote server
+      - name: Installing production dependencies on remote server
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
-          "cd "$REMOTE_DIR"/backend && npm ci"
+          "cd "$REMOTE_DIR"/backend && npm install --production"
+          
+      - name: Installing development dependencies on remote server
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR"/backend && npm install --dev"
 
       - name: Run DB migrations
         run: |
