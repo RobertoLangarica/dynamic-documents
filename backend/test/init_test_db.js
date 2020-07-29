@@ -12,12 +12,8 @@ const pgclient = new Client(config)
 
 console.log(config)
 
-pgclient.connect().
-    then(res => {
-        pgclient.query(`CREATE DATABASE ${process.env.DB_DATABASE}`, (err, res) => {
-            if (err) throw err
-        })
-    })
-    .catch(e => {
-        console.log(e)
-    })
+pgclient.connect()
+
+pgclient.query(`CREATE DATABASE ${process.env.DB_DATABASE}`, (err, res) => {
+    if (err) throw err
+})
