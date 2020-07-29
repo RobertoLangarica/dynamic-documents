@@ -37,7 +37,7 @@ jobs:
       - name: Connect to PostgresSQL
         working-directory: ./backend
         run: pwd
-      - run: cat ./backend/test/.env | grep 
+      - run: cat ./backend/test/.env | grep DB_DATABASE
       - run: exit 1
   back_build:
     needs: back_test
