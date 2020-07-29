@@ -1,7 +1,7 @@
 import * as request from 'supertest'
 import { Suite, getValiduserToken } from './test-utils'
 import { HttpStatus } from '@nestjs/common'
-import * as uuidv4 from 'uuid/v4'
+import { v4 as uuidv4 } from 'uuid'
 import { TemplateType } from 'src/template_types/template_type.entity'
 
 const main_route = 'template_types'

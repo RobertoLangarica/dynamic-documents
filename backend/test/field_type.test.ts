@@ -3,7 +3,7 @@ import { QueryRunner } from 'typeorm'
 import { Validation } from 'src/validations/validation.entity'
 import { Suite, getValiduserToken } from './test-utils'
 import { HttpStatus } from '@nestjs/common'
-import * as uuidv4 from 'uuid/v4'
+import { v4 as uuidv4 } from 'uuid'
 import { FieldType } from 'src/field_types/field_type.entity'
 import { plainToClass } from 'class-transformer'
 

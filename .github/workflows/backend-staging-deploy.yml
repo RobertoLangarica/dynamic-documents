@@ -36,9 +36,6 @@ jobs:
         run: npm ci
       - name: Create test database
         working-directory: ./backend/test
-        run: ls
-      - name: Create test database
-        working-directory: ./backend/test
         run: ./init_test_db.sh
       - name: Run tests
         working-directory: ./backend
