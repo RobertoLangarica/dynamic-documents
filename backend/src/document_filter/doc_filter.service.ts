@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, forwardRef, Inject } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus, forwardRef, Inject, NotFoundException, ConflictException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DocumentFilter, FilterField } from "./doc_filter.entity";
 import { DocFilterDto } from "./doc_filter.dto";
@@ -18,7 +18,7 @@ export class DocumentFilterService {
         private readonly doc_service: DocumentService
     ) { }
 
-    async findAll(document_query: string, expired: boolean): Promise<DocumentFilter[]> {
+    async findAll(document_query: string, expired: boolean): Promise<Object> {
 
         let query = this.filter_repo.createQueryBuilder('f')
 
@@ -30,11 +30,17 @@ export class DocumentFilterService {
             query.andWhere("(f.expired = :e)", { e: expired })
         }
 
-        return await query.getMany()
+        return { items: await query.getMany() }
     }
 
     async findById(id: string): Promise<DocumentFilter> {
-        return await this.filter_repo.findOne({ id: id })
+        let filter = await this.filter_repo.findOne({ id: id })
+
+        if (!filter) {
+            throw new NotFoundException()
+        }
+
+        return filter
     }
 
     async addFilter(data: DocFilterDto, owner: User): Promise<DocumentFilter> {
@@ -56,10 +62,27 @@ export class DocumentFilterService {
     }
 
     async deleteFilter(id: string) {
+        let toDelete = await this.filter_repo.findOne(id)
+
+        if (!toDelete) {
+            throw new NotFoundException()
+        }
+
         await this.filter_repo.delete({ id: id })
     }
 
     async updateFilter(id: string, data: DocFilterDto): Promise<DocumentFilter> {
+        // Prevent duplicated names
+        if (data.name) {
+            let duplicated = await this.filter_repo.createQueryBuilder('f')
+                .where("f.name = :name AND f.id != :id ", { name: data.name, id: id })
+                .getRawOne()
+
+            if (duplicated) {
+                throw new ConflictException(`There is an already existing document filter with the name: ${data.name}`)
+            }
+        }
+
         data['id'] = id;
         let filter = await this.filter_repo.preload(data)
 
@@ -72,7 +95,12 @@ export class DocumentFilterService {
     }
 
     async expire(id: string) {
-        let filter = await this.filter_repo.findOneOrFail(id)
+        let filter = await this.filter_repo.findOne(id)
+
+        if (!filter) {
+            throw new NotFoundException()
+        }
+
         filter.expired = true;
         return await this.filter_repo.save(filter)
     }

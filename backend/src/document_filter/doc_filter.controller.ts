@@ -1,6 +1,6 @@
 import { Controller, Get, Param, ParseUUIDPipe, Post, Body, Patch, Delete, Query, UseGuards } from "@nestjs/common";
 import { DocumentFilterService } from "./doc_filter.service";
-import { DocFilterDto } from "./doc_filter.dto";
+import { DocFilterDto, CreateDocFilterDto } from "./doc_filter.dto";
 import { CaptureDto } from "./capture.dto";
 import { ParseUUIDOrNullPipe } from "src/common/pipes/ParseUUIDOrNull.pipe";
 import { FilterValidationPipe } from "src/common/pipes/FilterValidation.pipe";
@@ -28,7 +28,7 @@ export class DocumentFilterController {
 
     @Post()
     @UseGuards(AuthGuard)
-    add(@Body(FilterValidationPipe) dto: DocFilterDto, @Body('user') user: User) {
+    add(@Body(FilterValidationPipe) dto: CreateDocFilterDto, @Body('user') user: User) {
         return this.service.addFilter(dto, user)
     }
 

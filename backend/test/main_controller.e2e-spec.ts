@@ -10,6 +10,7 @@ import { addTemplateTypes, TT_NoUserGetAll, TT_NoUserGetOne, TT_NoUserCreate, TT
 import { addStatuses, S_NoUserGetAll, S_NoUserGetOne, S_NoUserCreate, S_NoUserUpdate, S_NoUserDelete, S_GetAll, S_GetAllEmpty, S_GetOne, S_GetOneWrongID, S_GetOneMalformedUUID, S_UpdateWrongID, S_UpdateMalformedUUID, S_UpdateDuplicatedName, S_Update, S_CreateIncomplete, S_Create, S_CreateDuplicated, S_DeleteWrongID, S_DeleteMalformedUUID, S_Delete } from './status.test'
 import { addTemplates, Tmp_NoUserGetAll, Tmp_NoUserGetOne, Tmp_NoUserCreate, Tmp_NoUserUpdate, Tmp_NoUserDelete, Tmp_GetAll, Tmp_GetAllEmpty, Tmp_GetOne, Tmp_GetOneWrongID, Tmp_GetOneMalformedUUID, Tmp_UpdateWrongID, Tmp_UpdateMalformedUUID, Tmp_UpdateDuplicatedName, Tmp_CreateIncomplete, Tmp_Update, Tmp_Create, Tmp_CreateDuplicated, Tmp_DeleteWrongID, Tmp_DeleteMalformedUUID, Tmp_Delete } from './template/template_CRUD.test'
 import { addDocuments, Doc_NoUserGetAll, Doc_NoUserGetOne, Doc_NoUserCreate, Doc_NoUserUpdate, Doc_NoUserDelete, Doc_GetAll, Doc_GetAllEmpty, Doc_GetOne, Doc_GetOneWrongID, Doc_GetOneMalformedUUID, Doc_UpdateWrongID, Doc_UpdateMalformedUUID, Doc_UpdateDuplicatedName, Doc_Update, Doc_CreateIncomplete, Doc_Create, Doc_CreateDuplicated, Doc_DeleteWrongID, Doc_DeleteMalformedUUID, Doc_Delete, setDocumentsInitialStatus } from './document/document_CRUD.test'
+import { addFilters, DocF_ExpireWrongID, DocF_ExpireMalformedUUID, DocF_Expire, DocF_NoUserGetAll, DocF_NoUserGetOne, DocF_NoUserCreate, DocF_NoUserUpdate, DocF_NoUserDelete, DocF_NoUserExpire, DocF_GetAll, DocF_GetAllEmpty, DocF_GetOne, DocF_GetOneWrongID, DocF_GetOneMalformedUUID, DocF_UpdateWrongID, DocF_UpdateMalformedUUID, DocF_UpdateDuplicatedName, DocF_Update, DocF_CreateIncomplete, DocF_Create, DocF_CreateDuplicated, DocF_DeleteWrongID, DocF_DeleteMalformedUUID, DocF_Delete } from './doc_filter/doc_filter_CRUD.test'
 
 describe('End2End tests', () => {
   let suite: Suite
@@ -296,6 +297,41 @@ describe('End2End tests', () => {
       test('Delete with wrong ID should fail', async () => await Doc_DeleteWrongID(suite))
       test('Delete with malformed UUID should fail', async () => await Doc_DeleteMalformedUUID(suite))
       test('Delete', async () => await Doc_Delete(suite))
+    })
+  })
+  /************************/
+
+  /********DOCUMENT FILTER********/
+  describe('Documents FILTER', () => {
+    beforeAll(() => setDocumentsInitialStatus(suite))
+    beforeAll(() => addDocuments(suite))
+    beforeAll(() => addFilters(suite))
+
+    describe('crud', () => {
+      test('Get all without user should fail', async () => await DocF_NoUserGetAll(suite))
+      test('Get one without user should fail', async () => await DocF_NoUserGetOne(suite))
+      test('Create one without user should fail', async () => await DocF_NoUserCreate(suite))
+      test('Update one without user should fail', async () => await DocF_NoUserUpdate(suite))
+      test('Delete one without user should fail', async () => await DocF_NoUserDelete(suite))
+      test('Expire one without user should fail', async () => await DocF_NoUserExpire(suite))
+      test('Get all', async () => await DocF_GetAll(suite))
+      test('Get all when there is none, should return an empty array', async () => await DocF_GetAllEmpty(suite))
+      test('Get one', async () => await DocF_GetOne(suite))
+      test('Get one with wrong ID should fail', async () => await DocF_GetOneWrongID(suite))
+      test('Get one with malformed UUID should fail', async () => await DocF_GetOneMalformedUUID(suite))
+      test('Update with wrong ID should fail', async () => await DocF_UpdateWrongID(suite))
+      test('Update with malformed UUID should fail', async () => await DocF_UpdateMalformedUUID(suite))
+      test('Update with duplicated name should fail', async () => await DocF_UpdateDuplicatedName(suite))
+      test('Update', async () => await DocF_Update(suite))
+      test('Create with incomplete data should fail', async () => await DocF_CreateIncomplete(suite))
+      test('Create', async () => await DocF_Create(suite))
+      test('Create with duplicated name should fail', async () => await DocF_CreateDuplicated(suite))
+      test('Delete with wrong ID should fail', async () => await DocF_DeleteWrongID(suite))
+      test('Delete with malformed UUID should fail', async () => await DocF_DeleteMalformedUUID(suite))
+      test('Delete', async () => await DocF_Delete(suite))
+      test('Expire with wrong ID should fail', async () => await DocF_ExpireWrongID(suite))
+      test('Expire with malformed UUID should fail', async () => await DocF_ExpireMalformedUUID(suite))
+      test('Expire', async () => await DocF_Expire(suite))
     })
   })
   /************************/
