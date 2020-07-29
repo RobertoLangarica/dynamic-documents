@@ -6,7 +6,7 @@ api.baseURL = process.env.API_URL
 export default {
   namespaced: false,
   state: {
-    documents: [],
+    documents: [], //TODO: Think in the posibility of use a Map instead of an array
     templates: [],
     types: []
   },
@@ -24,6 +24,7 @@ export default {
       state.documents.push(value)
     },
     updateDocument (state, value) {
+      //TODO: A map would be faster to find a document
       let ind = state.documents.findIndex(item => item.id === value.id)
       if (ind >= 0) {
         state.documents[ind] = value

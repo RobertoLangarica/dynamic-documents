@@ -104,7 +104,7 @@ module.exports = configure(function (ctx) {
       importStrategy: 'auto',
 
       // Quasar plugins
-      plugins: ['LocalStorage']
+      plugins: ['LocalStorage', 'Dialog']
     },
 
     // animations: 'all', // --- includes all animations
