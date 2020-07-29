@@ -34,11 +34,9 @@ jobs:
       - name: Install dependencies
         working-directory: ./backend
         run: npm ci
-      - name: Connect to PostgresSQL
+      - name: Run tests
         working-directory: ./backend
-        run: pwd
-      - run: cat ./backend/test/.env | grep DB_DATABASE
-      - run: exit 1
+        run: npm run test:e2e
   back_build:
     needs: back_test
     runs-on: ubuntu-latest
