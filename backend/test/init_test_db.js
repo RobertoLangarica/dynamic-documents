@@ -16,4 +16,5 @@ pgclient.connect()
 
 pgclient.query(`CREATE DATABASE ${process.env.DB_DATABASE}`, (err, res) => {
     if (err) throw err
+    pgclient.end()
 })
