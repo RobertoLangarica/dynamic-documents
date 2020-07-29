@@ -2,6 +2,8 @@
 file=.env
 DB_DATABASE=$(grep DB_DATABASE $file | cut -d "=" -f 2)
 DB_USERNAME=$(grep DB_USERNAME $file | cut -d "=" -f 2)
-IMAGE_NAME=postgres
+DB_HOST=$(grep DB_HOST $file | cut -d "=" -f 2)
+DB_PORT=$(grep DB_PORT $file | cut -d "=" -f 2)
+DB_PASSWORD=$(grep DB_PASSWORD $file | cut -d "=" -f 2)
 
-docker exec "$IMAGE_NAME" psql -U "$DB_USERNAME" -v ON_ERROR_STOP=1 -c "CREATE DATABASE "$DB_DATABASE""
+DB_USERNAME=$DB_USERNAME DB_DATABASE=$DB_DATABASE DB_HOST=$DB_HOST DB_PORT=$DB_PORT DB_PASSWORD=$DB_PASSWORD node ./init_test_db
