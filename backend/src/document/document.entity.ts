@@ -19,7 +19,7 @@ export class Document extends TemplateBaseEntity {
     @Type(() => Status)
     status: Status
 
-    @Column({ type: 'jsonb', default: [] })
+    @Column({ type: 'jsonb', default: [], select: false })
     @Type(() => DocumentVersion) @IsArray()
     versions: DocumentVersion[]
 

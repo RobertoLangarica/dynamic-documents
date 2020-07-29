@@ -3,6 +3,7 @@ import { Reflector } from "@nestjs/core";
 import { Repository } from "typeorm";
 import { Document } from "src/document/document.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { isUUID } from "class-validator";
 
 @Injectable()
 export class DocumentStatusGuard implements CanActivate {
@@ -19,11 +20,19 @@ export class DocumentStatusGuard implements CanActivate {
         const request = context.switchToHttp().getRequest()
         const doc_id = doc_param ? request.params[doc_param] : request.params['id']
 
+        if (!isUUID(doc_id)) {
+            return false
+        }
+
         let doc = await this.doc_repo.createQueryBuilder('d')
             .select('d.id')
             .leftJoinAndSelect('d.status', 's')
             .where("d.id = :id", { id: doc_id })
             .getOne()
+
+        if (!doc) {
+            return false
+        }
 
         return status.findIndex(item => item === doc.status.name) >= 0
     }

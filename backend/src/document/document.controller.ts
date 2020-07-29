@@ -5,7 +5,7 @@ import { FieldsValidationPipe } from "src/common/pipes/FieldsValidation.pipe"
 import { FieldsValueValidationPipe } from "src/common/pipes/FieldsValueValidation.pipe"
 import { TemplateTypeFillPipe } from "src/common/pipes/TemplateTypeFill.pipe"
 import { CategoriesFillPipe } from "src/common/pipes/CategoriesFill.pipe"
-import { DocumentDto } from "./dto/document.dto"
+import { DocumentDto, CreateDocumentDto } from "./dto/document.dto"
 import { DocumentVersionFillPipe } from "src/common/pipes/DocumentVersionFill.pipe"
 import { User } from "src/user/user.entity"
 import { DocumentStatusGuard } from "src/common/guards/DocumentStatus.guard"
@@ -33,7 +33,7 @@ export class DocumentController {
     }
 
     @Post()
-    add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: DocumentDto) {
+    add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
         return this.service.addDocument(dto)
     }
 
