@@ -47,6 +47,7 @@ export class DDField {
     show_in_print = true
     capture_styles = []
     print_styles = []
+    sort_index = 0
     deleted = false // If true then the field should be removed
     is_new = false // If true the field should be added
     map_id = undefined
