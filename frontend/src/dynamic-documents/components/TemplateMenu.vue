@@ -1,0 +1,33 @@
+<template>
+    <div class="row">
+        <div class="col-12 row justify-between items-center">
+          <h6>{{title}}</h6>
+          <div><q-btn round icon="add_circle" flat @click="$emit('add')"/></div>
+        </div>
+        <div v-for="item in objects" :key="item.id" class="row col-12">
+            <q-btn class="col-12" :label="item.name" @click="$emit('select',item.id)" color="primary" outline/>
+            <q-btn class="col-6" label="embed" :to="{ name: 'embed-document', params: { id: item.id} }" color="primary"/>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+  name: 'template-menu',
+  props: {
+    objects: {
+      required: false,
+      type: Array,
+      default: () => []
+    },
+    title: {
+      required: false,
+      type: String,
+      default: 'Título'
+    }
+  },
+  data () {
+    return {}
+  }
+}
+</script>
