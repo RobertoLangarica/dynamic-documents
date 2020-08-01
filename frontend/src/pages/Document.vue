@@ -1,22 +1,20 @@
 <template>
   <article class="q-pa-lg">
-    <div>
+    <div class="fixed-top-right bg-white q-pa-sm q-mr-md">
       <q-radio v-for="view in views" v-model="currentView" :val="view.value" :label="view.label" :key="view.value" />
     </div>
     <h1>Doc</h1>
-    <div v-if="docExists">
+    <div v-if="docExists" :class="currentView">
       <draggable v-model="documentFields"
                  @start="drag=true" @end="drag=false"
                  handle=".cursor-drag">
-        <div v-for="field in documentFields" :key="field.id" class="field-container">
-          <div class="field-controls flex">
-            <q-btn icon="add" flat round size="md" dense class="cursor-pointer" color="grey" @click="showAddFieldDialog" />
-            <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
-          </div>
-          <div class="field-content">
-            {{ field.name }}
-          </div>
-        </div>
+        <field-component v-for="field in documentFields" :key="field.id"
+                         :field="field"
+                         :fields="documentFields"
+                         :currentView="currentView"
+                         class="field-container"
+                         @onShowAddFieldDialog="showAddFieldDialog"
+        />
       </draggable>
       <q-btn icon="add" rounded flat size="md" class="cursor-pointer" color="grey" label="Agregar un campo" @click="showAddFieldDialog" />
     </div>
@@ -34,15 +32,16 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import draggable from 'vuedraggable'
 import FieldTypeDialog from 'components/FieldTypeDialog.vue'
+import FieldComponent from 'components/FieldComponent.vue';
 
-@Component({ components: { draggable } })
+@Component({ components: {FieldComponent, draggable } })
 export default class Document extends Vue {
   currentView = 'edit'
   currentDoc = ''
   views= [
     { label: 'Editar', value: 'edit' },
     { label: 'Capturar', value: 'capture' },
-    { label: 'Previsualizar', value: 'view' }
+    { label: 'Ver', value: 'view' }
   ]
 
   get docExists () {

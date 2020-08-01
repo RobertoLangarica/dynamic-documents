@@ -5,7 +5,7 @@
         <q-scroll-area class="dialog-scroll-list">
           <q-list  bordered separator>
             <q-item-label header>Textos</q-item-label>
-            <q-item clickable v-ripple v-for="type in $store.state.dd.types" @click="onTypeSelect(type)">
+            <q-item clickable v-ripple v-for="(type, index) in $store.state.dd.types" :key="index" @click="onTypeSelect(type)">
               <q-item-section top avatar>
                 <q-avatar color="white" text-color="primary" icon="bluetooth" />
               </q-item-section>
