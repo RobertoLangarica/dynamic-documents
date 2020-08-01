@@ -37,7 +37,7 @@ export class CategoriesFillPipe implements PipeTransform {
         })
 
         if (names.length > 0) {
-            ids = ids.concat(await this.category_service.getIDsFromNames(names, true))
+            ids = ids.concat(await this.category_service.getIDsFromNamesOrCreate(names, true))
         }
 
         value.categories = ids

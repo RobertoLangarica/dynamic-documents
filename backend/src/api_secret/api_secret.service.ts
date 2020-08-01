@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { APISecret } from './api_secret.entity'
 import { Repository } from 'typeorm'
 import { Request } from 'express'
-import * as uuid from 'uuid/v4'
+import { v4 as uuid } from 'uuid'
 import { User } from 'src/user/user.entity'
 const sha256 = require('sha256')
 

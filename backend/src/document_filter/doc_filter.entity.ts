@@ -27,7 +27,8 @@ export class DocumentFilter extends EntityWithTimeStampt {
     @Column({ type: 'uuid' }) @IsUUID()
     document: string
 
-    @Column({ type: 'timestamptz', nullable: true, default: null }) @IsDate()
+    @Column({ type: 'timestamptz', nullable: true, default: null })
+    @Transform(value => new Date(value).toISOString(), { toClassOnly: true })
     expiration_date: string
 
     @Column({ default: '' }) @IsString()

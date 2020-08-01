@@ -1,13 +1,20 @@
-import { Controller, Get, Param, Post, Body, Patch, Delete, ParseUUIDPipe } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body, Patch, Delete, ParseUUIDPipe, UseGuards } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { CategoryService } from "./category.service";
 import { CategoryDto } from "./category.dto";
+import { AuthGuard } from "src/common/guards/Auth.guard";
 
 @ApiBearerAuth()
 @ApiTags('Categories')
 @Controller('categories')
+@UseGuards(AuthGuard)
 export class CategoryController {
     constructor(private readonly service: CategoryService) { }
+
+    @Get(':id')
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
+        return this.service.findById(id)
+    }
 
     @Get()
     find() {

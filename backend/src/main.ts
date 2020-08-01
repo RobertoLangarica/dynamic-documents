@@ -26,7 +26,8 @@ async function bootstrap() {
   console.warn("USING: CORS with '*' as origin.")
 
   app.enableCors(cors)
-  await app.listen(3000)
+  console.log(process.env.PORT)
+  await app.listen(process.env.PORT || 3000)
 }
 
 bootstrap()

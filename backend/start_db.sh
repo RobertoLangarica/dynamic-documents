@@ -109,18 +109,19 @@ else
     run=0
 fi
 
-# User, db and extensions initilization
+# User and DB initilization
 if [[ $run -eq 0 && $exist_credentials -eq 1 ]]; then
-    # docker exec $name /docker-entrypoint-initdb.d/init_db.sh
-
-    CONNECTION=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:$PORT
 
     # Waiting for the server
     serverError=2 # 2 is the error returned when the server is down
+    count=0
     while [ $serverError -eq 2 ]; do
-    psql $CONNECTION -v ON_ERROR_STOP=1 --command "\echo '      Server up...'"
-    serverError=$?
-    sleep 1
+        if [ "$count" == 1 ]; then
+            sleep 1
+        fi
+        count=1
+        docker exec "$name" psql -U "$POSTGRES_USER" -v ON_ERROR_STOP=1 --command "\echo '      Server up...'"
+        serverError=$?
     done
 
 
@@ -130,63 +131,24 @@ if [[ $run -eq 0 && $exist_credentials -eq 1 ]]; then
         echo "   NOTICE: Missing DB_DATABASE or DB_USERNAME --> Skipping creation"
     else
         ######## Creating user if not exist
-        user_exist=$(psql $CONNECTION -v ON_ERROR_STOP=1 -c "\du" | grep -w $DB_USERNAME | wc -l)
+        user_exist=$(docker exec "$name" psql -U "$POSTGRES_USER" -v ON_ERROR_STOP=1 -c "\du" | grep -w "$DB_USERNAME" | wc -l)
         if [ $user_exist -ge 1 ]; then
             echo "   User $DB_USERNAME already exist --> Skipping creation"
-            user=0
         else
             echo " -> Creating USER: $DB_USERNAME"
-            psql $CONNECTION -v ON_ERROR_STOP=1 -q <<-EOSQL 
-            CREATE USER $DB_USERNAME WITH 
-            PASSWORD '$DB_PASSWORD'
-            CREATEDB 
-            CREATEROLE;
-EOSQL
-            user=$?
+            docker exec "$name" psql -U "$POSTGRES_USER" -v ON_ERROR_STOP=1 -c "CREATE USER "$DB_USERNAME" WITH PASSWORD "$DB_PASSWORD" CREATEDB CREATEROLE"
         fi
         #########################################
 
         ######## Creating database if not exist
-        db_exist=$(psql $CONNECTION -v ON_ERROR_STOP=1 -c "\list" | grep -w $DB_DATABASE | wc -l)
+        db_exist=$(docker exec "$name" psql -U "$POSTGRES_USER" -v ON_ERROR_STOP=1 -c "\list" | grep -w "$DB_DATABASE" | wc -l)
         if [ $db_exist -ge 1 ]; then
             echo "   Database $DB_DATABASE already exist --> Skipping creation"
-            db=0
         else
             echo " -> Creating DB: $DB_DATABASE"
-            psql $CONNECTION -v ON_ERROR_STOP=1 -q <<-EOSQL
-            CREATE DATABASE $DB_DATABASE;
-            GRANT ALL PRIVILEGES ON DATABASE $DB_DATABASE to $DB_USERNAME
-EOSQL
-            db=$?
+            docker exec "$name" psql -U "$POSTGRES_USER" -v ON_ERROR_STOP=1 -c "CREATE DATABASE "$DB_DATABASE""
+            docker exec "$name" psql -U "$POSTGRES_USER" -v ON_ERROR_STOP=1 -c "GRANT ALL PRIVILEGES ON DATABASE "$DB_DATABASE" to "$DB_USERNAME""
         fi
         #########################################
     fi
-
-    printf "\n--------------------------------\n-> ADDING: DB extensions\n"
-    
-    # The extension goes directly in the DB
-    CONNECTION=$CONNECTION/$DB_DATABASE
-
-    # Usage getExtension $extensions $index
-    # $extensions is a comma separated value
-    # $index starting at 1
-    function getExtension () {
-        echo $(echo $1 | cut -d , -f $2)
-    }
-
-    extensions=uuid-ossp
-    length=1 #Extension count
-    index=1
-    while [ $index -le $length ]
-    do
-        echo extensions[$index]=$(getExtension $extensions $index)
-        extension=$(getExtension $extensions $index)
-        
-        echo " -> Adding: $extension"
-        
-        psql $CONNECTION -v ON_ERROR_STOP=1 -q <<-EOSQL
-        CREATE EXTENSION IF NOT EXISTS "$extension"
-EOSQL
-        index=$((index+1))
-    done
 fi

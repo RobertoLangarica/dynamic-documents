@@ -1,4 +1,4 @@
-import { Injectable, HttpStatus, HttpException } from "@nestjs/common";
+import { Injectable, HttpStatus, HttpException, NotFoundException, ConflictException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { Transformation } from "./transformation.entity";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -11,26 +11,44 @@ export class TransformationService {
         private readonly transformation_repo: Repository<Transformation>
     ) { }
 
-    async findAll(): Promise<Transformation[]> {
+    async findAll(): Promise<Object> {
         // Using query builder instead of find to avoid the eager relation between FieldType and Validations
-        return await this.transformation_repo.createQueryBuilder('ts')
-            .leftJoinAndSelect("ts.supported_types", "types")
-            .getMany()
+        return {
+            items: await this.transformation_repo.createQueryBuilder('ts')
+                .leftJoinAndSelect("ts.supported_types", "types")
+                .getMany()
+        }
 
     }
 
     async findById(id: string): Promise<Transformation> {
         // Using query builder instead of find to avoid the eager relation between FieldType and Validations
         // return await this.transformation_repo.findOne({ id: id })
-        return await this.transformation_repo.createQueryBuilder("ts")
+        let transform = await this.transformation_repo.createQueryBuilder("ts")
             .where("ts.id = :id", { id: id })
             .leftJoinAndSelect('ts.supported_types', 'types')
             .getOne()
 
+        if (!transform) {
+            throw new NotFoundException()
+        }
+
+        return transform
     }
 
     async deleteTransformation(id: string) {
+        let toDelete = await this.transformation_repo.createQueryBuilder("ts")
+            .select("ts.id")
+            .where("ts.id = :id", { id: id })
+            .getRawOne()
+
+        if (!toDelete) {
+            throw new NotFoundException()
+        }
+
         await this.transformation_repo.delete({ id: id })
+
+        return {}
     }
 
     async addTransformation(data: TransformationDto): Promise<Transformation> {
@@ -38,6 +56,10 @@ export class TransformationService {
 
         try {
             transformation = await this.transformation_repo.save(transformation)
+
+            // Making a find so we are returning the full object (including relations)
+            return await this.transformation_repo.findOne(transformation.id)
+
         } catch (e) {
             if (e.code && e.code == 23505) {
                 throw new HttpException(e.detail, HttpStatus.CONFLICT)
@@ -46,22 +68,33 @@ export class TransformationService {
                 throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
             }
         }
-
-        return transformation
     }
 
     async updateTransformation(id: string, data: TransformationDto): Promise<Transformation> {
+        if (data.name) {
+            // Prevent duplicated names
+            let duplicated = await this.transformation_repo.createQueryBuilder('t')
+                .select("t.id")
+                .where("t.name = :name AND t.id != :id ", { name: data.name, id: id })
+                .getRawOne()
+
+            if (duplicated) {
+                throw new ConflictException(`There is an already existing transformation with the name: ${data.name}`)
+            }
+        }
+
         data['id'] = id;
         let transformation = await this.transformation_repo.preload(data)
-        // overriding the incoming validations (since validations are a relation the preload do a merge instead of a replacement)
-        transformation.supported_types = data.supported_types
 
         if (!transformation) {
             throw new HttpException('Unable to find the required transformation', HttpStatus.NOT_FOUND)
         }
 
-
+        // overriding the incoming validations (since validations are a relation the preload do a merge instead of a replacement)
+        transformation.supported_types = data.supported_types
         transformation = await this.transformation_repo.save(transformation)
-        return transformation
+
+        // Making a find so we are returning the full object (including relations)
+        return await this.transformation_repo.findOne(id)
     }
 }

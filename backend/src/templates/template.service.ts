@@ -1,9 +1,8 @@
-import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus, NotFoundException, ConflictException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { isUUID } from "class-validator";
 import { Template } from "./template.entity";
-import { TemplateDto } from "./dto/template.dto";
+import { TemplateDto, CreateTemplateDto } from "./dto/template.dto";
 
 @Injectable()
 export class TemplateService {
@@ -12,7 +11,7 @@ export class TemplateService {
         private readonly template_repo: Repository<Template>
     ) { }
 
-    async findAll(categories_query: any): Promise<Template[]> {
+    async findAll(categories_query: any): Promise<Object> {
 
         let query = this.template_repo.createQueryBuilder('tmp')
             .select(['tmp.id', 'tmp.name'])
@@ -23,18 +22,30 @@ export class TemplateService {
             query.andWhere("(c.name = ANY(:cnames) OR c.id = ANY(:cids))", { cnames: categories_query.names, cids: categories_query.ids })
         }
 
-        return await query.getMany()
+        return { items: await query.getMany() }
     }
 
     async findById(id: string): Promise<Template> {
-        return await this.template_repo.findOne({ id: id })
+        let tmp = await this.template_repo.findOne({ id: id })
+
+        if (!tmp) {
+            throw new NotFoundException()
+        }
+
+        return tmp
     }
 
     async deleteTemplate(id: string) {
+        let toDelete = await this.template_repo.findOne(id)
+
+        if (!toDelete) {
+            throw new NotFoundException()
+        }
+
         await this.template_repo.delete({ id: id })
     }
 
-    async addTemplate(data: TemplateDto): Promise<Template> {
+    async addTemplate(data: CreateTemplateDto): Promise<Template> {
         let template = await this.template_repo.create(data)
 
         try {
@@ -58,6 +69,10 @@ export class TemplateService {
         delete data.fields
         data['id'] = id
         let template = await this.template_repo.preload(data)
+
+        if (!template) {
+            throw new HttpException('Unable to find the required template', HttpStatus.NOT_FOUND)
+        }
 
         if (data.categories) template.categories = data.categories
 
@@ -98,6 +113,8 @@ export class TemplateService {
 
         try {
             template = await this.template_repo.save(template)
+            template.warnings = data.warnings;
+            return template
         } catch (e) {
             if (e.code && e.code == 23505) {
                 throw new HttpException(e.detail, HttpStatus.CONFLICT)
@@ -106,10 +123,6 @@ export class TemplateService {
                 throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
             }
         }
-
-        template.warnings = data.warnings;
-
-        return template
     }
 
 }

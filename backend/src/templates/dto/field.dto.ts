@@ -1,7 +1,7 @@
-import { IsUUID, IsNotEmpty, IsOptional, IsJSON, IsArray, IsBoolean, IsString } from "class-validator"
+import { IsUUID, IsNotEmpty, IsOptional, IsJSON, IsArray, IsBoolean, IsString, IsNumber } from "class-validator"
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { Validation } from "../../validations/validation.entity"
-import { Type, Exclude, Transform, Expose } from "class-transformer"
+import { Type, Exclude, Expose } from "class-transformer"
 
 export class FDataOptions {
     values: any[]
@@ -141,4 +141,8 @@ export class Field {
     @IsOptional() @IsString() @ApiPropertyOptional()
     @Expose()
     map_id: boolean // If true the field should be ad
+
+    @IsOptional() @IsNumber() @ApiPropertyOptional()
+    @Expose()
+    sort_index: number = 0
 }

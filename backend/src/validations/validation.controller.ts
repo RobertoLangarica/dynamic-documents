@@ -1,11 +1,13 @@
 import { ValidationService } from "./validation.service";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
-import { Controller, Get, Post, Body, Delete, Param, Patch, ParseUUIDPipe } from "@nestjs/common";
-import { ValidationDto } from "./validation.dto";
+import { Controller, Get, Post, Body, Delete, Param, Patch, ParseUUIDPipe, UseGuards } from "@nestjs/common";
+import { ValidationDto, CreateValidationDTO } from "./validation.dto";
+import { AuthGuard } from "src/common/guards/Auth.guard";
 
 @ApiBearerAuth()
 @ApiTags('Validations')
 @Controller('validations')
+@UseGuards(AuthGuard)
 export class ValidationController {
     constructor(private readonly service: ValidationService) { }
 
@@ -20,7 +22,7 @@ export class ValidationController {
     }
 
     @Post()
-    add(@Body() dto: ValidationDto) {
+    add(@Body() dto: CreateValidationDTO) {
         return this.service.addValidation(dto)
     }
 

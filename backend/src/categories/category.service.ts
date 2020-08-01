@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus, NotFoundException, ConflictException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Category } from "./category.entity";
 import { Repository } from "typeorm";
@@ -10,11 +10,27 @@ export class CategoryService {
     private readonly category_repo: Repository<Category>
     ) { }
 
-    async findAll(): Promise<Category[]> {
-        return await this.category_repo.find()
+    async findAll(): Promise<Object> {
+        return { items: await this.category_repo.find() }
+    }
+
+    async findById(id: string): Promise<Category> {
+        let category = await this.category_repo.findOne(id)
+
+        if (!category) {
+            throw new NotFoundException()
+        }
+
+        return category
     }
 
     async deleteCategory(id: string) {
+        let toDelete = await this.category_repo.findOne(id)
+
+        if (!toDelete) {
+            throw new NotFoundException()
+        }
+
         await this.category_repo.delete({ id: id })
     }
 
@@ -23,6 +39,7 @@ export class CategoryService {
 
         try {
             category = await this.category_repo.save(category)
+            return category
         } catch (e) {
             if (e.code && e.code == 23505) {
                 throw new HttpException(e.detail, HttpStatus.CONFLICT)
@@ -31,15 +48,29 @@ export class CategoryService {
                 throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
             }
         }
-
-        return category
     }
 
     async updateCategory(id: string, data: CategoryDto) {
-        await this.category_repo.update(id, { name: data.name })
+        // Prevent duplicated names
+        let duplicated = await this.category_repo.createQueryBuilder('c')
+            .where("c.name = :name AND c.id != :id ", { name: data.name, id: id })
+            .getRawOne()
+
+        if (duplicated) {
+            throw new ConflictException(`There is an already existing category with the name: ${data.name}`)
+        }
+        data['id'] = id;
+        let category = await this.category_repo.preload(data)
+
+        if (!category) {
+            throw new HttpException('Unable to find the required category', HttpStatus.NOT_FOUND)
+        }
+
+        category = await this.category_repo.save(category)
+        return category
     }
 
-    async getIDsFromNames(names: string[], create_new: boolean = false): Promise<Object[]> {
+    async getIDsFromNamesOrCreate(names: string[], create_new: boolean = false): Promise<Object[]> {
         let result = []
         let inserted_ids = []
         result = await this.category_repo.createQueryBuilder('c')

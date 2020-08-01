@@ -1,5 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { IsDate, IsOptional, IsString, IsUUID } from 'class-validator'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { IsOptional, IsString, IsUUID } from 'class-validator'
 import { User } from './user.entity'
 import { EntityWithTimeStampt } from 'src/common/entities/entity_with_timestampt.entity'
 

@@ -1,0 +1,2 @@
+# Send the .env used in testing
+!.env
