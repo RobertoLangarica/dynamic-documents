@@ -4,7 +4,7 @@
     <ul>
       <li><router-link :to="{ name: 'login' }">Login</router-link></li>
       <li><a href="/documents-old">Testing de documentos anterior</a></li>
-      <li><a href="/documents">Testing de documento (Primer documento en el store)</a></li>
+      <li><a href="/documents"><strong>Testing de documento (Primer documento en el store)</strong></a></li>
       <li><a href="http://localhost:3000/docs" target="_blank">API</a></li>
     </ul>
   </div>
