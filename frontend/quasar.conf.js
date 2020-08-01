@@ -25,7 +25,7 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-
+      'dynamic_documents',
       'i18n'
     ],
 
