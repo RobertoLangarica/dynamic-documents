@@ -1,6 +1,6 @@
 #!/bin/bash
 image=registry.digitalocean.com/wizard/ddocuments/backend-dev
-version=latest
+version=0.0.1
 name=dd_back
 cont_port=3000
 port=3000
