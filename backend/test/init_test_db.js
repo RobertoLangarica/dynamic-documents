@@ -1,3 +1,4 @@
+// USED: In the git actions workflows
 const { Client } = require('pg')
 
 const config = {
@@ -9,8 +10,6 @@ const config = {
 }
 
 const pgclient = new Client(config)
-
-console.log(config)
 
 pgclient.connect()
 

@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# USED: In the git actions workflows
 file=.env
 DB_DATABASE=$(grep DB_DATABASE $file | cut -d "=" -f 2)
 DB_USERNAME=$(grep DB_USERNAME $file | cut -d "=" -f 2)

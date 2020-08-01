@@ -1,71 +1,64 @@
 import * as request from 'supertest'
-import { Suite, getValiduserToken } from '../test-utils'
+import { Suite, getValiduserToken } from '../../test-utils'
 import { HttpStatus } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
+import { Template } from 'src/templates/template.entity'
 import { plainToClass } from 'class-transformer'
-import { Document } from 'src/document/document.entity'
-import { Status } from 'src/status/status.entity'
-import { DocumentConfig } from 'src/document/document.config'
 
-const main_route = 'documents'
-const main_table = 'documents'
-let doc_initial_status
+const main_route = 'templates'
+const main_table = 'templates'
 
-export let setDocumentsInitialStatus = async (suite: Suite) => {
-    doc_initial_status = await suite.runner.manager.findOne(Status, { name: DocumentConfig.initialState })
-}
-
-const getRandomDocument = () => {
+const getRandomTemplate = () => {
     return {
         name: `s_${Math.round(Math.random() * 999999999)}`,
-        status: doc_initial_status
     }
 }
 
-export let addDocuments = async (suite: Suite) => {
+export let addTemplates = async (suite: Suite) => {
     // Add some new entities
     let items = []
 
     for (let i = 10; i > 0; i--) {
-        items.push(getRandomDocument())
+        items.push(getRandomTemplate())
     }
-    return suite.runner.manager.save(suite.runner.manager.create(Document, items))
+
+    await suite.runner.manager.save(suite.runner.manager.create(Template, items))
 }
 
-export let Doc_NoUserGetAll = async (suite: Suite) => {
+export let Tmp_NoUserGetAll = async (suite: Suite) => {
     return await request(suite.app.getHttpServer())
         .get(`/api/${main_route}/`)
         .expect(HttpStatus.FORBIDDEN)
 }
 
-export let Doc_NoUserGetOne = async (suite: Suite) => {
+export let Tmp_NoUserGetOne = async (suite: Suite) => {
     let uuid = uuidv4()
     return await request(suite.app.getHttpServer())
         .get(`/api/${main_route}/${uuid}`)
         .expect(HttpStatus.FORBIDDEN)
 }
 
-export let Doc_NoUserCreate = async (suite: Suite) => {
+export let Tmp_NoUserCreate = async (suite: Suite) => {
     return await request(suite.app.getHttpServer())
         .post(`/api/${main_route}/`)
         .expect(HttpStatus.FORBIDDEN)
 }
 
-export let Doc_NoUserUpdate = async (suite: Suite) => {
+export let Tmp_NoUserUpdate = async (suite: Suite) => {
     let uuid = uuidv4()
     return await request(suite.app.getHttpServer())
         .patch(`/api/${main_route}/${uuid}`)
         .expect(HttpStatus.FORBIDDEN)
 }
 
-export let Doc_NoUserDelete = async (suite: Suite) => {
+export let Tmp_NoUserDelete = async (suite: Suite) => {
     let uuid = uuidv4()
     return await request(suite.app.getHttpServer())
         .delete(`/api/${main_route}/${uuid}`)
         .expect(HttpStatus.FORBIDDEN)
 }
 
-export let Doc_GetAll = async (suite: Suite) => {
+export let Tmp_GetAll = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
 
     let count = await suite.runner.query(`SELECT COUNT(*) from ${main_table}`)
@@ -78,7 +71,7 @@ export let Doc_GetAll = async (suite: Suite) => {
         .expect(res => expect(res.body.items).toHaveLength(count))
 }
 
-export let Doc_GetAllEmpty = async (suite: Suite) => {
+export let Tmp_GetAllEmpty = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
     // Backing up the data (so we can return an empty array and continue other tests)
     await suite.runner.query(`ALTER TABLE "${main_table}" RENAME TO "${main_table}_backup"`)
@@ -96,21 +89,21 @@ export let Doc_GetAllEmpty = async (suite: Suite) => {
     await suite.runner.query(`ALTER TABLE "${main_table}_backup" RENAME TO "${main_table}"`)
 }
 
-export let Doc_GetOne = async (suite: Suite) => {
+export let Tmp_GetOne = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
 
     // Pick a random one to be rerieved by the API
-    let items = await suite.runner.manager.find(Document)
+    let items = await suite.runner.manager.find(Template)
     let item = items[Math.floor((Math.random() * items.length))]
 
     await request(suite.app.getHttpServer())
         .get(`/api/${main_route}/${item.id}`)
         .set({ 'Authorization': `Bearer ${token}` })
         .expect(HttpStatus.OK)
-        .expect(async res => expect(plainToClass(Document, res.body)).toEqual(plainToClass(Document, item)))
+        .expect(async res => expect(plainToClass(Template, res.body)).toEqual(plainToClass(Template, item)))
 }
 
-export let Doc_GetOneWrongID = async (suite: Suite) => {
+export let Tmp_GetOneWrongID = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
     let id = uuidv4()
     await request(suite.app.getHttpServer())
@@ -119,7 +112,7 @@ export let Doc_GetOneWrongID = async (suite: Suite) => {
         .expect(HttpStatus.NOT_FOUND)
 }
 
-export let Doc_GetOneMalformedUUID = async (suite: Suite) => {
+export let Tmp_GetOneMalformedUUID = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
     let id = 'wrong'
     await request(suite.app.getHttpServer())
@@ -128,28 +121,28 @@ export let Doc_GetOneMalformedUUID = async (suite: Suite) => {
         .expect(HttpStatus.UNPROCESSABLE_ENTITY)
 }
 
-export let Doc_UpdateWrongID = async (suite: Suite) => {
+export let Tmp_UpdateWrongID = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
     let id = uuidv4()
     await request(suite.app.getHttpServer())
         .patch(`/api/${main_route}/${id}`)
         .set({ 'Authorization': `Bearer ${token}` })
         .send({ name: 'new' })
-        .expect(res => expect(res.status == HttpStatus.NOT_FOUND || res.status == HttpStatus.FORBIDDEN))
+        .expect(HttpStatus.NOT_FOUND)
 }
 
-export let Doc_UpdateMalformedUUID = async (suite: Suite) => {
+export let Tmp_UpdateMalformedUUID = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
     let id = 'wrong'
     await request(suite.app.getHttpServer())
         .patch(`/api/${main_route}/${id}`)
         .set({ 'Authorization': `Bearer ${token}` })
-        .expect(res => expect(res.status == HttpStatus.UNPROCESSABLE_ENTITY || res.status == HttpStatus.FORBIDDEN))
+        .expect(HttpStatus.UNPROCESSABLE_ENTITY)
 }
 
-export let Doc_UpdateDuplicatedName = async (suite: Suite) => {
+export let Tmp_UpdateDuplicatedName = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
-    let items = await suite.runner.manager.find(Document)
+    let items = await suite.runner.manager.find(Template)
     let toUpdate = { name: items[1].name }
     let id = items[0].id
 
@@ -160,32 +153,26 @@ export let Doc_UpdateDuplicatedName = async (suite: Suite) => {
         .expect(HttpStatus.CONFLICT)
 }
 
-export let Doc_Update = async (suite: Suite) => {
+export let Tmp_Update = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
-    let item: any = getRandomDocument()
+    let item: any = getRandomTemplate()
 
     // Insert
-    item = await suite.runner.manager.save(suite.runner.manager.create(Document, item))
+    item = await suite.runner.manager.save(suite.runner.manager.create(Template, item))
 
     // Update with new info
-    let change = getRandomDocument()
-    // status can´t be updated (but should be retrieved)
-    delete change.status
+    let change = getRandomTemplate()
     await request(suite.app.getHttpServer())
         .patch(`/api/${main_route}/${item.id}`)
         .set({ 'Authorization': `Bearer ${token}` })
         .send(change)
         .expect(HttpStatus.OK)
-        .expect(res => {
-            // the status should be reetrieevd
-            change.status = item.status
-            expect(res.body).toMatchObject(change)
-        })
+        .expect(res => expect(res.body).toMatchObject(change))
 }
 
-export let Doc_CreateIncomplete = async (suite: Suite) => {
+export let Tmp_CreateIncomplete = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
-    let item = getRandomDocument()
+    let item = getRandomTemplate()
 
     // Without name
     delete item.name
@@ -196,33 +183,25 @@ export let Doc_CreateIncomplete = async (suite: Suite) => {
         .expect(HttpStatus.UNPROCESSABLE_ENTITY)
 }
 
-export let Doc_Create = async (suite: Suite) => {
+export let Tmp_Create = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
-    let item: any = getRandomDocument()
+    let item: any = getRandomTemplate()
 
-    //Status can´t be sent
-    delete item.status
     await request(suite.app.getHttpServer())
         .post(`/api/${main_route}/`)
         .set({ 'Authorization': `Bearer ${token}` })
         .send(item)
         .expect(HttpStatus.CREATED)
-        .expect(res => {
-            //Status should be retrieved
-            item.status = doc_initial_status
-            expect(res.body).toMatchObject(item)
-        })
+        .expect(res => expect(res.body).toMatchObject(item))
 }
 
-export let Doc_CreateDuplicated = async (suite: Suite) => {
+export let Tmp_CreateDuplicated = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
-    let item = getRandomDocument()
+    let item = getRandomTemplate()
 
     // Insert
-    await suite.runner.manager.save(suite.runner.manager.create(Document, item))
+    await suite.runner.manager.save(suite.runner.manager.create(Template, item))
 
-    // status can´t be sent
-    delete item.status
     await request(suite.app.getHttpServer())
         .post(`/api/${main_route}/`)
         .set({ 'Authorization': `Bearer ${token}` })
@@ -230,7 +209,7 @@ export let Doc_CreateDuplicated = async (suite: Suite) => {
         .expect(HttpStatus.CONFLICT)
 }
 
-export let Doc_DeleteWrongID = async (suite: Suite) => {
+export let Tmp_DeleteWrongID = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
     let id = uuidv4()
 
@@ -240,7 +219,7 @@ export let Doc_DeleteWrongID = async (suite: Suite) => {
         .expect(HttpStatus.NOT_FOUND)
 }
 
-export let Doc_DeleteMalformedUUID = async (suite: Suite) => {
+export let Tmp_DeleteMalformedUUID = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
     let id = 'wrong'
     await request(suite.app.getHttpServer())
@@ -249,9 +228,9 @@ export let Doc_DeleteMalformedUUID = async (suite: Suite) => {
         .expect(HttpStatus.UNPROCESSABLE_ENTITY)
 }
 
-export let Doc_Delete = async (suite: Suite) => {
+export let Tmp_Delete = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
-    let items = await suite.runner.manager.find(Document)
+    let items = await suite.runner.manager.find(Template)
     let item = items[Math.floor((Math.random() * items.length))]
 
     await request(suite.app.getHttpServer())

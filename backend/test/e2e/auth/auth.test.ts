@@ -1,4 +1,4 @@
-import { Suite, user1, user2, user3, randomUser, getValiduserToken } from "./test-utils"
+import { Suite, user1, user2, user3, randomUser, getValiduserToken } from "../../test-utils"
 import * as request from 'supertest'
 import { HttpStatus } from "@nestjs/common"
 

@@ -1,6 +1,6 @@
 import * as request from 'supertest'
 import { HttpStatus } from "@nestjs/common"
-import { Suite, getValiduserToken } from './test-utils'
+import { Suite, getValiduserToken } from '../../test-utils'
 import { v4 as uuidv4 } from 'uuid'
 import { Validation } from 'src/validations/validation.entity'
 
