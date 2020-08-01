@@ -25,7 +25,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "cd ./test && jest --config ./jest-e2e.json --silent=false && cd ..",
-    "typeorm": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config database/cli-config.ts",
+    "typeorm": "ts-node --transpile-only --files -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config database/cli-config.ts",
     "migration:run": "npm run typeorm migration:run",
     "migration:create": "npm run typeorm migration:create -n ",
     "migration:revert": "npm run typeorm migration:revert",

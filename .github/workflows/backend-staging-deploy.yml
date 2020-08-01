@@ -109,7 +109,7 @@ jobs:
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
-          "cd "$REMOTE_DIR"/backend && npm install --dev"
+          "cd "$REMOTE_DIR"/backend && npm install --only=dev"
 
       - name: Run DB migrations
         run: |
