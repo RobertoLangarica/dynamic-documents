@@ -1,6 +1,6 @@
 #!/bin/bash
 image=registry.digitalocean.com/wizard/ddocuments/backend-dev
-version=0.0.1
+version=latest
 name=dd_back
 cont_port=3000
 port=3000
@@ -8,6 +8,7 @@ network=dd_back_net
 interactive=false
 release=0
 
+# TODO change this block for a whle that allows an arbitrary param order
 # Check for params (release, interactive shell and custom image version)
 if [ $# -gt 0 ]; then
 
