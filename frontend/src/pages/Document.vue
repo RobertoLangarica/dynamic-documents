@@ -5,12 +5,12 @@
     </div>
     <h1>Doc</h1>
     <div v-if="docExists" :class="currentView">
-      <draggable v-model="documentFields"
+      <draggable v-model="manager.fields"
                  @start="drag=true" @end="drag=false"
                  handle=".cursor-drag">
-        <field-component v-for="field in documentFields" :key="field.id"
+        <field-component v-for="field in manager.fields" :key="field.id"
                          :field="field"
-                         :fields="documentFields"
+                         :fields="manager.fields"
                          :currentView="currentView"
                          class="field-container"
                          @onShowAddFieldDialog="showAddFieldDialog"
@@ -32,12 +32,14 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import draggable from 'vuedraggable'
 import FieldTypeDialog from 'components/FieldTypeDialog.vue'
-import FieldComponent from 'components/FieldComponent.vue';
+import FieldComponent from 'components/FieldComponent.vue'
+import { DocumentEditionManager } from 'src/dynamic-documents/src/DocumentEditionManager'
 
-@Component({ components: {FieldComponent, draggable } })
+@Component({ components: { FieldComponent, draggable } })
 export default class Document extends Vue {
   currentView = 'edit'
-  currentDoc = ''
+  currentDoc!: Object = null
+  manager!: DocumentEditionManager
   views= [
     { label: 'Editar', value: 'edit' },
     { label: 'Capturar', value: 'capture' },
@@ -47,10 +49,12 @@ export default class Document extends Vue {
   get docExists () {
     return !!this.currentDoc
   }
+
   get documentFields () {
     // TODO: Change this once the store is migrated to TS
     return this.currentDoc.fields
   }
+
   set documentFields () {
     // this.$store.commit('updateList', value)
   }
@@ -59,6 +63,10 @@ export default class Document extends Vue {
     await this.$store.dispatch('getDocument', this.$route.params.id)
     await this.$store.dispatch('updateTypes')
     this.currentDoc = this.$store.state.dd.documents[0]
+    this.manager = DocumentEditionManager.createFromRemoteObject(this.currentDoc)
+    // TODO: Set these properties with the real data
+    this.manager.isTemplate = false
+    this.manager.isDocument = true
   }
 
   showAddFieldDialog () {
@@ -68,10 +76,10 @@ export default class Document extends Vue {
       // Router, Vuex store, and so on, in your
       // custom component:
       parent: this, // becomes child of this Vue node
-                    // ("this" points to your Vue component)
+      // ("this" points to your Vue component)
       // props forwarded to component
       // (everything except "component" and "parent" props above):
-      text: 'something',
+      text: 'something'
       // ...more.props...
     }).onOk((type) => {
       console.log('OK', type)
