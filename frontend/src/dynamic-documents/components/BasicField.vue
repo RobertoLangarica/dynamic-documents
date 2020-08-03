@@ -65,135 +65,125 @@
     </div>
 </template>
 
-<script>
-import { DDField } from '../src/DDField'
-export default {
-  name: 'basic-field',
-  props: {
-    field: {
-      type: Object,
-      required: false,
-      default: () => {
-        // DDField
-        return new DDField()
-      }
-    },
-    all_fields: {
-      type: Array,
-      required: false,
-      default: () => []
-    }
-  },
-  data () {
-    return {
-      editMode: false,
-      debounce: 600
-    }
-  },
-  mounted () {
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
+
+import { DDField } from '../src/core/DDField'
+
+@Component({name:'basic-field'})
+export default class BasicField extends Vue {
+  @Prop({default: ()=> new DDField(), required:false }) readonly field!:DDField
+  @Prop({default: ()=> [], required:false }) readonly all_fields!:DDField[]
+
+  /** PROPERTIES */
+  editMode:boolean = false
+  debounce:number = 600
+  /**************/
+
+  mounted(){
     if (this.field.initInEdition) {
       this.editMode = true
     }
-  },
-  computed: {
-    name: {
-      get: function () {
-        return this.field.name
-      },
-      set: function (value) {
-        this.field.name = value
-        this.updated()
-      }
-    },
-    value: {
-      get: function () {
-        return this.field.value
-      },
-      set: function (value) {
-        this.field.value = value
-        this.updated()
-      }
-    },
-    label: {
-      get: function () {
-        return this.field.label
-      },
-      set: function (value) {
-        this.field.label = value
-        this.updated()
-      }
-    },
-    hint: {
-      get: function () {
-        return this.field.hint
-      },
-      set: function (value) {
-        this.field.hint = value
-        this.updated()
-      }
-    },
-    description: {
-      get: function () {
-        return this.field.description
-      },
-      set: function (value) {
-        this.field.description = value
-        this.updated()
-      }
-    },
-    readonly: {
-      get: function () {
-        return !this.field.readonly
-      },
-      set: function (value) {
-        this.field.readonly = !value
-        this.updated()
-      }
-    },
-    show_in_print: {
-      get: function () {
-        return this.field.show_in_print
-      },
-      set: function (value) {
-        this.field.show_in_print = value
-        this.updated()
-      }
-    },
-    show_in_capture: {
-      get: function () {
-        return this.field.show_in_capture
-      },
-      set: function (value) {
-        this.field.show_in_capture = value
-        this.updated()
-      }
-    },
-    required: {
-      get: function () {
-        return this.field.required
-      },
-      set: function (value) {
-        this.field.required = value
-        this.updated()
-      }
-    },
-    type () {
-      return this.field.type.name
-    },
-    component_name () {
-      return this.field.type.component
-    }
-  },
-  methods: {
-    updated (field) {
-      this.$emit('f-updated', field || this.field)
-    },
-    deleted (field) {
-      this.$emit('f-deleted', field || this.field)
-    },
-    added (field) {
-      this.$emit('f-added', field)
-    }
   }
+
+  updated (field?:DDField) {
+    this.$emit('f-updated', field || this.field)
+  }
+
+  deleted (field?:DDField) {
+    this.$emit('f-deleted', field || this.field)
+  }
+
+  added (field:DDField) {
+    this.$emit('f-added', field)
+  }
+
+  get name() {
+    return this.field.name
+  }
+  set name(value) {
+    this.field.name = value
+    this.updated()
+  }
+
+  get value () {
+    return this.field.value
+  }
+  set value (value) {
+    this.field.value = value
+    this.updated()
+  }
+
+
+  get label () {
+    return this.field.label
+  }
+  set label (value) {
+    this.field.label = value
+    this.updated()
+  }
+
+
+  get hint () {
+    return this.field.hint
+  }
+  set hint (value) {
+    this.field.hint = value
+    this.updated()
+  }
+
+
+  get description () {
+    return this.field.description
+  }
+  set description (value) {
+    this.field.description = value
+    this.updated()
+  }
+
+
+  get readonly () {
+    return this.field.readonly
+  }
+  set readonly (value) {
+    this.field.readonly = value
+    this.updated()
+  }
+
+  get show_in_print () {
+    return this.field.show_in_print
+  }
+  set show_in_print (value) {
+    this.field.show_in_print = value
+    this.updated()
+  }
+
+
+  get show_in_capture () {
+    return this.field.show_in_capture
+  }
+  set show_in_capture (value) {
+    this.field.show_in_capture = value
+    this.updated()
+  }
+
+
+  get required () { return this.field.required }
+  set required (value) {
+    this.field.required = value
+    this.updated()
+  }
+
+
+  get type () {
+    return this.field.type.name
+  }
+  
+  get component_name () {
+    return this.field.type.component
+  }
+
 }
 </script>
