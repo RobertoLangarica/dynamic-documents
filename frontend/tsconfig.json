@@ -1,8 +1,16 @@
 {
   "extends": "@quasar/app/tsconfig-preset",
   "compilerOptions": {
-    "baseUrl": ".",
+    "removeComments": true,
+    "baseUrl": "./",
     "experimentalDecorators": true,
-    "target": "es5",
-  }
+    "sourceMap": true,
+    "declaration": true,
+    "noImplicitAny": false
+  },
+  "exclude": [
+    "/dist",
+    ".quasar",
+    "node_modules"
+  ]
 }

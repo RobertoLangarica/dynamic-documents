@@ -28,6 +28,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import draggable from "vuedraggable";
+import { DDFieldType } from '../dynamic-documents/src/core/DDFieldType';
 @Component({ components: { draggable } })
 export default class Document extends Vue {
   show () {
@@ -38,7 +39,7 @@ export default class Document extends Vue {
     this.$refs.dialog.hide()
   }
 
-  onTypeSelect (type) {
+  onTypeSelect (type: DDFieldType) {
     this.$emit('ok', type)
     this.hide()
   }

@@ -8,7 +8,7 @@ import TemplateMenu from 'src/dynamic-documents/components/TemplateMenu'
 import DocumentEditorScreen from 'src/dynamic-documents/components/DocumentEditorScreen'
 import TemplateCreationDialog from 'src/dynamic-documents/components/TemplateCreationDialog'
 
-// we globally register our component
+// we globally register our components
 Vue.component('dd-group', DDGroup)
 Vue.component('field-type-selector', FieldTypeSelector)
 Vue.component('basic-field', BasicField)

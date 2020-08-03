@@ -2,6 +2,7 @@ import { IsUUID, IsNotEmpty, IsOptional, IsJSON, IsArray, IsBoolean, IsString, I
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { Validation } from "../../validations/validation.entity"
 import { Type, Exclude, Expose } from "class-transformer"
+import { FieldType } from "src/field_types/field_type.entity"
 
 export class FDataOptions {
     values: any[]
@@ -31,7 +32,8 @@ export class Field {
 
     @IsNotEmpty() @IsString() @ApiProperty({ description: 'Type name' })
     @Expose()
-    type: string
+    @Type(() => FieldType)
+    type: FieldType
 
     @IsOptional() @IsString() @ApiPropertyOptional()
     @Expose()
@@ -105,7 +107,7 @@ export class Field {
     @Type(() => FDataReplication)
     replication: FDataReplication
 
-    @Exclude()
+    @Expose()
     get allowReplication(): boolean {
         return this.replication.allow
     }
@@ -140,7 +142,7 @@ export class Field {
 
     @IsOptional() @IsString() @ApiPropertyOptional()
     @Expose()
-    map_id: boolean // If true the field should be ad
+    map_id: boolean // Id used by the fill maps
 
     @IsOptional() @IsNumber() @ApiPropertyOptional()
     @Expose()

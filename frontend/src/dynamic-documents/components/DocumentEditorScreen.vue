@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import { DDField } from '../src/DDField'
-
 export default {
   name: 'document-editor',
   props: {
@@ -33,9 +31,8 @@ export default {
       }
     }
   },
-  data () {
-    return {
-    }
+  data (){
+    return {}
   },
   mounted () {
     this.manager.store = this.$store
@@ -45,29 +42,30 @@ export default {
       get: function () {
         return this.manager.name
       },
-      set: function (value) {
+      set: fu(value) {
         this.manager.name = value
       }
     },
-    fields () {
+    fields = ()=> {
       return this.manager.fields.filter(f => f.group_by === '')
     }
   },
-  methods: {
+  methods:{
     onFieldUpdated (field) {
       this.manager.updateField(field)
     },
+
     onFieldDeleted (field) {
       this.manager.deleteField(field)
     },
+
     onFieldAdded (field) {
       this.manager.addField(field)
     },
+    
     onTypeSelected (type) {
-      let field = DDField.createFromType(type)
-      field.initInEdition = true
-      this.manager.addField(field)
-    }
+      this.manager.addFieldFromType(type)
+    },
   }
 }
 </script>

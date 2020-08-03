@@ -17,8 +17,11 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "class-transformer": "^0.3.1",
+    "class-validator": "^0.12.2",
     "core-js": "^3.6.5",
     "quasar": "^1.0.0",
+    "uuid": "^8.3.0",
     "vue-class-component": "^7.2.2",
     "vue-i18n": "^8.0.0",
     "vue-property-decorator": "^8.3.0",
@@ -27,6 +30,7 @@
   "devDependencies": {
     "@quasar/app": "^2.0.0",
     "@types/node": "^10.17.15",
+    "@types/uuid": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^3.3.0",
     "@typescript-eslint/parser": "^3.3.0",
     "babel-eslint": "^10.0.1",
@@ -38,7 +42,7 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.1.2",
-    "quasar-app-extension-api-wrapper": "0.0.11",
+    "quasar-app-extension-api-wrapper": "^0.0.13",
     "quasar-app-extension-nequ-components": "^0.7.0",
     "quasar-app-extension-vuelidate-rules": "^0.3.1"
   },

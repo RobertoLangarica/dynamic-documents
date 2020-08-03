@@ -8,7 +8,7 @@ network=dd_back_net
 interactive=false
 release=0
 
-# TODO change this block for a whle that allows an arbitrary param order
+# TODO change this block for a while block, that allows an arbitrary param order
 # Check for params (release, interactive shell and custom image version)
 if [ $# -gt 0 ]; then
 
