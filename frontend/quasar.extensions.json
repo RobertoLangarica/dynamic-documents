@@ -1,5 +1,5 @@
 {
-  "api-wrapper": {},
   "vuelidate-rules": {},
-  "nequ-components": {}
+  "nequ-components": {},
+  "api-wrapper": {}
 }

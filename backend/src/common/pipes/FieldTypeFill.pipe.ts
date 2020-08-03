@@ -41,7 +41,16 @@ export class FieldTypeFillPipe implements PipeTransform {
             ids = ids.concat(await this.type_service.getIDsFromNames(names))
         }
 
-        value.supported_types = ids
+        // Removing duplicates
+        let existing = {}
+        value.supported_types = ids.filter(i => {
+            if (!existing[i.id]) {
+                existing[i.id] = true
+                return true
+            }
+
+            return false
+        });
 
         return value
     }

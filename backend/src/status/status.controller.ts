@@ -1,13 +1,20 @@
-import { Controller, Get, Param, Post, Body, Patch, Delete, ParseUUIDPipe } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body, Patch, Delete, ParseUUIDPipe, UseGuards } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { StatusService } from "./status.service";
 import { StatusDto } from "./status.dto";
+import { AuthGuard } from "src/common/guards/Auth.guard";
 
 @ApiBearerAuth()
 @ApiTags('document status')
 @Controller('status')
+@UseGuards(AuthGuard)
 export class StatusController {
     constructor(private readonly service: StatusService) { }
+
+    @Get(':id')
+    findOne(@Param('id', ParseUUIDPipe) id: string) {
+        return this.service.findById(id)
+    }
 
     @Get()
     find() {

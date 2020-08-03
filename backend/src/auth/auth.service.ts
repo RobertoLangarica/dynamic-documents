@@ -1,10 +1,10 @@
-import { HttpException, Injectable } from '@nestjs/common'
+import { HttpException, Injectable, HttpStatus } from '@nestjs/common'
 import { LoginDto } from './dto/login.dto'
 import { User } from '../user/user.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, getConnection } from 'typeorm'
 import * as bcrypt from 'bcrypt'
-import * as uuid from 'uuid/v4'
+import { v4 as uuid } from 'uuid'
 import { Token } from './token.entity'
 import { classToPlain } from 'class-transformer'
 import { Grant } from 'src/user/grant.entity'
@@ -48,6 +48,7 @@ export class AuthService {
       .addSelect('User.password')
       .where({ email: dto.email.toLowerCase() })
       .getOne()
+
     if (!user || !bcrypt.compareSync(dto.password, user.password)) {
       throw new HttpException('invalid_credentials', 422)
     }
@@ -60,7 +61,7 @@ export class AuthService {
     let exist = await this.userRepo.findOne({ where: { email: dto.email } })
 
     if (exist) {
-      throw new HttpException('User already exists', 409)
+      throw new HttpException('User already exists', HttpStatus.CONFLICT)
     }
 
     // Creating user
@@ -70,6 +71,7 @@ export class AuthService {
     user.first_name = ""
     user.last_name = ""
     user = await this.userRepo.save(user)
+    delete user.password; // Avoid returning this data
 
     // Permisos de usuario
     let repo = getConnection().getRepository(Grant)

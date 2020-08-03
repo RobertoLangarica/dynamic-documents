@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, BadRequestException } from "@nestjs/common"
+import { Injectable, HttpException, HttpStatus, BadRequestException, NotFoundException } from "@nestjs/common"
 import { Document } from "./document.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
@@ -19,7 +19,7 @@ export class DocumentService {
         private readonly template_service: TemplateService
     ) { }
 
-    async findAll(categories_query: any, status_query: any): Promise<Document[]> {
+    async findAll(categories_query: any, status_query: any): Promise<Object> {
         let query = this.doc_repo.createQueryBuilder('doc')
             .select(['doc.id', 'doc.name'])
             .leftJoinAndSelect('doc.type', 't')
@@ -34,11 +34,16 @@ export class DocumentService {
             query.andWhere("(c.name = ANY(:cnames) OR c.id = ANY(:cids))", { cnames: categories_query.names, cids: categories_query.ids })
         }
 
-        return await query.getMany()
+        return { items: await query.getMany() }
     }
 
     async findById(id: string): Promise<Document> {
-        return await this.doc_repo.findOneOrFail({ id: id })
+        let doc = await this.doc_repo.findOne({ id: id })
+        if (!doc) {
+            throw new NotFoundException()
+        }
+
+        return doc
     }
 
     async exists(id_or_name: string): Promise<boolean> {
@@ -57,6 +62,12 @@ export class DocumentService {
     }
 
     async deleteDocument(id: string) {
+        let toDelete = await this.doc_repo.findOne(id)
+
+        if (!toDelete) {
+            throw new NotFoundException()
+        }
+
         await this.doc_repo.delete({ id: id })
     }
 
@@ -123,6 +134,11 @@ export class DocumentService {
         let versions = data.versions
         delete data.versions
         let document = await this.doc_repo.preload(data)
+
+        if (!document) {
+            throw new NotFoundException()
+        }
+
         if (versions) document.versions.push(versions[0])
         if (data.categories) document.categories = data.categories
 

@@ -1,11 +1,13 @@
-import { Controller, Patch, Body, Post } from "@nestjs/common";
+import { Controller, Patch, Body, Post, UseGuards } from "@nestjs/common";
 import { User } from "src/user/user.entity";
 import { APISecretService } from "./api_secret.service";
 import { AddIPDTO } from "./dto/addip.dto";
 import { ApiTags } from "@nestjs/swagger";
+import { AuthGuard } from "src/common/guards/Auth.guard";
 
 @ApiTags('Api secrets')
 @Controller('secret')
+@UseGuards(AuthGuard)
 export class APISecretController {
     constructor(private readonly secret: APISecretService) {
     }

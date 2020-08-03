@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, Unique } from 'typeorm'
 import { IsArray, IsEmail, IsObject, IsString } from 'class-validator'
 import * as bcrypt from 'bcrypt'
 import { Exclude, Expose } from 'class-transformer'
@@ -7,6 +7,7 @@ import { APISecret } from 'src/api_secret/api_secret.entity'
 import { EntityWithTimeStampt } from 'src/common/entities/entity_with_timestampt.entity'
 
 @Entity('users')
+@Unique(['email'])
 export class User extends EntityWithTimeStampt {
   @Column() @IsEmail()
   email: string
@@ -55,10 +56,10 @@ export class User extends EntityWithTimeStampt {
   }
 
   @Exclude()
-  @OneToMany(type => Grant, m => m.user, { eager: true })
+  @OneToMany(type => Grant, m => m.user, { eager: true, onDelete: 'CASCADE' })
   raw_grants: Grant[]
 
   @Exclude()
-  @OneToMany(type => APISecret, r => r.user, { eager: false })
+  @OneToMany(type => APISecret, r => r.user, { eager: false, onDelete: 'CASCADE' })
   api_secret: APISecret[];
 }

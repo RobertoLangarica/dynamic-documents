@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus, NotFoundException, ConflictException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Status } from "src/status/status.entity"
@@ -10,8 +10,18 @@ export class StatusService {
     private readonly status_repo: Repository<Status>
     ) { }
 
-    async findAll(): Promise<Status[]> {
-        return await this.status_repo.find()
+    async findAll(): Promise<Object> {
+        return { items: await this.status_repo.find() }
+    }
+
+    async findById(id: string): Promise<Status> {
+        let status = await this.status_repo.findOne(id)
+
+        if (!status) {
+            throw new NotFoundException()
+        }
+
+        return status
     }
 
     async findByName(name: string): Promise<Status> {
@@ -19,6 +29,12 @@ export class StatusService {
     }
 
     async deleteStatus(id: string) {
+        let toDelete = await this.status_repo.findOne(id)
+
+        if (!toDelete) {
+            throw new NotFoundException()
+        }
+
         await this.status_repo.delete({ id: id })
     }
 
@@ -27,6 +43,7 @@ export class StatusService {
 
         try {
             status = await this.status_repo.save(status)
+            return status
         } catch (e) {
             if (e.code && e.code == 23505) {
                 throw new HttpException(e.detail, HttpStatus.CONFLICT)
@@ -36,11 +53,27 @@ export class StatusService {
             }
         }
 
-        return status
     }
 
     async updateStatus(id: string, data: StatusDto) {
-        await this.status_repo.update(id, { name: data.name })
+        // Prevent duplicated names
+        let duplicated = await this.status_repo.createQueryBuilder('s')
+            .where("s.name = :name AND s.id != :id ", { name: data.name, id: id })
+            .getRawOne()
+
+        if (duplicated) {
+            throw new ConflictException(`There is an already existing status with the name: ${data.name}`)
+        }
+
+        data['id'] = id;
+        let status = await this.status_repo.preload(data)
+
+        if (!status) {
+            throw new HttpException('Unable to find the required status', HttpStatus.NOT_FOUND)
+        }
+
+        status = await this.status_repo.save(status)
+        return status
     }
 
     async getIDsFromNames(names: string[], create_new: boolean = false): Promise<Object[]> {

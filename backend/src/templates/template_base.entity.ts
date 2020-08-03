@@ -14,7 +14,6 @@ export class TemplateBaseEntity extends EntityWithTimeStampt {
     @Type(() => TemplateType)
     type: TemplateType
 
-    @Exclude()
     get typeName() { return this.type.name }
 
     @Column({ default: '' }) @IsString()
@@ -24,7 +23,7 @@ export class TemplateBaseEntity extends EntityWithTimeStampt {
     @Type(() => Field) @IsArray()
     fields: Field[]
 
-    @Exclude() @IsArray()
+    @IsArray()
     warnings: string[] // Not saved in the DB
 
 } 

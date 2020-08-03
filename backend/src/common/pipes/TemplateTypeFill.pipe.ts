@@ -24,7 +24,7 @@ export class TemplateTypeFillPipe implements PipeTransform {
             return value
         }
 
-        value.type = await this.template_type_service.findByName(value.type, true)
+        value.type = await this.template_type_service.findByNameOrCreate(value.type, true)
 
         return value
     }

@@ -16,9 +16,9 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component
 export default class ClassComponent extends Vue {
-  @Prop({ type: Object, required: true }) readonly field!: object;
-  @Prop({ type: Array, required: true }) readonly fields!: object;
-  @Prop({ type: String, required: true }) readonly currentView!: object;
+  @Prop({ type: Object, required: true }) readonly field!: Object;
+  @Prop({ type: Array, required: true }) readonly fields!: Object;
+  @Prop({ type: String, required: true }) readonly currentView!: Object;
 
   text = 'Abc'
 }

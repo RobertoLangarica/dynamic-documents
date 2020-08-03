@@ -1,8 +1,8 @@
 import { ConnectionOptions } from 'typeorm'
-import { User } from '../src/user/user.entity'
-import { Token } from '../src/auth/token.entity'
-import { Grant } from '../src/user/grant.entity'
-import { APISecret } from '../src/api_secret/api_secret.entity'
+import { User } from 'src/user/user.entity'
+import { Token } from 'src/auth/token.entity'
+import { Grant } from 'src/user/grant.entity'
+import { APISecret } from 'src/api_secret/api_secret.entity'
 import { Validation } from 'src/validations/validation.entity'
 import { FieldType } from 'src/field_types/field_type.entity'
 import { Transformation } from 'src/transformations/transformation.entity'
@@ -24,9 +24,11 @@ const config = (): ConnectionOptions => {
     logging: false,
     entities: [User, Token, Grant, APISecret, Validation, FieldType, Transformation, Category, TemplateType, Template,
       Status, Document, DocumentFilter],
-    synchronize: false
+    synchronize: false,
+    migrations: process.env.NODE_ENV === 'test' ? ['../database/migrations/*.ts'] : undefined
   }
-  console.log(config)
+  if (process.env.NODE_ENV === 'dev') console.log(config)
+
   return config;
 }
 

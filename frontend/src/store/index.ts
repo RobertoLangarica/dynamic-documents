@@ -1,21 +1,17 @@
 import { store } from 'quasar/wrappers'
 import Vuex from 'vuex'
-
-// import example from './module-example';
-// import { ExampleStateInterface } from './module-example/state';
-import login from './login'
-import dd from './dynamic-documents'
+import login, { ILoginState } from './login'
+import dd, { IDDState } from './dynamic-documents'
 
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation
  */
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface StateInterface {
-  // Define your own store structure, using submodules if needed
-  // example: ExampleStateInterface;
-  // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
-  example: unknown;
+  login:ILoginState,
+  dd:IDDState
 }
 
 export default store(function ({ Vue }) {
@@ -23,9 +19,6 @@ export default store(function ({ Vue }) {
 
   const Store = new Vuex.Store<StateInterface>({
     modules: { dd, login },
-
-    // enable strict mode (adds overhead!)
-    // for dev mode only
     strict: !!process.env.DEV
   })
 

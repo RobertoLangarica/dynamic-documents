@@ -6,7 +6,44 @@ on:
     branches:
       - staging_back
 jobs:
+  back_test:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+
+    # Service containers to run with `container-job`
+    services:
+      postgres:
+        image: postgres:11.8
+        env:
+          POSTGRES_PASSWORD: admin
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+    steps:
+      - name: Checkout last version
+        uses: actions/checkout@v2
+      
+      # Performs a clean installation of all dependencies in the `package.json` file
+      # For more information, see https://docs.npmjs.com/cli/ci.html
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+      - name: Create test database
+        working-directory: ./backend/test
+        run: ./init_test_db.sh
+
+      - name: Run tests
+        working-directory: ./backend
+        run: npm run test:e2e
+
   back_build:
+    needs: back_test
     runs-on: ubuntu-latest
     env:
       SERVER: fid@68.183.171.182
@@ -14,17 +51,18 @@ jobs:
       BRANCH: staging_back
       PROCESS_NAME: DD_staging
     steps:
-      - uses: actions/checkout@v2
-      - name: Getting latest version
-        run: git checkout
-      - name: Instalando dependencias
-        run: |
-          cd backend
-          npm install
+      - name: Checkout last version
+        uses: actions/checkout@v2
+      
+      # Performs a clean installation of all dependencies in the `package.json` file
+      # For more information, see https://docs.npmjs.com/cli/ci.html
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
       - name: Build
-        run: |
-          cd backend
-          npm run build
+        working-directory: ./backend
+        run: npm run build
+
       - name: Adding SSH basics
         run: |
           eval `ssh-agent`
@@ -32,39 +70,54 @@ jobs:
           mkdir ~/.ssh
           echo > ~/.ssh/known_hosts
           ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
-      - name: Deleting last build on the server
+
+      - name: Deleting last build on the remote server
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
           "cd "$REMOTE_DIR"/backend && \
           yes | rm -r dist"
-      - name: Sending new build to the server
+
+      - name: Sending new build to the remote server
+        working-directory: ./backend
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
-          cd backend
           scp -r ./dist "$SERVER":"$REMOTE_DIR"/backend/dist
-      - name: Getting last repo version on the server
+
+      # Checking out the working branch after a hard reset to dismiss any local change prompt for overwriting
+      - name: Getting last repo version on the remote server
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
           "cd "$REMOTE_DIR" && \
+          git reset --hard && \
           git fetch && \
           git checkout origin/"$BRANCH""
-      - name: Installing dependencies
+
+      - name: Installing production dependencies on remote server
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
-          "cd "$REMOTE_DIR"/backend && npm install"
+          "cd "$REMOTE_DIR"/backend && npm install --production"
+
+      - name: Installing development dependencies on remote server
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR"/backend && npm install --only=dev"
+
       - name: Run DB migrations
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
           "cd "$REMOTE_DIR"/backend && npm run migration:run"
+          
       - name: Restart pm2
         run: |
           eval `ssh-agent`
