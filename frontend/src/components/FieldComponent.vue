@@ -31,31 +31,39 @@ export default class ClassComponent extends Vue {
 </script>
 
 <style lang="scss">
-  .field-container {
-    display: flex;
-    padding: 0.5em;
-    .field-controls {
+  .fields-container {
+    &.edit {
+      .field-container {
+        background-color: #fafaff;
+        margin: 0.5em 0
+      }
+    }
+    .field-container {
       display: flex;
-      width: 5em;
-      opacity: 0;
-      transition: opacity 0.25s;
-      justify-content: flex-end;
-      align-items: flex-start;
-    }
-    .field-config {
-      display: flex;
-      width: 2em;
-      opacity: 0;
-      transition: opacity 0.25s;
-      justify-content: flex-end;
-      align-items: flex-start;
-    }
-    .field-content {
-      flex: 1
-    }
-    &:hover, &:active {
-      .field-controls, .field-config {
-        opacity: 1;
+      padding: 0.5em;
+      .field-controls {
+        display: flex;
+        width: 5em;
+        opacity: 0;
+        transition: opacity 0.25s;
+        justify-content: flex-end;
+        align-items: flex-start;
+      }
+      .field-config {
+        display: flex;
+        width: 2em;
+        opacity: 0;
+        transition: opacity 0.25s;
+        justify-content: flex-end;
+        align-items: flex-start;
+      }
+      .field-content {
+        flex: 1
+      }
+      &:hover, &:active {
+        .field-controls, .field-config {
+          opacity: 1;
+        }
       }
     }
   }

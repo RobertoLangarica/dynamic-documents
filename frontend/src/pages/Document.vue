@@ -14,6 +14,7 @@
     </h1>
     <div
       v-if="docReady"
+      class="fields-container"
       :class="currentView"
     >
       <draggable
