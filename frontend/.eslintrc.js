@@ -93,6 +93,10 @@ module.exports = {
     'semi': 'off',
     'prefer-const': 'off',
     'no-void': 'off',
+    'vue/max-attributes-per-line': 'off',
+    'vue/attributes-order': 'off',
+    'vue/attribute-hyphenation': 'off',
+    'vue/html-closing-bracket-newline': 'off',
     // TypeScript
     quotes: ['off', 'single', { avoidEscape: true }],
     '@typescript-eslint/explicit-function-return-type': 'off',
