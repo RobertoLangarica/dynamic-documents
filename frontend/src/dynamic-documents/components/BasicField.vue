@@ -3,21 +3,8 @@
     <div class="col-12 row items-center justify-between">
       <h3>{{ name }}</h3>
       <div>
-        <q-btn
-          v-if="editMode"
-          round
-          icon="delete"
-          color="negative"
-          flat
-          @click="deleted()"
-        />
-        <q-btn
-          round
-          :icon="!editMode ? 'edit':'close'"
-          color="primary"
-          flat
-          @click="editMode=!editMode"
-        />
+        <q-btn v-if="editMode" round icon="delete" color="negative" flat @click="deleted()" />
+        <q-btn round :icon="!editMode ? 'edit':'close'" color="primary" flat @click="editMode=!editMode" />
       </div>
     </div>
 
