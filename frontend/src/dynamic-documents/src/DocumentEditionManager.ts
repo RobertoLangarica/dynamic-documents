@@ -5,9 +5,9 @@ import { DDTemplateType } from './core/DDTemplateType';
 import { Type } from 'class-transformer';
 import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
-import { DDDocument } from './core/DDDocument';
-import { DDTemplate } from './core/DDTemplate';
 import { DDFieldType } from './core/DDFieldType';
+import { DDTemplate } from './core/DDTemplate';
+import { DDDocument } from './core/DDDocument';
 
 export class DocumentEditionManager {
   id: string = uuidv4()

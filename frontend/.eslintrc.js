@@ -7,7 +7,7 @@ module.exports = {
 
   // https://eslint.vuejs.org/user-guide/#how-to-use-custom-parser
   // Must use parserOptions instead of "parser" to allow vue-eslint-parser to keep working
-  // `parser: 'vue-eslint-parser'` is already included with any 'plugin:vue/**' config and should be omitted
+  parser: 'vue-eslint-parser',
   parserOptions: {
     // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser#configuration
     // https://github.com/TypeStrong/fork-ts-checker-webpack-plugin#eslint
@@ -25,7 +25,7 @@ module.exports = {
   },
 
   // Rules order is important, please avoid shuffling them
-  extends: [
+  /*extends: [
     // Base ESLint recommended rules
     // 'eslint:recommended',
 
@@ -38,22 +38,28 @@ module.exports = {
     // Uncomment any of the lines below to choose desired strictness,
     // but leave only one uncommented!
     // See https://eslint.vuejs.org/rules/#available-rules
-    'plugin:vue/essential', // Priority A: Essential (Error Prevention)
+    // 'plugin:vue/essential', // Priority A: Essential (Error Prevention)
     // 'plugin:vue/strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
-    // 'plugin:vue/recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
+    'plugin:vue/recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
 
     'standard'
 
+  ],*/
+  extends: [
+    'standard',
+    // ESLint typescript rules
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:vue/recommended',
   ],
 
   plugins: [
-    // required to apply rules which need type information
-    '@typescript-eslint',
 
     // https://eslint.vuejs.org/user-guide/#why-doesn-t-it-work-on-vue-file
     // required to lint *.vue files
     'vue',
-
+    // required to apply rules which need type information
+    '@typescript-eslint'
   ],
 
   globals: {
@@ -97,7 +103,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
-
+    '@typescript-eslint/no-unsafe-return': 'off',
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
