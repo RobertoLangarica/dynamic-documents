@@ -5,8 +5,10 @@
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="field-content">
-      <q-badge v-if="currentView !== 'capture'" color="secondary"> {{ field.name }}</q-badge>
-      <q-input v-model="text" label="Standard" outlined :readonly="currentView === 'view'" />
+      <q-badge v-if="currentView !== 'capture'" color="secondary">
+        {{ field.name }}
+      </q-badge>
+      <q-input v-model="text" :label="field.label" :hint="field.hint" outlined :readonly="currentView === 'view'" />
     </div>
   </div>
 </template>

@@ -15,7 +15,7 @@
       :class="currentView"
     >
       <draggable
-        v-model="manager.fields"
+        v-model="filteredFields"
         handle=".cursor-drag"
         @start="drag=true"
         @end="drag=false"
@@ -24,7 +24,7 @@
           v-for="field in manager.fields"
           :key="field.id"
           :field="field"
-          :fields="manager.fields"
+          :fields="filteredFields"
           :current-view="currentView"
           class="field-container"
           @onShowAddFieldDialog="showAddFieldDialog"
@@ -62,7 +62,7 @@ import { DocumentEditionManager } from 'src/dynamic-documents/src/DocumentEditio
 export default class Document extends Vue {
   currentView = 'edit'
   manager!: DocumentEditionManager
-  views= [
+  views = [
     { label: 'Editar', value: 'edit' },
     { label: 'Capturar', value: 'capture' },
     { label: 'Ver', value: 'view' }
@@ -73,6 +73,12 @@ export default class Document extends Vue {
   get documentFields () {
     // TODO: Change this once the store is migrated to TS
     return this.manager ? this.manager.fields : []
+  }
+
+  get filteredFields () {
+    return this.manager.fields.filter(
+      (f) => f.group_by === "" || f.group_by === undefined
+    );
   }
 
   async mounted () {
