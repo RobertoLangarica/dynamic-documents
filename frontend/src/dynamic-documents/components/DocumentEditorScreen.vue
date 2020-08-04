@@ -13,59 +13,40 @@
     </div>
 </template>
 
-<script>
-export default {
-  name: 'document-editor',
-  props: {
-    captureMode: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    manager: {
-      type: Object,
-      required: false,
-      default: () => {
-        // DocumentEditionManager
-        return {}
-      }
-    }
-  },
-  data (){
-    return {}
-  },
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
+import { DocumentEditionManager } from '../src/DocumentEditionManager'
+import { DDFieldType } from '../src/core/DDFieldType'
+import { DDField } from '../src/core/DDField'
+
+@Component({name:'document-editor'})
+export default class DocumentEditorScreen extends Vue{
+  @Prop({required:false, default: false}) readonly captureMode!:boolean
+  @Prop({required:false, default: ()=> new DocumentEditionManager}) readonly manager!:DocumentEditionManager
+
   mounted () {
     this.manager.store = this.$store
-  },
-  computed: {
-    name: {
-      get: function () {
-        return this.manager.name
-      },
-      set: fu(value) {
-        this.manager.name = value
-      }
-    },
-    fields = ()=> {
-      return this.manager.fields.filter(f => f.group_by === '')
-    }
-  },
-  methods:{
-    onFieldUpdated (field) {
-      this.manager.updateField(field)
-    },
+  }
 
-    onFieldDeleted (field) {
-      this.manager.deleteField(field)
-    },
+  get name () {return this.manager.name}
+  set name(value) {this.manager.name = value}
 
-    onFieldAdded (field) {
-      this.manager.addField(field)
-    },
-    
-    onTypeSelected (type) {
-      this.manager.addFieldFromType(type)
-    },
+  get fields(){ return this.manager.fields.filter(f => f.group_by === '') }
+  
+  onFieldUpdated (field:DDField) {
+    this.manager.updateField(field)
+  }
+  onFieldDeleted (field:DDField) {
+    this.manager.deleteField(field)
+  }
+  onFieldAdded (field:DDField) {
+    this.manager.addField(field)
+  }
+
+  onTypeSelected (type: DDFieldType) {
+    this.manager.addFieldFromType(type)
   }
 }
 </script>

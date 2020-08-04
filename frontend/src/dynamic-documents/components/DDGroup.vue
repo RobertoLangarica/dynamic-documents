@@ -15,13 +15,13 @@
 
 <script>
 
-import { DDField } from '../src/DDField'
+import { DDField } from '../src/core/DDField'
 
 export default {
   name: 'dd-group',
   props: {
     field: {
-      type: Object,
+      type: DDField,
       required: false,
       default: () => {
         // DDField

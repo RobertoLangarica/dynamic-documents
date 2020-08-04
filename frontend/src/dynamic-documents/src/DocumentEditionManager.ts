@@ -5,9 +5,9 @@ import { DDTemplateType } from './core/DDTemplateType';
 import { Type } from 'class-transformer';
 import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
-import { DDDocument } from './core/DDDocument';
-import { DDTemplate } from './core/DDTemplate';
 import { DDFieldType } from './core/DDFieldType';
+import { DDTemplate } from './core/DDTemplate';
+import { DDDocument } from './core/DDDocument';
 
 export class DocumentEditionManager {
   id: string = uuidv4()
@@ -61,7 +61,7 @@ export class DocumentEditionManager {
     this.markForDelete(toDelete)
 
     // Remove locally and remotely
-    let deleted = []
+    let deleted:DDField[] = []
     for (let i = 0; i < this.fields.length; i++) {
       if (this.fields[i].deleted) {
         deleted.push(this.fields.splice(i, 1)[0])
@@ -343,6 +343,6 @@ export class DocumentEditionManager {
   public addFieldFromType (type: DDFieldType) {
     let field = DDField.createFromType(type)
     field.initInEdition = true
-    void this.addField(field)
+    this.addField(field)
   }
 }
