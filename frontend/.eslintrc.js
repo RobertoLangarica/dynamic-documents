@@ -54,12 +54,12 @@ module.exports = {
   ],
 
   plugins: [
-
     // https://eslint.vuejs.org/user-guide/#why-doesn-t-it-work-on-vue-file
     // required to lint *.vue files
     'vue',
+
     // required to apply rules which need type information
-    '@typescript-eslint'
+    '@typescript-eslint',
   ],
 
   globals: {
@@ -93,10 +93,10 @@ module.exports = {
     'semi': 'off',
     'prefer-const': 'off',
     'no-void': 'off',
-    'vue/max-attributes-per-line': 'off',
     'vue/attributes-order': 'off',
     'vue/attribute-hyphenation': 'off',
     'vue/html-closing-bracket-newline': 'off',
+    'vue/max-attributes-per-line': 'off',
     // TypeScript
     quotes: ['off', 'single', { avoidEscape: true }],
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -108,6 +108,7 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/no-unsafe-return': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'warn',
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
