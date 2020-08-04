@@ -6,7 +6,8 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "declaration": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "target": "ES2015",
   },
   "exclude": [
     "/dist",
