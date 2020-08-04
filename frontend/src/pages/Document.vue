@@ -11,7 +11,7 @@
     </div>
     <h1>Doc</h1>
     <div
-      v-if="docExists"
+      v-if="docReady"
       :class="currentView"
     >
       <draggable
@@ -61,7 +61,6 @@ import { DocumentEditionManager } from 'src/dynamic-documents/src/DocumentEditio
 @Component({ components: { FieldComponent, draggable } })
 export default class Document extends Vue {
   currentView = 'edit'
-  currentDoc!: Object = null
   manager!: DocumentEditionManager
   views= [
     { label: 'Editar', value: 'edit' },
@@ -69,20 +68,18 @@ export default class Document extends Vue {
     { label: 'Ver', value: 'view' }
   ]
 
-  get docExists () {
-    return !!this.currentDoc
-  }
+  docReady = false
 
   get documentFields () {
     // TODO: Change this once the store is migrated to TS
-    return this.currentDoc.fields
+    return this.manager ? this.manager.fields : []
   }
 
   async mounted () {
-    await this.$store.dispatch('getDocument', this.$route.params.id)
+    let document = await this.$store.dispatch('getDocument', this.$route.params.id)
     await this.$store.dispatch('updateTypes')
-    this.currentDoc = this.$store.state.dd.documents[0]
-    this.manager = DocumentEditionManager.createFromRemoteObject(this.currentDoc)
+    this.manager = DocumentEditionManager.createFromRemoteObject(document)
+    this.docReady = true
     // TODO: Set these properties with the real data
     this.manager.isTemplate = false
     this.manager.isDocument = true
@@ -102,8 +99,6 @@ export default class Document extends Vue {
       // ...more.props...
     }).onOk((type) => {
       console.log('OK', type)
-    }).onCancel(() => {
-    }).onDismiss(() => {
     })
   }
 }
