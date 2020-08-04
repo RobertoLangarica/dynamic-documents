@@ -1,17 +1,19 @@
 <template>
-<div title="Documents" >
-  <h1>Documents</h1>
-  <q-list bordered separator>
-    <q-item v-for="item in this.$store.state.dd.documents" :key="item.id"
-            :to="{ name: 'embed-document', params: { id: item.id} }"
-            clickable v-ripple>
-      <q-item-section>
-        <q-item-label>{{ item.name }}</q-item-label>
-        <q-item-label caption>{{ item.id }}</q-item-label>
-      </q-item-section>
-    </q-item>
-  </q-list>
-</div>
+  <div title="Documents">
+    <h1>Documents</h1>
+    <q-list bordered separator>
+      <q-item v-for="item in this.$store.state.dd.documents" :key="item.id"
+              :to="{ name: 'embed-document', params: { id: item.id} }"
+              clickable v-ripple>
+        <q-item-section>
+          <q-item-label>{{ item.name }}</q-item-label>
+          <q-item-label caption>
+            {{ item.id }}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </div>
 </template>
 
 <script lang="ts">
