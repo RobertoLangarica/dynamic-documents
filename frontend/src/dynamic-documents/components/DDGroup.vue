@@ -1,16 +1,25 @@
 <template>
-    <nq-field :label="name">
-        <template v-slot:control>
-            <div class="col-12 row">
-                <field-type-selector class="col-12  q-mb-lg" @selected="onTypeSelected" label="Agregar campo en el grupo"/>
-                <basic-field class="col-12" v-for="item in fields" :key="item.id" :field="item" :all_fields="all_fields"
-                    @f-updated="onFieldUpdated"
-                    @f-deleted="onFieldDeleted"
-                    @f-added="onFieldAdded"
-                    />
-            </div>
-        </template>
-    </nq-field>
+  <nq-field :label="name">
+    <template v-slot:control>
+      <div class="col-12 row">
+        <field-type-selector
+          class="col-12  q-mb-lg"
+          label="Agregar campo en el grupo"
+          @selected="onTypeSelected"
+        />
+        <basic-field
+          v-for="item in fields"
+          :key="item.id"
+          class="col-12"
+          :field="item"
+          :all_fields="all_fields"
+          @f-updated="onFieldUpdated"
+          @f-deleted="onFieldDeleted"
+          @f-added="onFieldAdded"
+        />
+      </div>
+    </template>
+  </nq-field>
 </template>
 
 <script>
@@ -18,7 +27,7 @@
 import { DDField } from '../src/core/DDField'
 
 export default {
-  name: 'dd-group',
+  name: 'DdGroup',
   props: {
     field: {
       type: DDField,

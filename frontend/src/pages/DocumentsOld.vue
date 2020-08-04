@@ -1,16 +1,35 @@
 <template>
-<nq-page title="Documents" max-width="lg">
-    <template slot="aside" >
-      <template-menu :objects="templates" title="Plantillas" @select="onSelectedTemplate" @add="onShowCreation(true)"/>
-      <template-menu :objects="documents" title="Documentos" @select="onSelectedDocument" @add="onShowCreation(false)"/>
+  <nq-page
+    title="Documents"
+    max-width="lg"
+  >
+    <template slot="aside">
+      <template-menu
+        :objects="templates"
+        title="Plantillas"
+        @select="onSelectedTemplate"
+        @add="onShowCreation(true)"
+      />
+      <template-menu
+        :objects="documents"
+        title="Documentos"
+        @select="onSelectedDocument"
+        @add="onShowCreation(false)"
+      />
     </template>
 
-    <document-editor v-if="exist" :manager="manager"/>
+    <document-editor
+      v-if="exist"
+      :manager="manager"
+    />
 
-    <q-dialog v-model="show_creation" persistent>
-      <template-creation-dialog :isTemplate="creating_template"/>
+    <q-dialog
+      v-model="show_creation"
+      persistent
+    >
+      <template-creation-dialog :is-template="creating_template" />
     </q-dialog>
-</nq-page>
+  </nq-page>
 </template>
 
 <script>

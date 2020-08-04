@@ -1,22 +1,45 @@
 <template>
   <article class="q-pa-lg">
     <div class="fixed-top-right bg-white q-pa-sm q-mr-md">
-      <q-radio v-for="view in views" v-model="currentView" :val="view.value" :label="view.label" :key="view.value" />
+      <q-radio
+        v-for="view in views"
+        :key="view.value"
+        v-model="currentView"
+        :val="view.value"
+        :label="view.label"
+      />
     </div>
     <h1>Doc</h1>
-    <div v-if="docExists" :class="currentView">
-      <draggable v-model="manager.fields"
-                 @start="drag=true" @end="drag=false"
-                 handle=".cursor-drag">
-        <field-component v-for="field in manager.fields" :key="field.id"
-                         :field="field"
-                         :fields="manager.fields"
-                         :currentView="currentView"
-                         class="field-container"
-                         @onShowAddFieldDialog="showAddFieldDialog"
+    <div
+      v-if="docExists"
+      :class="currentView"
+    >
+      <draggable
+        v-model="manager.fields"
+        handle=".cursor-drag"
+        @start="drag=true"
+        @end="drag=false"
+      >
+        <field-component
+          v-for="field in manager.fields"
+          :key="field.id"
+          :field="field"
+          :fields="manager.fields"
+          :current-view="currentView"
+          class="field-container"
+          @onShowAddFieldDialog="showAddFieldDialog"
         />
       </draggable>
-      <q-btn icon="add" rounded flat size="md" class="cursor-pointer" color="grey" label="Agregar un campo" @click="showAddFieldDialog" />
+      <q-btn
+        icon="add"
+        rounded
+        flat
+        size="md"
+        class="cursor-pointer"
+        color="grey"
+        label="Agregar un campo"
+        @click="showAddFieldDialog"
+      />
     </div>
     <q-spinner
       v-else
@@ -53,10 +76,6 @@ export default class Document extends Vue {
   get documentFields () {
     // TODO: Change this once the store is migrated to TS
     return this.currentDoc.fields
-  }
-
-  set documentFields () {
-    // this.$store.commit('updateList', value)
   }
 
   async mounted () {
