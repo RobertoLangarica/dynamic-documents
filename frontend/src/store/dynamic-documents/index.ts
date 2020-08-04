@@ -15,18 +15,18 @@ export interface IDDState {
   types: DDFieldType[]
 }
 
-const state:IDDState = {
+const state: IDDState = {
   documents: [],
   templates: [],
-  types:  []
+  types: []
 }
 
-const mutations:MutationTree<IDDState> = {
+const mutations: MutationTree<IDDState> = {
 
-  templates(state: IDDState, value: DDTemplate[]){
+  templates(state: IDDState, value: DDTemplate[]) {
     state.templates = value
   },
-  
+
   documents(state: IDDState, value: DDDocument[]) {
     state.documents = value
   },
@@ -63,17 +63,17 @@ const mutations:MutationTree<IDDState> = {
   }
 }
 
-const getters:GetterTree<IDDState, StateInterface> = {
+const getters: GetterTree<IDDState, StateInterface> = {
 
-  template:(state: IDDState) => (id: string): DDTemplate | undefined => {
+  template: (state: IDDState) => (id: string): DDTemplate | undefined => {
     return state.templates.find(t => t.id === id)
   },
 
-  document:(state: IDDState) => (id: string): DDDocument | undefined => {
+  document: (state: IDDState) => (id: string): DDDocument | undefined => {
     return state.documents.find(t => t.id === id)
   },
 
-  owner:(state: IDDState) => (id: string): DDTemplate | DDDocument | undefined => {
+  owner: (state: IDDState) => (id: string): DDTemplate | DDDocument | undefined => {
     let owner = state.templates.find(t => t.id === id)
     if (!owner) {
       owner = state.documents.find(t => t.id === id)
@@ -107,9 +107,8 @@ const actions: ActionTree<IDDState, StateInterface> = {
 
     return dispatch('updateDocument', id)
   },
-  getTemplate({ getters, dispatch }, id: string): Promise<DDTemplate | undefined> {
+  async getTemplate({ getters, dispatch }, id: string): Promise<DDTemplate | undefined> {
     let result = getters.template(id)
-
     // If the property fields is missing, then an update is needed
     if (result && result.fields) return result
 
@@ -171,7 +170,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
 }
 
 export default {
-  namespaced: true,
+  namespaced: false,
   state,
   mutations,
   getters,

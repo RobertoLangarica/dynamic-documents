@@ -28,7 +28,7 @@ const mutations: MutationTree<ILoginState> = {
 }
 
 const loginModule: Module<ILoginState, StateInterface> = {
-  namespaced: true,
+  namespaced: false,
   state,
   mutations
 }

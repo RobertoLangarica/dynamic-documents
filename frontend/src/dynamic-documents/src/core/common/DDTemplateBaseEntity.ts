@@ -18,7 +18,7 @@ export class DDTemplateBaseEntity extends DDEntityWithTimeStampt {
     description: string = ''
 
     @Type(() => DDField)
-    fields: DDField[] = []
+    fields?: DDField[]
 
     warnings: string[] = []
 }

@@ -23,7 +23,7 @@ export class DocumentEditionManager {
   categories: DDCategory[] = [];
 
   @Type(() => DDField)
-  fields: DDField[] = [] // DDField[]
+  fields!: DDField[]
 
   isTemplate: boolean = false
 
@@ -37,7 +37,7 @@ export class DocumentEditionManager {
 
   store: Store<StateInterface> | null = null; // Vuex instance
 
-  async updateField (field: DDField) {
+  async updateField(field: DDField) {
     let i = this.fields.findIndex(f => f.id === field.id)
     this.fields[i] = field
 
@@ -48,7 +48,7 @@ export class DocumentEditionManager {
     }
   }
 
-  async deleteField (field: DDField) {
+  async deleteField(field: DDField) {
     let toDelete = this.fields.find(f => f.id === field.id)
 
     if (!toDelete) {
@@ -61,7 +61,7 @@ export class DocumentEditionManager {
     this.markForDelete(toDelete)
 
     // Remove locally and remotely
-    let deleted:DDField[] = []
+    let deleted: DDField[] = []
     for (let i = 0; i < this.fields.length; i++) {
       if (this.fields[i].deleted) {
         deleted.push(this.fields.splice(i, 1)[0])
@@ -82,9 +82,9 @@ export class DocumentEditionManager {
     this.toUpdate = []
   }
 
-  removeUpdateDuplicates () {
-    let copy:DDField[] = []
-    let existing:Map<string, boolean> = new Map<string, boolean>()
+  removeUpdateDuplicates() {
+    let copy: DDField[] = []
+    let existing: Map<string, boolean> = new Map<string, boolean>()
     this.toUpdate.forEach(item => {
       if (!existing.get(item.id)) {
         copy.push(item)
@@ -94,7 +94,7 @@ export class DocumentEditionManager {
     this.toUpdate = copy
   }
 
-  markForDelete (toDelete:DDField) {
+  markForDelete(toDelete: DDField) {
     toDelete.deleted = true
 
     this.fields.forEach(field => {
@@ -126,7 +126,7 @@ export class DocumentEditionManager {
     })
   }
 
-  async addField (field:DDField) {
+  async addField(field: DDField) {
     this.fields.push(field)
     field.is_new = true
     if (this.isDocument) {
@@ -144,7 +144,7 @@ export class DocumentEditionManager {
    * @param {*} includeGroupChildren true: The copy include the children, false: No children is copied with this action
    * @return [fields] an array of copied fields
    */
-  async copyField (idToCopy: string, source: DocumentEditionManager, includeGroupChildren = false, remoteUpdate = false) {
+  async copyField(idToCopy: string, source: DocumentEditionManager, includeGroupChildren = false, remoteUpdate = false) {
     let sourceField: DDField | undefined
     let field: DDField
 
@@ -262,7 +262,7 @@ export class DocumentEditionManager {
     }
   }
 
-  getReferencedField (id:string) {
+  getReferencedField(id: string) {
     let field = this.fields.find(f => f.id === id)
 
     if (field) {
@@ -274,11 +274,11 @@ export class DocumentEditionManager {
     return field
   }
 
-  isNotEmptyString (property?:string) {
+  isNotEmptyString(property?: string) {
     return (property !== undefined && property !== '')
   }
 
-  async cloneDocument (sourceDoc:DocumentEditionManager) {
+  async cloneDocument(sourceDoc: DocumentEditionManager) {
     let copy = new DocumentEditionManager()
     Object.assign(copy, sourceDoc)
     copy.id = uuidv4()
@@ -299,7 +299,7 @@ export class DocumentEditionManager {
     }
 
     // The sorting order of the copied fields is probably not the original one
-    let sorted:DDField[] = []
+    let sorted: DDField[] = []
     sourceDoc.fields.forEach(src => {
       sorted.push(copy.fields.find(f => f.source_field === src.id)!)
     })
@@ -323,24 +323,23 @@ export class DocumentEditionManager {
     return copy
   }
 
-  static createFromRemoteObject (remote: DDTemplate | DDDocument) {
+  static createFromRemoteObject(remote: DDTemplate | DDDocument): DocumentEditionManager {
     let manager = new DocumentEditionManager()
     Object.assign(manager, remote)
     // TODO validate what happen with the categories and the reactivity
 
     // To avoid mutation errors we need copies of the fields instead of references
-    manager.fields = remote.fields.map(item => {
-      let obj:DDField = {} as any
+    manager.fields = remote.fields!.map(item => {
+      let obj: DDField = {} as any
       // TODO validate what happen with the properties passed as reference between Objects
       Object.assign(obj, item)
       return obj
     })
     manager.toUpdate = []
-
     return manager
   }
 
-  public addFieldFromType (type: DDFieldType) {
+  public addFieldFromType(type: DDFieldType) {
     let field = DDField.createFromType(type)
     field.initInEdition = true
     this.addField(field)

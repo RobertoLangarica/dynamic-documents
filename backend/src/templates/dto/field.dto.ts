@@ -109,7 +109,7 @@ export class Field {
 
     @Expose()
     get allowReplication(): boolean {
-        return this.replication.allow
+        return this.replication?.allow
     }
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
