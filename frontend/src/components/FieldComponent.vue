@@ -34,8 +34,10 @@ export default class ClassComponent extends Vue {
   .fields-container {
     &.edit {
       .field-container {
-        background-color: #fafaff;
-        margin: 0.5em 0
+        margin: 0.5em 0;
+        &:hover {
+          background-color: #f8f8f8;
+        }
       }
     }
     .field-container {
