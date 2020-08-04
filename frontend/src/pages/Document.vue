@@ -9,8 +9,12 @@
         :label="view.label"
       />
     </div>
-    <h1>Doc</h1>
-    <div v-if="docReady" :class="currentView">
+    <h1
+      v-if="docReady"
+      :contenteditable="currentView === 'edit'"
+      @input="titleChanged"
+    >{{ manager.name }}</h1>
+    <div v-if="docReady" class="fields-container" :class="currentView">
       <draggable
         v-model="filteredFields"
         handle=".cursor-drag"
@@ -23,7 +27,6 @@
           :field="field"
           :fields="filteredFields"
           :current-view="currentView"
-          class="field-container"
           @onShowAddFieldDialog="showAddFieldDialog"
         />
       </draggable>
@@ -78,12 +81,6 @@ export default class Document extends Vue {
     return this.currentView === IViews.PRINT;
   }
 
-  // views = [
-  //   { label: "Editar", value: "edit" },
-  //   { label: "Capturar", value: "capture" },
-  //   { label: "Ver", value: "view" },
-  // ];
-
   docReady = false;
 
   get documentFields() {
@@ -110,6 +107,10 @@ export default class Document extends Vue {
     this.manager.isDocument = true;
   }
 
+  titleChanged(e) {
+    console.log("titleChanged", e);
+  }
+
   showAddFieldDialog() {
     this.$q
       .dialog({
@@ -130,24 +131,3 @@ export default class Document extends Vue {
   }
 }
 </script>
-
-<style lang="scss">
-.field-container {
-  display: flex;
-  padding: 0.5em;
-  .field-controls {
-    width: 5em;
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-  .field-content {
-    flex: 1;
-  }
-  &:hover,
-  &:active {
-    .field-controls {
-      opacity: 1;
-    }
-  }
-}
-</style>
