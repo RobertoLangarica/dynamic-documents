@@ -1,17 +1,22 @@
 <template>
-  <div v-show="currentView === 'edit' || (currentView === 'capture' && field.show_in_capture) || (currentView === 'print' && field.show_in_print)"
+  <div v-show="isInEditView || (isInCaptureView && field.show_in_capture) || (isInPrintView && field.show_in_print)"
        class="field-container">
-    <div class="field-controls q-pt-md" v-if="currentView === 'edit'">
+    <div class="field-controls q-pt-md" v-if="isInEditView">
       <q-btn icon="add" flat round size="md" dense class="cursor-pointer" color="grey" @click="$emit('onShowAddFieldDialog')" />
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="field-content">
-      <q-badge v-if="currentView === 'edit'" color="secondary" contenteditable="true">
+      <q-badge v-if="isInEditView" color="secondary" contenteditable="true">
         {{ field.name }}
       </q-badge>
-      <q-input v-model="field.value" :label="field.label" :hint="field.hint" outlined :readonly="currentView === 'view'" />
+      A B C
+      <q-input v-model="field.value"
+               :label="field.label"
+               :hint="field.hint"
+               outlined
+               :readonly="isInPrintView" />
     </div>
-    <div class="q-pt-md q-ml-sm field-config" v-if="currentView === 'edit'">
+    <div class="q-pt-md q-ml-sm field-config" v-if="isInEditView">
       <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" />
     </div>
   </div>
@@ -24,8 +29,9 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 export default class ClassComponent extends Vue {
   @Prop({ type: Object, required: true }) readonly field!: Object;
   @Prop({ type: Array, required: true }) readonly fields!: Object;
-  @Prop({ type: String, required: true }) readonly currentView!: Object;
-
+  @Prop({ type: Boolean, required: true }) readonly isInEditView!: boolean;
+  @Prop({ type: Boolean, required: true }) readonly isInCaptureView!: boolean;
+  @Prop({ type: Boolean, required: true }) readonly isInPrintView!: boolean;
   text = 'Abc'
 }
 </script>

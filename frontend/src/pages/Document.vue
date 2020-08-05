@@ -13,7 +13,9 @@
       v-if="docReady"
       :contenteditable="currentView === 'edit'"
       @input="titleChanged"
-    >{{ manager.name }}</h1>
+    >
+      {{ manager.name }}
+    </h1>
     <div v-if="docReady" class="fields-container" :class="currentView">
       <draggable
         v-model="filteredFields"
@@ -26,7 +28,9 @@
           :key="field.id"
           :field="field"
           :fields="filteredFields"
-          :current-view="currentView"
+          :is-in-edit-view="isInEditView"
+          :is-in-capture-view="isInCaptureView"
+          :is-in-print-view="isInPrintView"
           @onShowAddFieldDialog="showAddFieldDialog"
         />
       </draggable>
@@ -66,35 +70,35 @@ export default class Document extends Vue {
   views = [
     { label: "Editar", value: IViews.EDIT },
     { label: "Capturar", value: IViews.CAPTURE },
-    { label: "Ver", value: IViews.PRINT },
+    { label: "Ver", value: IViews.PRINT }
   ];
 
-  get isInEditView() {
+  get isInEditView () {
     return this.currentView === IViews.EDIT;
   }
 
-  get isInCaptureView() {
+  get isInCaptureView () {
     return this.currentView === IViews.CAPTURE;
   }
 
-  get isInPrintView() {
+  get isInPrintView () {
     return this.currentView === IViews.PRINT;
   }
 
   docReady = false;
 
-  get documentFields() {
+  get documentFields () {
     // TODO: Change this once the store is migrated to TS
     return this.manager ? this.manager.fields : [];
   }
 
-  get filteredFields() {
+  get filteredFields () {
     return this.manager.fields.filter(
       (f) => f.group_by === "" || f.group_by === undefined
     );
   }
 
-  async mounted() {
+  async mounted () {
     let document = await this.$store.dispatch(
       "getDocument",
       this.$route.params.id
@@ -107,11 +111,11 @@ export default class Document extends Vue {
     this.manager.isDocument = true;
   }
 
-  titleChanged(e) {
+  titleChanged (e) {
     console.log("titleChanged", e);
   }
 
-  showAddFieldDialog() {
+  showAddFieldDialog () {
     this.$q
       .dialog({
         component: FieldTypeDialog,
@@ -122,7 +126,7 @@ export default class Document extends Vue {
         // ("this" points to your Vue component)
         // props forwarded to component
         // (everything except "component" and "parent" props above):
-        text: "something",
+        text: "something"
         // ...more.props...
       })
       .onOk((type) => {
