@@ -9,7 +9,6 @@
       <q-badge v-if="isInEditView" color="secondary" contenteditable="true">
         {{ field.name }}
       </q-badge>
-      A B C
       <q-input v-model="field.value"
                :label="field.label"
                :hint="field.hint"
