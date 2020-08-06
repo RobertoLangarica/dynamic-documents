@@ -1,17 +1,21 @@
 <template>
-  <div v-show="edit_view || (capture_view && field.show_in_capture) || (print_view && field.show_in_print)"
+  <div v-show="isInEditView || (isInCaptureView && field.show_in_capture) || (isInPrintView && field.show_in_print)"
        class="field-container">
-    <div class="field-controls q-pt-md" v-if="edit_view">
+    <div class="field-controls q-pt-md" v-if="isInEditView">
       <q-btn icon="add" flat round size="md" dense class="cursor-pointer" color="grey" @click="$emit('onShowAddFieldDialog')" />
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="field-content">
-      <q-badge v-if="edit_view" color="secondary" contenteditable="true">
+      <q-badge v-if="isInEditView" color="secondary" contenteditable="true">
         {{ field.name }}
       </q-badge>
-      <q-input v-model="field.value" :label="field.label" :hint="field.hint" outlined :readonly="print_view" />
+      <component v-model="field.value"
+                 :is="getComponent(field.type, field)"
+                 :label="field.label"
+                 :hint="field.hint"
+                 :readonly="isInPrintView" />
     </div>
-    <div class="q-pt-md q-ml-sm field-config" v-if="edit_view">
+    <div class="q-pt-md q-ml-sm field-config" v-if="isInEditView">
       <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" />
     </div>
   </div>
@@ -19,17 +23,25 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { DDField } from 'src/dynamic-documents/src/core/DDField';
+import { DDFieldType, fieldComponentID, fieldComponentUI } from 'src/dynamic-documents/src/core/DDFieldType';
 
 @Component
 export default class ClassComponent extends Vue {
-  @Prop({ required: true }) readonly field!: DDField;
-  @Prop({ required: true }) readonly fields!: DDField[];
-  @Prop({ required: false, default: true }) readonly edit_view!:boolean ;
-  @Prop({ required: false, default: false }) readonly capture_view!:boolean ;
-  @Prop({ required: false, default: false }) readonly print_view!:boolean ;
+  @Prop({ type: Object, required: true }) readonly field!: Object;
+  @Prop({ type: Array, required: true }) readonly fields!: Object;
+  @Prop({ type: Boolean, required: true }) readonly isInEditView!: boolean;
+  @Prop({ type: Boolean, required: true }) readonly isInCaptureView!: boolean;
+  @Prop({ type: Boolean, required: true }) readonly isInPrintView!: boolean;
 
-  text = 'Abc'
+  getComponent (fieldType: DDFieldType, field) {
+    if (fieldComponentUI[fieldType.component]) {
+      let component = fieldComponentUI[fieldType.component].component || 'nq-input'
+      console.log('component')
+      return component
+    } else {
+      return 'nq-input'
+    }
+  }
 }
 </script>
 

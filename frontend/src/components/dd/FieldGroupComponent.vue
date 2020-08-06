@@ -6,9 +6,9 @@
       :key="field.id"
       :field="field"
       :fields="fields"
-      :edit_view="edit_view"
-      :capture_view="capture_view"
-      :print_view="print_view"
+      :isInEditView="edit_view"
+      :isInCaptureView="capture_view"
+      :isInPrintView="print_view"
       @onShowAddFieldDialog="showAddFieldDialog"
     />
     <!-- Prueba sin filtrar campos -->
