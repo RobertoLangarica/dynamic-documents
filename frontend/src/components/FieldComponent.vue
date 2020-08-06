@@ -9,11 +9,11 @@
       <q-badge v-if="isInEditView" color="secondary" contenteditable="true">
         {{ field.name }}
       </q-badge>
-      <q-input v-model="field.value"
-               :label="field.label"
-               :hint="field.hint"
-               outlined
-               :readonly="isInPrintView" />
+      <component v-model="field.value"
+                 :is="getComponent(field.type, field)"
+                 :label="field.label"
+                 :hint="field.hint"
+                 :readonly="isInPrintView" />
     </div>
     <div class="q-pt-md q-ml-sm field-config" v-if="isInEditView">
       <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" />
@@ -23,6 +23,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
+import { DDFieldType, fieldComponentID, fieldComponentUI } from 'src/dynamic-documents/src/core/DDFieldType';
 
 @Component
 export default class ClassComponent extends Vue {
@@ -31,7 +32,16 @@ export default class ClassComponent extends Vue {
   @Prop({ type: Boolean, required: true }) readonly isInEditView!: boolean;
   @Prop({ type: Boolean, required: true }) readonly isInCaptureView!: boolean;
   @Prop({ type: Boolean, required: true }) readonly isInPrintView!: boolean;
-  text = 'Abc'
+
+  getComponent (fieldType: DDFieldType, field) {
+    if (fieldComponentUI[fieldType.component]) {
+      let component = fieldComponentUI[fieldType.component].component || 'nq-input'
+      console.log('component')
+      return component
+    } else {
+      return 'nq-input'
+    }
+  }
 }
 </script>
 
