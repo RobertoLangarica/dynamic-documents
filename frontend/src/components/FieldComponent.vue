@@ -1,17 +1,17 @@
 <template>
-  <div v-show="currentView === 'edit' || (currentView === 'capture' && field.show_in_capture) || (currentView === 'print' && field.show_in_print)"
+  <div v-show="edit_view || (capture_view && field.show_in_capture) || (print_view && field.show_in_print)"
        class="field-container">
-    <div class="field-controls q-pt-md" v-if="currentView === 'edit'">
+    <div class="field-controls q-pt-md" v-if="edit_view">
       <q-btn icon="add" flat round size="md" dense class="cursor-pointer" color="grey" @click="$emit('onShowAddFieldDialog')" />
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="field-content">
-      <q-badge v-if="currentView === 'edit'" color="secondary" contenteditable="true">
+      <q-badge v-if="edit_view" color="secondary" contenteditable="true">
         {{ field.name }}
       </q-badge>
-      <q-input v-model="field.value" :label="field.label" :hint="field.hint" outlined :readonly="currentView === 'view'" />
+      <q-input v-model="field.value" :label="field.label" :hint="field.hint" outlined :readonly="print_view" />
     </div>
-    <div class="q-pt-md q-ml-sm field-config" v-if="currentView === 'edit'">
+    <div class="q-pt-md q-ml-sm field-config" v-if="edit_view">
       <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" />
     </div>
   </div>
@@ -19,12 +19,15 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
+import { DDField } from 'src/dynamic-documents/src/core/DDField';
 
 @Component
 export default class ClassComponent extends Vue {
-  @Prop({ type: Object, required: true }) readonly field!: Object;
-  @Prop({ type: Array, required: true }) readonly fields!: Object;
-  @Prop({ type: String, required: true }) readonly currentView!: Object;
+  @Prop({ required: true }) readonly field!: DDField;
+  @Prop({ required: true }) readonly fields!: DDField[];
+  @Prop({ required: false, default: true }) readonly edit_view!:boolean ;
+  @Prop({ required: false, default: false }) readonly capture_view!:boolean ;
+  @Prop({ required: false, default: false }) readonly print_view!:boolean ;
 
   text = 'Abc'
 }

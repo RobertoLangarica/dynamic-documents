@@ -37,7 +37,7 @@ export class DocumentEditionManager {
 
   store: Store<StateInterface> | null = null; // Vuex instance
 
-  async updateField(field: DDField) {
+  async updateField (field: DDField) {
     let i = this.fields.findIndex(f => f.id === field.id)
     this.fields[i] = field
 
@@ -48,7 +48,7 @@ export class DocumentEditionManager {
     }
   }
 
-  async deleteField(field: DDField) {
+  async deleteField (field: DDField) {
     let toDelete = this.fields.find(f => f.id === field.id)
 
     if (!toDelete) {
@@ -82,7 +82,7 @@ export class DocumentEditionManager {
     this.toUpdate = []
   }
 
-  removeUpdateDuplicates() {
+  removeUpdateDuplicates () {
     let copy: DDField[] = []
     let existing: Map<string, boolean> = new Map<string, boolean>()
     this.toUpdate.forEach(item => {
@@ -94,7 +94,7 @@ export class DocumentEditionManager {
     this.toUpdate = copy
   }
 
-  markForDelete(toDelete: DDField) {
+  markForDelete (toDelete: DDField) {
     toDelete.deleted = true
 
     this.fields.forEach(field => {
@@ -126,7 +126,7 @@ export class DocumentEditionManager {
     })
   }
 
-  async addField(field: DDField) {
+  async addField (field: DDField) {
     this.fields.push(field)
     field.is_new = true
     if (this.isDocument) {
@@ -144,7 +144,7 @@ export class DocumentEditionManager {
    * @param {*} includeGroupChildren true: The copy include the children, false: No children is copied with this action
    * @return [fields] an array of copied fields
    */
-  async copyField(idToCopy: string, source: DocumentEditionManager, includeGroupChildren = false, remoteUpdate = false) {
+  async copyField (idToCopy: string, source: DocumentEditionManager, includeGroupChildren = false, remoteUpdate = false) {
     let sourceField: DDField | undefined
     let field: DDField
 
@@ -262,7 +262,7 @@ export class DocumentEditionManager {
     }
   }
 
-  getReferencedField(id: string) {
+  getReferencedField (id: string) {
     let field = this.fields.find(f => f.id === id)
 
     if (field) {
@@ -274,11 +274,11 @@ export class DocumentEditionManager {
     return field
   }
 
-  isNotEmptyString(property?: string) {
+  isNotEmptyString (property?: string) {
     return (property !== undefined && property !== '')
   }
 
-  async cloneDocument(sourceDoc: DocumentEditionManager) {
+  async cloneDocument (sourceDoc: DocumentEditionManager) {
     let copy = new DocumentEditionManager()
     Object.assign(copy, sourceDoc)
     copy.id = uuidv4()
@@ -323,7 +323,7 @@ export class DocumentEditionManager {
     return copy
   }
 
-  static createFromRemoteObject(remote: DDTemplate | DDDocument): DocumentEditionManager {
+  static createFromRemoteObject (remote: DDTemplate | DDDocument): DocumentEditionManager {
     let manager = new DocumentEditionManager()
     Object.assign(manager, remote)
     // TODO validate what happen with the categories and the reactivity
@@ -339,7 +339,7 @@ export class DocumentEditionManager {
     return manager
   }
 
-  public addFieldFromType(type: DDFieldType) {
+  public addFieldFromType (type: DDFieldType) {
     let field = DDField.createFromType(type)
     field.initInEdition = true
     this.addField(field)

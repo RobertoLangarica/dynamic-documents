@@ -8,6 +8,7 @@ import { StatusService } from "src/status/status.service"
 import { DocumentConfig } from "./document.config"
 import { DocumentFilterService } from "src/document_filter/doc_filter.service"
 import { TemplateService } from "src/templates/template.service"
+import { plainToClass } from "class-transformer"
 
 @Injectable()
 export class DocumentService {
@@ -126,21 +127,27 @@ export class DocumentService {
     }
 
     async saveDocumentChanges(data: DocumentDto): Promise<Document> {
-        // avoiding the override of the existing fields by using preload
+        // avoiding the override of the existing fields
         let fields = data.fields;
         delete data.fields
 
         //avoiding the override of the existing versions
         let versions = data.versions
         delete data.versions
-        let document = await this.doc_repo.preload(data)
+        let document = await this.doc_repo.createQueryBuilder('d')
+            .addSelect('d.versions')
+            .where('id=:id', { id: data.id })
+            .getOne()
 
         if (!document) {
             throw new NotFoundException()
         }
 
+        // Assigning present changes in data
+        Object.assign(document, data)
+
+
         if (versions) document.versions.push(versions[0])
-        if (data.categories) document.categories = data.categories
 
         if (fields.length > 0) {
             // Fields is only a partial update
