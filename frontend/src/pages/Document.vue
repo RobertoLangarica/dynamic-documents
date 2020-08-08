@@ -16,17 +16,37 @@
     >
       {{ manager.name }}
     </h1>
-    <div v-if="docReady" class="fields-container" :class="currentView">
-      <field-group-component
+    <!-- <div v-if="docReady" class="fields-container" :class="currentView"> -->
+    <!-- <field-group-component
         :fields="documentFields"
         :edit_view="isInEditView"
         :capture_view="isInCaptureView"
         :print_view="isInPrintView"
         @f-add="onFieldAdded"
         @f-update="onFieldUpdated"
-        @f-delete="onFieldDeleted" />
-    </div>
-    <q-spinner v-else color="primary" size="3em" :thickness="2" />
+        @f-delete="onFieldDeleted" /> -->
+
+    <field-component
+      v-for="field in documentFields"
+      :key="field.id"
+      :field="field"
+      :fields="documentFields"
+      :isInEditView="isInEditView"
+      :isInCaptureView="isInCaptureView"
+      :isInPrintView="isInPrintView"
+    />
+    <q-btn
+      icon="add"
+      rounded
+      flat
+      size="md"
+      class="cursor-pointer"
+      color="grey"
+      label="Agregar un campo"
+      @click="showAddFieldDialog"
+    />
+    <!-- </div> -->
+    <!-- <q-spinner v-else color="primary" size="3em" :thickness="2" /> -->
   </article>
 </template>
 
@@ -38,6 +58,8 @@ import FieldComponent from "components/FieldComponent.vue";
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
 import FieldGroupComponent from 'components/dd/FieldGroupComponent'
 import { DDField } from "src/dynamic-documents/src/core/DDField";
+import FieldTypeDialog from "components/FieldTypeDialog.vue";
+import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 
 export enum IViews{
   EDIT,
@@ -45,10 +67,12 @@ export enum IViews{
   PRINT,
 }
 
-@Component({ components: { FieldComponent, draggable, 'field-group-component': FieldGroupComponent } })
+@Component({ components: { FieldComponent, draggable, 'field-group-component': FieldGroupComponent, FieldTypeDialog } })
 export default class Document extends Vue {
   currentView: IViews = IViews.EDIT;
   manager!: DocumentEditionManager;
+  fields:DDField[] = []
+
   views = [
     { label: "Editar", value: IViews.EDIT },
     { label: "Capturar", value: IViews.CAPTURE },
@@ -70,7 +94,7 @@ export default class Document extends Vue {
   docReady = false;
 
   get documentFields () {
-    return this.manager ? this.manager.fields : [];
+    return this.fields;
   }
 
   get filteredFields () {
@@ -91,6 +115,7 @@ export default class Document extends Vue {
     }
 
     this.manager = DocumentEditionManager.createFromRemoteObject(document);
+    this.fields = this.manager.fields;
     this.docReady = true;
     // TODO: Set these properties with the real data
     this.manager.isTemplate = false;
@@ -113,6 +138,30 @@ export default class Document extends Vue {
   onFieldAdded (field: DDField) {
     this.manager.addField(field);
     console.log(this.documentFields)
+  }
+
+  showAddFieldDialog () {
+    this.$q
+      .dialog({
+        component: FieldTypeDialog,
+        // optional if you want to have access to
+        // Router, Vuex store, and so on, in your
+        // custom component:
+        parent: this, // becomes child of this Vue node
+        // ("this" points to your Vue component)
+        // props forwarded to component
+        // (everything except "component" and "parent" props above):
+        text: "something"
+      // ...more.props...
+      })
+      .onOk((type) => {
+        this.onFieldTypeSelected(type as DDFieldType)
+      });
+  }
+
+  onFieldTypeSelected (type:DDFieldType) {
+    let field = DDField.createFromType(type)
+    this.onFieldAdded(field)
   }
 }
 </script>
