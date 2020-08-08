@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <draggable v-model="myFields" handle=".cursor-drag" @start="drag=true" @end="drag=false"> -->
+    <draggable v-model="myFields" handle=".cursor-drag"  @start="onDragStart" @end="onDragEnded" :animation="200">
     <field-component
       v-for="field in myFields"
       :key="field.id"
@@ -11,12 +11,8 @@
       :isInPrintView="print_view"
       @onShowAddFieldDialog="showAddFieldDialog"
     />
-    <!-- Prueba sin filtrar campos -->
-    <p v-for="item in fields" :key="item.id + 'a'">
-      {{ item.name }}
-    </p>
 
-    <!-- </draggable> -->
+    </draggable>
     <q-btn
       icon="add"
       rounded
@@ -38,11 +34,11 @@ import { Prop } from "vue-property-decorator";
 
 import draggable from "vuedraggable";
 import FieldTypeDialog from "components/FieldTypeDialog.vue";
-import FieldComponent from "components/FieldComponent.vue";
+import FieldComponent from "components/dd/FieldComponent.vue";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 
-@Component({ components: { draggable, 'field-type-dialog': FieldTypeDialog, 'field-component': FieldComponent } })
+@Component({name:'field-group-component', components: { draggable, 'field-type-dialog': FieldTypeDialog, 'field-component': FieldComponent } })
 export default class FieldGroupComponent extends Vue {
 @Prop({ required: false, default: '' }) readonly group!:string
 @Prop({ required: true }) readonly fields!:DDField[]
@@ -50,17 +46,38 @@ export default class FieldGroupComponent extends Vue {
 @Prop({ required: false, default: false }) readonly capture_view!:boolean ;
 @Prop({ required: false, default: false }) readonly print_view!:boolean ;
 
-drag:boolean = false
-
 get myFields () {
-  console.log('GROUP', this.group)
   if (this.group === '') {
     // Without group
+    // return this.fields.filter(v => v.group_by === '' || !v.group_by).sort((a,b)=>a.sort_index - b.sort_index)
     return this.fields.filter(v => v.group_by === '' || !v.group_by)
   }
 
-  // TODO filtrar por campo
-  return this.fields
+  // return this.fields.filter(v => v.group_by === this.group).sort((a,b)=>a.sort_index - b.sort_index)
+  return this.fields.filter(v => v.group_by === this.group)
+}
+
+set myFields (value){
+  // console.log(value)
+  console.log('end')
+}
+
+onDragStart(e){
+  console.log(e)
+}
+
+onDragEnded(e){
+  console.log(e.oldIndex)
+  console.log(e.newIndex)
+
+  // Index swap
+  if(Math.abs(e.oldIndex - e.newIndex) === 1){
+    // First time 
+    if(this.myFields[e.oldIndex].sort_index === this.myFields[e.newIndex].sort_index){
+        this.myFields[e.oldIndex].sort_index = e.newIndex
+        this.myFields[e.newIndex].sort_index = e.oldIndex
+    }
+  }
 }
 
 showAddFieldDialog () {
@@ -85,7 +102,7 @@ showAddFieldDialog () {
 onFieldTypeSelected (type:DDFieldType) {
   let field = DDField.createFromType(type)
   field.group_by = this.group
-  this.$emit('f-add', field)
+  this.$root.$emit('f-add', field)
 }
 }
 </script>

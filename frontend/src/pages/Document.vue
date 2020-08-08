@@ -16,50 +16,23 @@
     >
       {{ manager.name }}
     </h1>
-    <!-- <div v-if="docReady" class="fields-container" :class="currentView"> -->
-    <!-- <field-group-component
-        :fields="documentFields"
+    <div v-if="docReady" class="fields-container" :class="currentView">
+      <field-group-component
+        :fields="fields"
         :edit_view="isInEditView"
         :capture_view="isInCaptureView"
         :print_view="isInPrintView"
-        @f-add="onFieldAdded"
-        @f-update="onFieldUpdated"
-        @f-delete="onFieldDeleted" /> -->
-
-    <field-component
-      v-for="field in documentFields"
-      :key="field.id"
-      :field="field"
-      :fields="documentFields"
-      :isInEditView="isInEditView"
-      :isInCaptureView="isInCaptureView"
-      :isInPrintView="isInPrintView"
-    />
-    <q-btn
-      icon="add"
-      rounded
-      flat
-      size="md"
-      class="cursor-pointer"
-      color="grey"
-      label="Agregar un campo"
-      @click="showAddFieldDialog"
-    />
-    <!-- </div> -->
-    <!-- <q-spinner v-else color="primary" size="3em" :thickness="2" /> -->
+        />
+    </div>
+    <q-spinner v-else color="primary" size="3em" :thickness="2" />
   </article>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import draggable from "vuedraggable";
-import FieldComponent from "components/FieldComponent.vue";
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
-import FieldGroupComponent from 'components/dd/FieldGroupComponent'
 import { DDField } from "src/dynamic-documents/src/core/DDField";
-import FieldTypeDialog from "components/FieldTypeDialog.vue";
-import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 
 export enum IViews{
   EDIT,
@@ -67,11 +40,12 @@ export enum IViews{
   PRINT,
 }
 
-@Component({ components: { FieldComponent, draggable, 'field-group-component': FieldGroupComponent, FieldTypeDialog } })
+@Component({})
 export default class Document extends Vue {
   currentView: IViews = IViews.EDIT;
   manager!: DocumentEditionManager;
   fields:DDField[] = []
+  docReady = false;
 
   views = [
     { label: "Editar", value: IViews.EDIT },
@@ -91,16 +65,16 @@ export default class Document extends Vue {
     return this.currentView === IViews.PRINT;
   }
 
-  docReady = false;
-
-  get documentFields () {
-    return this.fields;
+  created () {
+    this.$root.$on('f-add', this.onFieldAdded.bind(this))
+    this.$root.$on('f-update', this.onFieldUpdated.bind(this))
+    this.$root.$on('f-delete', this.onFieldDeleted.bind(this))
   }
 
-  get filteredFields () {
-    return this.manager.fields.filter(
-      (f) => f.group_by === "" || f.group_by === undefined
-    );
+  beforDestroy () {
+    this.$root.$off('f-add', this.onFieldAdded.bind(this))
+    this.$root.$off('f-update', this.onFieldUpdated.bind(this))
+    this.$root.$off('f-delete', this.onFieldDeleted.bind(this))
   }
 
   async mounted () {
@@ -109,7 +83,8 @@ export default class Document extends Vue {
       this.$route.params.id
     );
     await this.$store.dispatch("updateTypes");
-    // TODO remove this login push
+
+    // TODO remove this login since it is only for test purposes
     if (!document) {
       return this.$router.push({ name: 'login' })
     }
@@ -128,40 +103,15 @@ export default class Document extends Vue {
   }
 
   onFieldUpdated (field: DDField) {
-    this.manager.updateField(field);
+    void this.manager.updateField(field);
   }
 
   onFieldDeleted (field: DDField) {
-    this.manager.deleteField(field);
+    void this.manager.deleteField(field);
   }
 
   onFieldAdded (field: DDField) {
-    this.manager.addField(field);
-    console.log(this.documentFields)
-  }
-
-  showAddFieldDialog () {
-    this.$q
-      .dialog({
-        component: FieldTypeDialog,
-        // optional if you want to have access to
-        // Router, Vuex store, and so on, in your
-        // custom component:
-        parent: this, // becomes child of this Vue node
-        // ("this" points to your Vue component)
-        // props forwarded to component
-        // (everything except "component" and "parent" props above):
-        text: "something"
-      // ...more.props...
-      })
-      .onOk((type) => {
-        this.onFieldTypeSelected(type as DDFieldType)
-      });
-  }
-
-  onFieldTypeSelected (type:DDFieldType) {
-    let field = DDField.createFromType(type)
-    this.onFieldAdded(field)
+    void this.manager.addField(field);
   }
 }
 </script>

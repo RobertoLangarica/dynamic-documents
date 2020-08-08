@@ -6,42 +6,68 @@
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="field-content">
-      <q-badge v-if="isInEditView" color="secondary" contenteditable="true">
-        {{ field.name }}
+      <q-badge v-if="isInEditView" color="secondary" contenteditable="true" @input="e=>name= e.target.outerText" >
+        {{ name }}
       </q-badge>
       <component v-model="field.value"
-                 :is="getComponent(field.type, field)"
-                 :label="field.label"
-                 :hint="field.hint"
-                 :readonly="isInPrintView" />
+                :is="getComponent(field.type)"
+                :label="field.label"
+                :hint="field.hint"
+                :readonly="isInPrintView" 
+                :group="field.id"
+                :fields="fields"
+                :edit_view="isInEditView"
+                :capture_view="isInCaptureView"
+                :print_view="isInPrintView"
+                 />
     </div>
-    <div class="q-pt-md q-ml-sm field-config" v-if="isInEditView">
+    <div class="q-pt-md q-ml-sm field-config column" v-if="isInEditView">
       <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" />
+      <q-btn icon="delete" flat round size="md" dense class="cursor-pointer" color="red" @click="onDelete"/>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { DDFieldType, fieldComponentID, fieldComponentUI } from 'src/dynamic-documents/src/core/DDFieldType';
+import { DDFieldType, FieldComponentUI } from 'src/dynamic-documents/src/core/DDFieldType';
+import { DDField } from 'src/dynamic-documents/src/core/DDField';
+import {throttle} from 'underscore/modules/index'
 
 @Component
 export default class ClassComponent extends Vue {
-  @Prop({ type: Object, required: true }) readonly field!: Object;
-  @Prop({ type: Array, required: true }) readonly fields!: Object;
+  @Prop({ required: true }) readonly field!: DDField;
+  @Prop({ type: Array, required: true }) readonly fields!: DDField[];
   @Prop({ type: Boolean, required: true }) readonly isInEditView!: boolean;
   @Prop({ type: Boolean, required: true }) readonly isInCaptureView!: boolean;
   @Prop({ type: Boolean, required: true }) readonly isInPrintView!: boolean;
+  @Prop({ type: Number, required: false, default:500 }) readonly debounce!: number;
 
-  getComponent (fieldType: DDFieldType, field) {
-    if (fieldComponentUI[fieldType.component]) {
-      let component = fieldComponentUI[fieldType.component].component || 'nq-input'
-      console.log('component')
+  get name(){return this.field.name }
+  set name(value){
+    this.field.name = value
+    this.notifyUpdate()
+  }
+
+  getComponent (fieldType: DDFieldType, field:DDField) {
+    console.log(fieldType.component, this.field)
+    if (FieldComponentUI[fieldType.component]) {
+      let component = FieldComponentUI[fieldType.component].component || 'nq-input'
       return component
     } else {
       return 'nq-input'
     }
   }
+
+  onDelete(){
+    this.$root.$emit('f-delete', this.field)
+  }
+
+  // Avoiding overflow of update calls
+  notifyUpdate = throttle( ()=> {
+    this.$root.$emit('f-update', this.field)
+  }, this.debounce, {leading:false})
+  
 }
 </script>
 

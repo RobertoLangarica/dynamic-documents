@@ -2,15 +2,16 @@ import { DDSimpleEntity } from "./common/DDSimpleEntity";
 import { DDValidation } from "./DDValidation";
 import { Type } from "class-transformer";
 
-export enum fieldComponentID {
+export enum EFieldComponentID {
   INPUT_TEXT = 'input-text',
   INPUT_NUMBER = 'input-number',
   INPUT_CURRENCY = 'input-currency',
+  GROUP = 'group',
   NOT_DEFINED = ''
 }
 
 export class DDFieldType extends DDSimpleEntity {
-    component: fieldComponentID = fieldComponentID.NOT_DEFINED
+    component: EFieldComponentID = EFieldComponentID.NOT_DEFINED
 
     parameters: string = ''
 
@@ -18,9 +19,10 @@ export class DDFieldType extends DDSimpleEntity {
     validations: DDValidation[] = []
 }
 
-export const fieldComponentUI: Record<fieldComponentID, { component: string, parameters: any }> = {
-  [fieldComponentID.INPUT_TEXT]: { component: 'nq-input', parameters: {} },
-  [fieldComponentID.INPUT_NUMBER]: { component: 'nq-input-number', parameters: {} },
-  [fieldComponentID.INPUT_CURRENCY]: { component: 'nq-input-currency', parameters: {} },
-  [fieldComponentID.NOT_DEFINED]: { component: 'nq-input', parameters: {} }
+export const FieldComponentUI: Record<EFieldComponentID, { component: string, parameters: any }> = {
+  [EFieldComponentID.INPUT_TEXT]: { component: 'nq-input', parameters: {} },
+  [EFieldComponentID.INPUT_NUMBER]: { component: 'nq-input-number', parameters: {} },
+  [EFieldComponentID.INPUT_CURRENCY]: { component: 'nq-input-currency', parameters: {} },
+  [EFieldComponentID.NOT_DEFINED]: { component: 'nq-input', parameters: {} },
+  [EFieldComponentID.GROUP]: { component: 'field-group-component', parameters: {} }
 }

@@ -49,12 +49,14 @@ export class DocumentEditionManager {
   }
 
   async deleteField (field: DDField) {
-    let toDelete = this.fields.find(f => f.id === field.id)
+    let toDelete = field
 
-    if (!toDelete) {
-      // Nothing to delete
-      return
-    }
+    // let toDelete = this.fields.find(f => f.id === field.id)
+    // if (!toDelete) {
+    //   // Nothing to delete
+    //   console.log('Nothing to delete')
+    //   return
+    // }
 
     // mark deletion
     this.toUpdate = []
@@ -64,7 +66,7 @@ export class DocumentEditionManager {
     let deleted: DDField[] = []
     for (let i = 0; i < this.fields.length; i++) {
       if (this.fields[i].deleted) {
-        deleted.push(this.fields.splice(i, 1)[0])
+        deleted.push(this.fields.splice(i--, 1)[0])
       }
     }
 
@@ -99,7 +101,7 @@ export class DocumentEditionManager {
 
     this.fields.forEach(field => {
       // Eliminamos cualquier dependencia
-      if (field.dependent && field.dependent.on === toDelete.id) {
+      if (field.dependent?.on === toDelete.id) {
         field.dependent = null
         this.toUpdate.push(field)
       }
