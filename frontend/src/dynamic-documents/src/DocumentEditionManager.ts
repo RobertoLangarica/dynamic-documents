@@ -74,7 +74,6 @@ export class DocumentEditionManager {
     this.toUpdate = this.toUpdate.filter(item => !item.deleted)
 
     this.removeUpdateDuplicates()
-
     if (this.isDocument) {
       await this.store?.dispatch('setDocument', { id: this.id, fields: deleted.concat(this.toUpdate) })
     } else {
@@ -343,7 +342,6 @@ export class DocumentEditionManager {
 
   public addFieldFromType (type: DDFieldType) {
     let field = DDField.createFromType(type)
-    field.initInEdition = true
     this.addField(field)
   }
 }

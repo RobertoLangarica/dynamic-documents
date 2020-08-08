@@ -21,6 +21,7 @@ export class FDataReplication {
     max_count: number //0 or less mean no max count
 }
 
+@Exclude()
 export class Field {
     @IsNotEmpty() @IsString() @ApiProperty()
     @Expose()

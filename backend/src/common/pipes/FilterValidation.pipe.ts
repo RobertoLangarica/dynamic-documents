@@ -14,11 +14,6 @@ export class FilterValidationPipe implements PipeTransform {
             return value
         }
 
-        // Avoiding extra data for the fields
-        if (value.fields) {
-            value.fields = plainToClass(FilterField, value.fields, { excludeExtraneousValues: true })
-        }
-
         // Avoiding unexisting documents
         if (value.document) {
             if (isUUID(value.document)) {

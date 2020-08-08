@@ -1,8 +1,9 @@
 import { EntityWithTimeStampt } from "src/common/entities/entity_with_timestampt.entity";
 import { Entity, Unique, Column } from "typeorm";
-import { Type, Expose, Transform } from "class-transformer";
-import { IsDate, IsString, IsUUID, IsArray, IsBoolean } from "class-validator";
+import { Type, Expose, Transform, Exclude } from "class-transformer";
+import { IsString, IsUUID, IsArray, IsBoolean } from "class-validator";
 
+@Exclude()
 export class FilterField {
     @IsUUID() @Expose()
     field: string

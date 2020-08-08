@@ -99,14 +99,12 @@ export class DDField {
   // Identifier used in the fillmaps
   map_id?: string
 
-  // ## EDITOR PROPERTIES ##
-  initInEdition: boolean = false
-  // #######################
-
   static createFromType (type: DDFieldType): DDField {
     let field = new DDField()
     field.name = type.name
+    console.log(type)
     field.type = type
+    console.log(field.type)
     field.is_new = true
 
     return field

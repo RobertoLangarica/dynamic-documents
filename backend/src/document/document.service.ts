@@ -8,7 +8,6 @@ import { StatusService } from "src/status/status.service"
 import { DocumentConfig } from "./document.config"
 import { DocumentFilterService } from "src/document_filter/doc_filter.service"
 import { TemplateService } from "src/templates/template.service"
-import { plainToClass } from "class-transformer"
 
 @Injectable()
 export class DocumentService {
@@ -136,7 +135,8 @@ export class DocumentService {
         delete data.versions
         let document = await this.doc_repo.createQueryBuilder('d')
             .addSelect('d.versions')
-            .where('id=:id', { id: data.id })
+            .leftJoinAndSelect('d.status', 's')
+            .where('d.id=:id', { id: data.id })
             .getOne()
 
         if (!document) {
@@ -161,7 +161,6 @@ export class DocumentService {
             })
             let u = 0;
             let d = 0;
-
             for (let i = 0; i < document.fields.length; i++) {
                 // Is there something to update?
                 if (u < toUpdate.length && document.fields[i].id === toUpdate[u].id) {

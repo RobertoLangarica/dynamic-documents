@@ -1,6 +1,6 @@
 import { Injectable, PipeTransform, ArgumentMetadata, BadRequestException } from "@nestjs/common";
 import { Field } from "src/templates/dto/field.dto";
-import { plainToClass } from "class-transformer";
+import { plainToClass, classToClass, plainToClassFromExist } from "class-transformer";
 import { isArray } from "util";
 
 @Injectable()
@@ -24,20 +24,18 @@ export class FieldsValidationPipe implements PipeTransform {
         let fields: Field[]
 
         fields = value.fields.map((field, index) => {
-            let f = plainToClass(Field, field, { excludeExtraneousValues: true })
-
-            if (!f.id) {
+            if (!field.id) {
                 throw new BadRequestException(`Missing id property at fields[${index}]`)
             }
 
             // since there is no defaults we remove the undefined properties
-            Object.keys(f).forEach(key => {
-                if (f[key] === undefined) {
-                    delete f[key]
+            Object.keys(field).forEach(key => {
+                if (field[key] === undefined) {
+                    delete field[key]
                 }
             })
 
-            return f
+            return field
         })
         value.fields = fields
         return value

@@ -12,8 +12,10 @@ export enum EFieldComponentID {
 
 export class DDFieldType extends DDSimpleEntity {
     component: EFieldComponentID = EFieldComponentID.NOT_DEFINED
-
+    description: string = ''
     parameters: string = ''
+    name: string = ''
+    id: string = ''
 
     @Type(() => DDValidation)
     validations: DDValidation[] = []
