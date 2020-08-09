@@ -1,6 +1,6 @@
 <template>
   <div>
-    <draggable v-model="myFields" handle=".cursor-drag"  @start="onDragStart" @end="onDragEnded" :animation="200">
+    <draggable v-model="myFields" handle=".cursor-drag"  @end="onDragEnded" :animation="200">
     <field-component
       v-for="field in myFields"
       :key="field.id"
@@ -49,33 +49,40 @@ export default class FieldGroupComponent extends Vue {
 get myFields () {
   if (this.group === '') {
     // Without group
-    // return this.fields.filter(v => v.group_by === '' || !v.group_by).sort((a,b)=>a.sort_index - b.sort_index)
-    return this.fields.filter(v => v.group_by === '' || !v.group_by)
+    return this.fields.filter(v => v.group_by === '' || !v.group_by).sort((a,b)=>a.sort_index - b.sort_index)
+    // return this.fields.filter(v => v.group_by === '' || !v.group_by)
   }
 
-  // return this.fields.filter(v => v.group_by === this.group).sort((a,b)=>a.sort_index - b.sort_index)
-  return this.fields.filter(v => v.group_by === this.group)
+  return this.fields.filter(v => v.group_by === this.group).sort((a,b)=>a.sort_index - b.sort_index)
+  // return this.fields.filter(v => v.group_by === this.group)
 }
 
-set myFields (value){
-  // console.log(value)
-  console.log('end')
-}
-
-onDragStart(e){
-  console.log(e)
-}
+set myFields (value){/*Empty on purpose*/}
 
 onDragEnded(e){
-  console.log(e.oldIndex)
-  console.log(e.newIndex)
+  if(e.oldIndex === e.newIndex ) return;
 
-  // Index swap
-  if(Math.abs(e.oldIndex - e.newIndex) === 1){
-    // First time 
-    if(this.myFields[e.oldIndex].sort_index === this.myFields[e.newIndex].sort_index){
-        this.myFields[e.oldIndex].sort_index = e.newIndex
-        this.myFields[e.newIndex].sort_index = e.oldIndex
+  let a = e.oldIndex < e.newIndex ? e.oldIndex:e.newIndex
+  let b = e.oldIndex > e.newIndex ? e.oldIndex:e.newIndex
+
+  console.log(`from:${a} to ${b}   ${e.oldIndex},${e.newIndex}`)
+  for(let i = a; i <= b; i++){
+    if(e.newIndex < e.oldIndex){
+      // The fields go down
+      console.log('down +1')
+      if(i == b){
+        this.myFields[i].sort_index = this.myFields[e.newIndex].sort_index-1
+      } else {
+        this.myFields[i].sort_index += 1;
+      }
+    } else{
+      // The fields go up
+      console.log('up -1')
+      if(i == a ){
+        this.myFields[i].sort_index = this.myFields[b].sort_index
+      } else {
+        this.myFields[i].sort_index -= 1;
+      }
     }
   }
 }

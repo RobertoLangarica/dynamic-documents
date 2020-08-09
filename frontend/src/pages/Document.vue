@@ -65,19 +65,17 @@ export default class Document extends Vue {
     return this.currentView === IViews.PRINT;
   }
 
-  created () {
-    this.$root.$on('f-add', this.onFieldAdded.bind(this))
-    this.$root.$on('f-update', this.onFieldUpdated.bind(this))
-    this.$root.$on('f-delete', this.onFieldDeleted.bind(this))
-  }
-
-  beforDestroy () {
-    this.$root.$off('f-add', this.onFieldAdded.bind(this))
-    this.$root.$off('f-update', this.onFieldUpdated.bind(this))
-    this.$root.$off('f-delete', this.onFieldDeleted.bind(this))
+  beforeDestroy () {
+    this.$root.$off('f-add', this.onFieldAdded)
+    this.$root.$off('f-update', this.onFieldUpdated)
+    this.$root.$off('f-delete', this.onFieldDeleted)
   }
 
   async mounted () {
+    this.$root.$on('f-add', this.onFieldAdded)
+    this.$root.$on('f-update', this.onFieldUpdated)
+    this.$root.$on('f-delete', this.onFieldDeleted)
+
     let document = await this.$store.dispatch(
       "getDocument",
       this.$route.params.id

@@ -102,10 +102,7 @@ export class DDField {
   static createFromType (type: DDFieldType): DDField {
     let field = new DDField()
     field.name = type.name
-    console.log(type)
     field.type = type
-    console.log(field.type)
-    field.is_new = true
 
     return field
   }

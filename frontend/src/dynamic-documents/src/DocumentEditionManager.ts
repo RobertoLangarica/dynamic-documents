@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Store } from 'vuex'
 import { DDField, FDataDependent } from './core/DDField'
 import { DDTemplateType } from './core/DDTemplateType';
-import { Type } from 'class-transformer';
+import { Type, classToClassFromExist, classToClass } from 'class-transformer';
 import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
 import { DDFieldType } from './core/DDFieldType';
@@ -74,13 +74,15 @@ export class DocumentEditionManager {
     this.toUpdate = this.toUpdate.filter(item => !item.deleted)
 
     this.removeUpdateDuplicates()
-    if (this.isDocument) {
-      await this.store?.dispatch('setDocument', { id: this.id, fields: deleted.concat(this.toUpdate) })
-    } else {
-      await this.store?.dispatch('setTemplate', { id: this.id, fields: deleted.concat(this.toUpdate) })
-    }
-
+    // Avoid any local field remaining for update
+    let forUpdate = this.toUpdate.concat()
     this.toUpdate = []
+
+    if (this.isDocument) {
+      await this.store?.dispatch('setDocument', { id: this.id, fields: deleted.concat(forUpdate) })
+    } else {
+      await this.store?.dispatch('setTemplate', { id: this.id, fields: deleted.concat(forUpdate) })
+    }
   }
 
   removeUpdateDuplicates () {
@@ -128,14 +130,17 @@ export class DocumentEditionManager {
   }
 
   async addField (field: DDField) {
-    this.fields.push(field)
+    // field.sort_index = this.fields.length
+    // Adding a copy so the is_new flag get deleted immediatley
+    let copy = classToClass(field)
+    this.fields.push(copy)
     field.is_new = true
+
     if (this.isDocument) {
       await this.store?.dispatch('setDocument', { id: this.id, fields: [field] })
     } else {
       await this.store?.dispatch('setTemplate', { id: this.id, fields: [field] })
     }
-    field.is_new = false
   }
 
   /**
@@ -165,7 +170,7 @@ export class DocumentEditionManager {
 
     field = DDField.copyField(sourceField)
 
-    // Se va agregar
+    // It will be remotely added
     field.is_new = true
 
     if (this.isDocument) {
@@ -221,6 +226,7 @@ export class DocumentEditionManager {
       field.use_embedded = field.embedded_fields.length > 0
     }
 
+    // Duplicate anchor
     if (this.isNotEmptyString(sourceField.replicate_with)) {
       let ref = this.getReferencedField(sourceField.replicate_with!)
       if (!ref) {
@@ -252,14 +258,23 @@ export class DocumentEditionManager {
     if (remoteUpdate) {
       this.removeUpdateDuplicates()
 
-      let toAdd = this.fields.filter(f => f.is_new)
-      if (this.isDocument) {
-        await this.store?.dispatch('setDocument', { id: this.id, fields: toAdd.concat(this.toUpdate) })
-      } else {
-        await this.store?.dispatch('setTemplate', { id: this.id, fields: toAdd.concat(this.toUpdate) })
-      }
+      let toAdd = this.fields.filter(f => f.is_new).map(item => {
+        // Avoiding any local field with the is_new flag in local
+        let copy = classToClass(item)
+        item.is_new = false
+        delete item.is_new
+        return copy
+      })
 
+      // Avoiding garbage fields in local update queue
+      let forUpdate = this.toUpdate.concat()
       this.toUpdate = []
+
+      if (this.isDocument) {
+        await this.store?.dispatch('setDocument', { id: this.id, fields: toAdd.concat(forUpdate) })
+      } else {
+        await this.store?.dispatch('setTemplate', { id: this.id, fields: toAdd.concat(forUpdate) })
+      }
     }
   }
 

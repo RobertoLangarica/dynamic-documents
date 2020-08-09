@@ -9,6 +9,9 @@
       <q-badge v-if="isInEditView" color="secondary" contenteditable="true" @input="e=>name= e.target.outerText" >
         {{ name }}
       </q-badge>
+      <q-badge v-if="isInEditView" color="secondary" >
+        {{ field.sort_index }}
+      </q-badge>
       <component v-model="field.value"
                 :is="getComponent(field.type)"
                 :label="field.label"
@@ -50,7 +53,6 @@ export default class ClassComponent extends Vue {
   }
 
   getComponent (fieldType: DDFieldType, field:DDField) {
-    console.log(fieldType.component, this.field)
     if (FieldComponentUI[fieldType.component]) {
       let component = FieldComponentUI[fieldType.component].component || 'nq-input'
       return component
