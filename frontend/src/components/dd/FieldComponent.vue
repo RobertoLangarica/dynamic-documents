@@ -5,13 +5,10 @@
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="field-content">
-      <q-badge v-if="isInEditView" color="secondary" contenteditable="true" @input="e=>name= e.target.outerText" >
+      <q-badge v-if="isInEditView" color="secondary" contenteditable="true" @input="e=>name=e.target.innerText" >
         {{ name }}
       </q-badge>
-      <q-badge v-if="isInEditView" color="secondary" >
-        {{ field.sort_index }}
-      </q-badge>
-      <component v-model="field.value"
+      <component v-model="value"
                 :is="getComponent(field.type)"
                 :label="field.label"
                 :hint="field.hint"
@@ -23,9 +20,9 @@
                 :print_view="isInPrintView"
                  />
     </div>
-    <div class="q-pt-md q-ml-sm field-config column" v-if="isInEditView">
+    <div class="q-pt-md q-ml-sm field-config column justify-start" v-if="isInEditView">
       <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" />
-      <q-btn icon="delete" flat round size="md" dense class="cursor-pointer" color="red" @click="onDelete"/>
+      <q-btn icon="delete" flat round size="md" dense class="cursor-pointer" color="grey" @click="onDelete"/>
     </div>
   </div>
 </template>
@@ -50,6 +47,12 @@ export default class ClassComponent extends Vue {
   set name(value){
     this.field.name = value
     this.notifyUpdate({id:this.field.id,name:value}) // Sending only the data that changed
+  }
+
+  get value(){return this.field.value }
+  set value(value){
+    this.field.value = value
+    this.notifyUpdate({id:this.field.id,value:value}) // Sending only the data that changed
   }
 
   getComponent (fieldType: DDFieldType, field:DDField) {
