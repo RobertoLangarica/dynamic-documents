@@ -90,15 +90,8 @@ showAddFieldDialog () {
   this.$q
     .dialog({
       component: FieldTypeDialog,
-      // optional if you want to have access to
-      // Router, Vuex store, and so on, in your
-      // custom component:
-      parent: this, // becomes child of this Vue node
-      // ("this" points to your Vue component)
-      // props forwarded to component
-      // (everything except "component" and "parent" props above):
+      parent: this,
       text: "something"
-      // ...more.props...
     })
     .onOk((type) => {
       this.onFieldTypeSelected(type as DDFieldType)
@@ -107,6 +100,7 @@ showAddFieldDialog () {
 
 onFieldTypeSelected (type:DDFieldType) {
   let field = DDField.createFromType(type)
+  // All the children are part of this group
   field.group_by = this.group
   this.$root.$emit('f-add', field)
 }

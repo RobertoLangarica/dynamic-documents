@@ -141,6 +141,44 @@ export class DocumentEditionManager {
     }
   }
 
+  async addFieldAtSortIndex (field: DDField, sort_index: number) {
+    let indexToInsert = this.fields.findIndex(item => item.sort_index === sort_index)
+
+    let forUpdate: any[] = []
+    // Minimizing data transfer
+    if (indexToInsert < this.fields.length - indexToInsert) {
+      field.sort_index = this.fields[indexToInsert].sort_index
+      // Zero to index
+      for (let i = 0; i <= indexToInsert; i++) {
+        // this.fields[i].sort_index -= 1
+        forUpdate.push({ id: this.fields[i].id, sort_index: this.fields[i].sort_index })
+      }
+    } else {
+      field.sort_index = this.fields[indexToInsert].sort_index + 1
+      // Index to length
+      for (let i = indexToInsert + 1; i < this.fields.length; i++) {
+        this.fields[i].sort_index += 2
+        forUpdate.push({ id: this.fields[i].id, sort_index: this.fields[i].sort_index })
+      }
+    }
+
+    // Adding a copy so the is_new flag get deleted immediatley
+    let copy = classToClass(field)
+    this.fields.push(copy)
+    // Sorting of the fields
+    this.fields = this.fields.sort((a, b) => a.sort_index - b.sort_index)
+
+    // Save remote changes
+    field.is_new = true
+    forUpdate.push(field)
+
+    if (this.isDocument) {
+      await this.store?.dispatch('setDocument', { id: this.id, fields: forUpdate })
+    } else {
+      await this.store?.dispatch('setTemplate', { id: this.id, fields: forUpdate })
+    }
+  }
+
   /**
    *
    * @param {*} idToCopy UUID

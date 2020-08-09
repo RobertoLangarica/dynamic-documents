@@ -70,6 +70,7 @@ export default class Document extends Vue {
     this.$root.$off('f-update', this.onFieldUpdated)
     this.$root.$off('f-delete', this.onFieldDeleted)
     this.$root.$off('f-sort_fields', this.onSortedFields)
+    this.$root.$off('f-add_under_sort_index', this.onFieldInserted)
   }
 
   async mounted () {
@@ -77,6 +78,7 @@ export default class Document extends Vue {
     this.$root.$on('f-update', this.onFieldUpdated)
     this.$root.$on('f-delete', this.onFieldDeleted)
     this.$root.$on('f-sort_fields', this.onSortedFields)
+    this.$root.$on('f-add_under_sort_index', this.onFieldInserted)
 
     let document = await this.$store.dispatch(
       "getDocument",
@@ -121,6 +123,10 @@ export default class Document extends Vue {
 
   onFieldAdded (field: DDField) {
     void this.manager.addField(field);
+  }
+
+  onFieldInserted (params:{field:DDField,index:number}) {
+    void this.manager.addFieldAtSortIndex(params.field, params.index)
   }
 }
 </script>

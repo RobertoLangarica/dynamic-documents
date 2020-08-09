@@ -1,8 +1,7 @@
 <template>
-  <div v-show="isInEditView || (isInCaptureView && field.show_in_capture) || (isInPrintView && field.show_in_print)"
-       class="field-container">
+  <div v-show="isInEditView || (isInCaptureView && field.show_in_capture) || (isInPrintView && field.show_in_print)" class="field-container">
     <div class="field-controls q-pt-md" v-if="isInEditView">
-      <q-btn icon="add" flat round size="md" dense class="cursor-pointer" color="grey" @click="$emit('onShowAddFieldDialog')" />
+      <q-btn icon="add" flat round size="md" dense class="cursor-pointer" color="grey" @click="showAddFieldDialog" />
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="field-content">
@@ -35,6 +34,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { DDFieldType, FieldComponentUI } from 'src/dynamic-documents/src/core/DDFieldType';
 import { DDField } from 'src/dynamic-documents/src/core/DDField';
+import FieldTypeDialog from "components/FieldTypeDialog.vue";
 import {throttle} from 'underscore/modules/index'
 
 @Component
@@ -49,7 +49,7 @@ export default class ClassComponent extends Vue {
   get name(){return this.field.name }
   set name(value){
     this.field.name = value
-    this.notifyUpdate()
+    this.notifyUpdate({id:this.field.id,name:value}) // Sending only the data that changed
   }
 
   getComponent (fieldType: DDFieldType, field:DDField) {
@@ -66,10 +66,28 @@ export default class ClassComponent extends Vue {
   }
 
   // Avoiding overflow of update calls
-  notifyUpdate = throttle( ()=> {
-    this.$root.$emit('f-update', this.field)
+  notifyUpdate = throttle( (field)=> {
+    this.$root.$emit('f-update', field)
   }, this.debounce, {leading:false})
   
+  showAddFieldDialog () {
+    this.$q
+      .dialog({
+        component: FieldTypeDialog,
+        parent: this,
+        text: "something"
+      })
+      .onOk((type) => {
+        this.onFieldTypeSelected(type as DDFieldType)
+      });
+  }
+
+  onFieldTypeSelected (type:DDFieldType) {
+    let field = DDField.createFromType(type)
+    // All the new fields are group brothers
+    field.group_by = this.field.group_by
+    this.$root.$emit('f-add_under_sort_index', {field:field, index:this.field.sort_index})
+  }
 }
 </script>
 
