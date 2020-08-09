@@ -86,28 +86,26 @@ export class TemplateService {
                 delete item.is_new
                 return item
             })
-            let u = 0;
-            let d = 0;
 
-            for (let i = 0; i < template.fields.length; i++) {
-                // Is there something to update?
-                if (u < toUpdate.length && template.fields[i].id === toUpdate[u].id) {
-                    template.fields[i] = Object.assign(template.fields[i], toUpdate[u])
-                    u++;
-                }
+            // Deleting fields
+            toDelete.forEach(item => {
+                let i = template.fields.findIndex(f => f.id === item.id)
 
-                // Is there something to delete?
-                if (d < toDelete.length && template.fields[i].id === toDelete[d].id) {
+                if (i >= 0) {
                     template.fields.splice(i, 1)
-                    i--;
-                    d++;
                 }
+            })
 
-                if (u >= toUpdate.length && d >= toDelete.length) {
-                    // There is nothing else to update or delete
-                    break;
+            // Updating fields
+            toUpdate.forEach(item => {
+                let i = template.fields.findIndex(f => f.id === item.id)
+
+                if (i < 0) {
+                    return;
                 }
-            }
+                template.fields[i] = Object.assign(template.fields[i], item)
+            })
+
             template.fields = template.fields.concat(toAdd)
         }
 

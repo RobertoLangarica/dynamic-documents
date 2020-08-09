@@ -146,7 +146,6 @@ export class DocumentService {
         // Assigning present changes in data
         Object.assign(document, data)
 
-
         if (versions) document.versions.push(versions[0])
 
         if (fields.length > 0) {
@@ -159,28 +158,28 @@ export class DocumentService {
                 delete item.is_new
                 return item
             })
-            let u = 0;
-            let d = 0;
-            for (let i = 0; i < document.fields.length; i++) {
-                // Is there something to update?
-                if (u < toUpdate.length && document.fields[i].id === toUpdate[u].id) {
-                    document.fields[i] = Object.assign(document.fields[i], toUpdate[u])
-                    u++;
-                }
 
-                // Is there something to delete?
-                if (d < toDelete.length && document.fields[i].id === toDelete[d].id) {
+            // Deleting fields
+            toDelete.forEach(item => {
+                let i = document.fields.findIndex(f => f.id === item.id)
+
+                if (i >= 0) {
                     document.fields.splice(i, 1)
-                    i--;
-                    d++;
                 }
+            })
 
-                if (u >= toUpdate.length && d >= toDelete.length) {
-                    // There is nothing else to update or delete
-                    break;
+            // Updating fields
+            toUpdate.forEach(item => {
+                let i = document.fields.findIndex(f => f.id === item.id)
+
+                if (i < 0) {
+                    return;
                 }
-            }
+                document.fields[i] = Object.assign(document.fields[i], item)
+            })
+
             document.fields = document.fields.concat(toAdd)
+
         }
 
         try {
