@@ -69,12 +69,14 @@ export default class Document extends Vue {
     this.$root.$off('f-add', this.onFieldAdded)
     this.$root.$off('f-update', this.onFieldUpdated)
     this.$root.$off('f-delete', this.onFieldDeleted)
+    this.$root.$off('f-sort_fields', this.onSortedFields)
   }
 
   async mounted () {
     this.$root.$on('f-add', this.onFieldAdded)
     this.$root.$on('f-update', this.onFieldUpdated)
     this.$root.$on('f-delete', this.onFieldDeleted)
+    this.$root.$on('f-sort_fields', this.onSortedFields)
 
     let document = await this.$store.dispatch(
       "getDocument",
@@ -90,10 +92,19 @@ export default class Document extends Vue {
     this.manager = DocumentEditionManager.createFromRemoteObject(document);
     this.fields = this.manager.fields;
     this.docReady = true;
-    // TODO: Set these properties with the real data
+    // TODO: Set these properties with the real data (it should support templates)
     this.manager.isTemplate = false;
     this.manager.isDocument = true;
     this.manager.store = this.$store;
+  }
+
+  onSortedFields(sorted){
+    this.manager.updateFields(sorted.map(item=>{
+      // Minimizing the data being send
+      return {id:item.id,sort_index:item.sort_index}
+    }))
+    //sorting the fields
+    this.manager.fields = this.manager.fields.sort((a, b) => a.sort_index - b.sort_index)
   }
 
   titleChanged (e) {

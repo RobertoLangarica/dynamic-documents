@@ -49,12 +49,10 @@ export default class FieldGroupComponent extends Vue {
 get myFields () {
   if (this.group === '') {
     // Without group
-    return this.fields.filter(v => v.group_by === '' || !v.group_by).sort((a,b)=>a.sort_index - b.sort_index)
-    // return this.fields.filter(v => v.group_by === '' || !v.group_by)
+    return this.fields.filter(v => v.group_by === '' || !v.group_by)
   }
 
-  return this.fields.filter(v => v.group_by === this.group).sort((a,b)=>a.sort_index - b.sort_index)
-  // return this.fields.filter(v => v.group_by === this.group)
+  return this.fields.filter(v => v.group_by === this.group)
 }
 
 set myFields (value){/*Empty on purpose*/}
@@ -64,12 +62,12 @@ onDragEnded(e){
 
   let a = e.oldIndex < e.newIndex ? e.oldIndex:e.newIndex
   let b = e.oldIndex > e.newIndex ? e.oldIndex:e.newIndex
+  let toUpdate:DDField[] = []
 
-  console.log(`from:${a} to ${b}   ${e.oldIndex},${e.newIndex}`)
   for(let i = a; i <= b; i++){
+    toUpdate.push(this.myFields[i])
     if(e.newIndex < e.oldIndex){
       // The fields go down
-      console.log('down +1')
       if(i == b){
         this.myFields[i].sort_index = this.myFields[e.newIndex].sort_index-1
       } else {
@@ -77,7 +75,6 @@ onDragEnded(e){
       }
     } else{
       // The fields go up
-      console.log('up -1')
       if(i == a ){
         this.myFields[i].sort_index = this.myFields[b].sort_index
       } else {
@@ -85,6 +82,8 @@ onDragEnded(e){
       }
     }
   }
+
+  this.$root.$emit('f-sort_fields',toUpdate)
 }
 
 showAddFieldDialog () {

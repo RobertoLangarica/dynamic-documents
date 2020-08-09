@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Store } from 'vuex'
 import { DDField, FDataDependent } from './core/DDField'
 import { DDTemplateType } from './core/DDTemplateType';
-import { Type, classToClassFromExist, classToClass } from 'class-transformer';
+import { Type, classToClass } from 'class-transformer';
 import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
 import { DDFieldType } from './core/DDFieldType';
@@ -37,10 +37,15 @@ export class DocumentEditionManager {
 
   store: Store<StateInterface> | null = null; // Vuex instance
 
-  async updateField (field: DDField) {
-    let i = this.fields.findIndex(f => f.id === field.id)
-    this.fields[i] = field
+  async updateFields (fields:DDField[]) {
+    if (this.isDocument) {
+      await this.store?.dispatch('setDocument', { id: this.id, fields: fields })
+    } else {
+      await this.store?.dispatch('setTemplate', { id: this.id, fields: fields })
+    }
+  }
 
+  async updateField (field: DDField) {
     if (this.isDocument) {
       await this.store?.dispatch('setDocument', { id: this.id, fields: [field] })
     } else {
@@ -50,13 +55,6 @@ export class DocumentEditionManager {
 
   async deleteField (field: DDField) {
     let toDelete = field
-
-    // let toDelete = this.fields.find(f => f.id === field.id)
-    // if (!toDelete) {
-    //   // Nothing to delete
-    //   console.log('Nothing to delete')
-    //   return
-    // }
 
     // mark deletion
     this.toUpdate = []
@@ -130,8 +128,8 @@ export class DocumentEditionManager {
   }
 
   async addField (field: DDField) {
-    // field.sort_index = this.fields.length
     // Adding a copy so the is_new flag get deleted immediatley
+    field.sort_index = this.fields.length
     let copy = classToClass(field)
     this.fields.push(copy)
     field.is_new = true
@@ -180,6 +178,7 @@ export class DocumentEditionManager {
     }
 
     // Adding the copy before any deep copy (to avoid circular reference)
+    field.sort_index = this.fields.length
     this.fields.push(field)
 
     // Dependent
