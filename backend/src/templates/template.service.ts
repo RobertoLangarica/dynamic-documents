@@ -106,7 +106,15 @@ export class TemplateService {
                 template.fields[i] = Object.assign(template.fields[i], item)
             })
 
-            template.fields = template.fields.concat(toAdd)
+            // TODO maybe we could trust on the incomming sort_index
+            // adding and sorting fields
+            template.fields = template.fields
+                .concat(toAdd)
+                .sort((a, b) => a.sort_index - b.sort_index)
+                .map((value, index) => {
+                    value.sort_index = index
+                    return value
+                })
         }
 
         try {
