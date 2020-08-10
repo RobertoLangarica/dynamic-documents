@@ -2,8 +2,11 @@
   <div>
     <h1>Documentos dinámicos</h1>
     <ul>
-      <li><router-link :to="{ name: 'login' }">Login</router-link></li>
-      <li><a href="/documents-old">Testing de documentos anterior</a></li>
+      <li>
+        <router-link :to="{ name: 'login' }">
+          Login
+        </router-link>
+      </li>
       <li><a href="/documents"><strong>Testing de documento</strong></a></li>
       <li><a href="http://localhost:3000/docs" target="_blank">API</a></li>
     </ul>

@@ -7,7 +7,6 @@ const routes: RouteConfig[] = [
     children: [
       { name: 'index', path: '', component: () => import('pages/Index.vue') },
       { name: 'login', path: 'login', component: () => import('pages/Login.vue') },
-      { name: 'documents-old', path: 'documents-old', component: () => import('pages/DocumentsOld.vue') },
       { name: 'documents', path: 'documents', component: () => import('pages/Documents.vue') },
       { name: 'embed-document', path: 'document/:id', component: () => import('pages/Document.vue') }
     ]

@@ -98,6 +98,7 @@ module.exports = {
     'vue/html-closing-bracket-newline': 'off',
     'vue/max-attributes-per-line': 'off',
     'vue/prop-name-casing': 'off',
+    'vue/singleline-html-element-content-newline': 'off',
     // TypeScript
     quotes: ['off', 'single', { avoidEscape: true }],
     '@typescript-eslint/explicit-function-return-type': 'off',

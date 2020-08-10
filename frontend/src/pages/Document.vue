@@ -11,7 +11,7 @@
     </div>
     <h1
       v-if="docReady"
-      :contenteditable="currentView === 'edit'"
+      :contenteditable="isInEditView"
       @input="titleChanged"
     >
       {{ manager.name }}
@@ -22,7 +22,7 @@
         :edit_view="isInEditView"
         :capture_view="isInCaptureView"
         :print_view="isInPrintView"
-        />
+      />JA
     </div>
     <q-spinner v-else color="primary" size="3em" :thickness="2" />
   </article>
@@ -66,19 +66,19 @@ export default class Document extends Vue {
   }
 
   beforeDestroy () {
-    this.$root.$off('f-add', this.onFieldAdded)
-    this.$root.$off('f-update', this.onFieldUpdated)
-    this.$root.$off('f-delete', this.onFieldDeleted)
-    this.$root.$off('f-sort_fields', this.onSortedFields)
-    this.$root.$off('f-add_under_sort_index', this.onFieldInserted)
+    this.$root.$off('f-add', this.onFieldAdded.bind(this))
+    this.$root.$off('f-update', this.onFieldUpdated.bind(this))
+    this.$root.$off('f-delete', this.onFieldDeleted.bind(this))
+    this.$root.$off('f-sort_fields', this.onSortedFields.bind(this))
+    this.$root.$off('f-add_under_sort_index', this.onFieldInserted.bind(this))
   }
 
   async mounted () {
-    this.$root.$on('f-add', this.onFieldAdded)
-    this.$root.$on('f-update', this.onFieldUpdated)
-    this.$root.$on('f-delete', this.onFieldDeleted)
-    this.$root.$on('f-sort_fields', this.onSortedFields)
-    this.$root.$on('f-add_under_sort_index', this.onFieldInserted)
+    this.$root.$on('f-add', this.onFieldAdded.bind(this))
+    this.$root.$on('f-update', this.onFieldUpdated.bind(this))
+    this.$root.$on('f-delete', this.onFieldDeleted.bind(this))
+    this.$root.$on('f-sort_fields', this.onSortedFields.bind(this))
+    this.$root.$on('f-add_under_sort_index', this.onFieldInserted.bind(this))
 
     let document = await this.$store.dispatch(
       "getDocument",
@@ -100,12 +100,12 @@ export default class Document extends Vue {
     this.manager.store = this.$store;
   }
 
-  onSortedFields(sorted){
-    this.manager.updateFields(sorted.map(item=>{
+  onSortedFields (sorted:DDField[]) {
+    void this.manager.updateFields(sorted.map(item => {
       // Minimizing the data being send
-      return {id:item.id,sort_index:item.sort_index}
+      return { id: item.id, sort_index: item.sort_index } as DDField
     }))
-    //sorting the fields
+    // sorting the fields
     this.manager.fields = this.manager.fields.sort((a, b) => a.sort_index - b.sort_index)
   }
 
@@ -125,7 +125,7 @@ export default class Document extends Vue {
     void this.manager.addField(field);
   }
 
-  onFieldInserted (params:{field:DDField,index:number}) {
+  onFieldInserted (params:{field:DDField, index:number}) {
     void this.manager.addFieldAtSortIndex(params.field, params.index)
   }
 }

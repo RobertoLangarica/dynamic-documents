@@ -25,8 +25,10 @@ export default class Documents extends Vue {
   mounted () {
     this.$store.commit('init')
     // TODO remove this override for authorization
-    this.$api.setAuthorization(this.$store.state.login.token)
-    this.$store.dispatch('getDocuments')
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    this.$api.setAuthorization((this.$store).state.login.token)
+    void this.$store.dispatch('getDocuments')
   }
 }
 </script>

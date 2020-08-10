@@ -1,17 +1,16 @@
 <template>
   <div>
-    <draggable v-model="myFields" handle=".cursor-drag"  @end="onDragEnded" :animation="200">
-    <field-component
-      v-for="field in myFields"
-      :key="field.id"
-      :field="field"
-      :fields="fields"
-      :isInEditView="edit_view"
-      :isInCaptureView="capture_view"
-      :isInPrintView="print_view"
-      @onShowAddFieldDialog="showAddFieldDialog"
-    />
-
+    <draggable v-model="myFields" handle=".cursor-drag" @end="onDragEnded" :animation="200">
+      <field-component
+        v-for="field in myFields"
+        :key="field.id"
+        :field="field"
+        :fields="fields"
+        :isInEditView="edit_view"
+        :isInCaptureView="capture_view"
+        :isInPrintView="print_view"
+        @onShowAddFieldDialog="showAddFieldDialog"
+      />
     </draggable>
     <q-btn
       icon="add"
@@ -38,7 +37,7 @@ import FieldComponent from "components/dd/FieldComponent.vue";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 
-@Component({name:'field-group-component', components: { draggable, 'field-type-dialog': FieldTypeDialog, 'field-component': FieldComponent } })
+@Component({ name: 'field-group-component', components: { draggable, 'field-type-dialog': FieldTypeDialog, 'field-component': FieldComponent } })
 export default class FieldGroupComponent extends Vue {
 @Prop({ required: false, default: '' }) readonly group!:string
 @Prop({ required: true }) readonly fields!:DDField[]
@@ -55,27 +54,27 @@ get myFields () {
   return this.fields.filter(v => v.group_by === this.group)
 }
 
-set myFields (value){/*Empty on purpose*/}
+set myFields (value) { /* Empty on purpose */ }
 
-onDragEnded(e){
-  if(e.oldIndex === e.newIndex ) return;
+onDragEnded (e:{oldIndex:number, newIndex:number}) {
+  if (e.oldIndex === e.newIndex) return;
 
-  let a = e.oldIndex < e.newIndex ? e.oldIndex:e.newIndex
-  let b = e.oldIndex > e.newIndex ? e.oldIndex:e.newIndex
+  let a = e.oldIndex < e.newIndex ? e.oldIndex : e.newIndex
+  let b = e.oldIndex > e.newIndex ? e.oldIndex : e.newIndex
   let toUpdate:DDField[] = []
 
-  for(let i = a; i <= b; i++){
+  for (let i = a; i <= b; i++) {
     toUpdate.push(this.myFields[i])
-    if(e.newIndex < e.oldIndex){
+    if (e.newIndex < e.oldIndex) {
       // The fields go down
-      if(i == b){
-        this.myFields[i].sort_index = this.myFields[e.newIndex].sort_index-1
+      if (i === b) {
+        this.myFields[i].sort_index = this.myFields[e.newIndex].sort_index - 1
       } else {
         this.myFields[i].sort_index += 1;
       }
-    } else{
+    } else {
       // The fields go up
-      if(i == a ){
+      if (i === a) {
         this.myFields[i].sort_index = this.myFields[b].sort_index
       } else {
         this.myFields[i].sort_index -= 1;
@@ -83,7 +82,7 @@ onDragEnded(e){
     }
   }
 
-  this.$root.$emit('f-sort_fields',toUpdate)
+  this.$root.$emit('f-sort_fields', toUpdate)
 }
 
 showAddFieldDialog () {

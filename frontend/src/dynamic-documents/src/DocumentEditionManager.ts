@@ -395,6 +395,6 @@ export class DocumentEditionManager {
 
   public addFieldFromType (type: DDFieldType) {
     let field = DDField.createFromType(type)
-    this.addField(field)
+    void this.addField(field)
   }
 }
