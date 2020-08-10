@@ -388,6 +388,7 @@ export class DocumentEditionManager {
       Object.assign(obj, item)
       return obj
     })
+
     manager.toUpdate = []
     return manager
   }

@@ -21,7 +21,7 @@
                  />
     </div>
     <div class="q-pt-md q-ml-sm field-config column justify-start" v-if="isInEditView">
-      <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" />
+      <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" @click="onShowConfigDiaog"/>
       <q-btn icon="delete" flat round size="md" dense class="cursor-pointer" color="grey" @click="onDelete"/>
     </div>
   </div>
@@ -32,9 +32,10 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import { DDFieldType, FieldComponentUI } from 'src/dynamic-documents/src/core/DDFieldType';
 import { DDField } from 'src/dynamic-documents/src/core/DDField';
 import FieldTypeDialog from "components/FieldTypeDialog.vue";
+import FieldConfigDialog from 'components/dd/FieldConfigDialog.vue'
 import {throttle} from 'underscore/modules/index'
 
-@Component
+@Component({components:{FieldConfigDialog}})
 export default class ClassComponent extends Vue {
   @Prop({ required: true }) readonly field!: DDField;
   @Prop({ type: Array, required: true }) readonly fields!: DDField[];
@@ -83,6 +84,16 @@ export default class ClassComponent extends Vue {
       .onOk((type) => {
         this.onFieldTypeSelected(type as DDFieldType)
       });
+  }
+
+  onShowConfigDiaog(){
+    this.$q.dialog({
+      maximized:true,
+      fullWidth:true,
+      component: FieldConfigDialog,
+      parent: this,
+      field:this.field
+    })
   }
 
   onFieldTypeSelected (type:DDFieldType) {
