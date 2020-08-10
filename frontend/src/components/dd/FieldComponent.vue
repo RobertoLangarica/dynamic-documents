@@ -6,7 +6,7 @@
     </div>
     <div class="field-content">
       <q-badge v-if="isInEditView" color="secondary" contenteditable="true" @input="e=>name=e.target.innerText">
-        {{ name }}
+        {{ initialName }}
       </q-badge>
       <component v-model="value"
                  :is="getComponent(field.type)"
@@ -43,6 +43,11 @@ export default class ClassComponent extends Vue {
   @Prop({ type: Boolean, required: true }) readonly isInCaptureView!: boolean;
   @Prop({ type: Boolean, required: true }) readonly isInPrintView!: boolean;
   @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
+  initialName:string = ''
+
+  mounted () {
+    this.initialName = this.field.name;
+  }
 
   get name () { return this.field.name }
   set name (value) {
