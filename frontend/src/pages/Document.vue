@@ -22,7 +22,7 @@
         :edit_view="isInEditView"
         :capture_view="isInCaptureView"
         :print_view="isInPrintView"
-      />JA
+      />
     </div>
     <q-spinner v-else color="primary" size="3em" :thickness="2" />
   </article>

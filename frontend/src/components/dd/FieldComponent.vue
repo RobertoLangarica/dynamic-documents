@@ -12,12 +12,13 @@
                  :is="getComponent(field.type)"
                  :label="field.label"
                  :hint="field.hint"
-                 :readonly="isInPrintView"
+                 :readonly="isReadOnly"
                  :group="field.id"
                  :fields="fields"
                  :edit_view="isInEditView"
                  :capture_view="isInCaptureView"
                  :print_view="isInPrintView"
+                 :field="field"
       />
     </div>
     <div class="q-pt-md q-ml-sm field-config column justify-start" v-if="isInEditView">
@@ -29,7 +30,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { DDFieldType, FieldComponentUI } from 'src/dynamic-documents/src/core/DDFieldType';
+import { DDFieldType, FieldComponentUI, EFieldComponentID } from 'src/dynamic-documents/src/core/DDFieldType';
 import { DDField } from 'src/dynamic-documents/src/core/DDField';
 import FieldTypeDialog from "components/FieldTypeDialog.vue";
 import FieldConfigDialog from 'components/dd/FieldConfigDialog.vue'
@@ -47,6 +48,10 @@ export default class ClassComponent extends Vue {
 
   mounted () {
     this.initialName = this.field.name;
+  }
+
+  get isReadOnly () {
+    return this.isInPrintView || (this.isInCaptureView && this.field.readonly)
   }
 
   get name () { return this.field.name }
