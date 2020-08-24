@@ -1,5 +1,5 @@
 <template>
-  <editor-menu-bar class="q-mb-md q-mt-sm" :editor="editor" v-slot="{ commands, isActive }">
+  <editor-menu-bar class="q-mb-md q-mt-sm menubar" :class="{ 'is-hidden':hidden }" :editor="editor" v-slot="{ commands, isActive }">
     <div class="row justify-between">
       <q-btn class="col-1 menubar__button" @click="$emit('add_image',commands.field_embedded) " size="xs">
         <q-icon name="image" />
@@ -22,7 +22,7 @@
       </q-btn>
 
       <q-btn class="col-1 menubar__button" :class="{ 'is-active': isActive.paragraph() }" @click="commands.paragraph" size="xs">
-        <q-icon name="post_add" />
+        <q-icon name="title" />
       </q-btn>
 
       <q-btn class="col-1 menubar__button" :class="{ 'is-active': isActive.heading({ level: 1 }) }" @click="commands.heading({ level: 1 })" size="xs">
@@ -58,6 +58,10 @@ export default {
     editor: {
       type: Object,
       required: true
+    },
+    hidden: {
+      type: Boolean,
+      required: false
     }
   },
   data () {
@@ -65,3 +69,47 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+$color-black:rgb(.3,.3,.3);
+
+.menubar {
+    margin-bottom: 1rem;
+    transition: visibility 0.2s 0.4s, opacity 0.2s 0.4s;
+
+    &.is-hidden {
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    &.is-focused {
+        visibility: visible;
+        opacity: 1;
+        transition: visibility 0.2s, opacity 0.2s;
+    }
+
+    &__button {
+        font-weight: bold;
+        display: inline-flex;
+        background: transparent;
+        border: 0;
+        color: $color-black;
+        padding: 0.2rem 0.5rem;
+        margin-right: 0.2rem;
+        border-radius: 3px;
+        cursor: pointer;
+
+        &:hover {
+        background-color: rgba($color-black, 0.05);
+        }
+
+        &.is-active {
+        background-color: rgba($color-black, 0.1);
+        }
+    }
+
+    span#{&}__button {
+        font-size: 13.3333px;
+    }
+  }
+</style>

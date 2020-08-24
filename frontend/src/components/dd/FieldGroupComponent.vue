@@ -12,15 +12,15 @@
         @onShowAddFieldDialog="showAddFieldDialog"
       />
     </draggable>
-    <q-btn
-      icon="add"
-      rounded
-      flat
-      size="md"
-      class="cursor-pointer"
-      color="grey"
-      label="Agregar un campo"
-      @click="showAddFieldDialog"
+    <q-btn v-if="!readonly"
+           icon="add"
+           rounded
+           flat
+           size="md"
+           class="cursor-pointer"
+           color="grey"
+           label="Agregar un campo"
+           @click="showAddFieldDialog"
     />
     <div />
   </div>
@@ -55,6 +55,10 @@ get myFields () {
 }
 
 set myFields (value) { /* Empty on purpose */ }
+
+get readonly () {
+  return this.capture_view || this.print_view
+}
 
 onDragEnded (e:{oldIndex:number, newIndex:number}) {
   if (e.oldIndex === e.newIndex) return;

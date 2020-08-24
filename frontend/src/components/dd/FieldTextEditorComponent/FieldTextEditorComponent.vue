@@ -1,27 +1,26 @@
 <template>
   <div>
-    <template v-if="!readonly">
-      <nq-field @focus="editor.focus()" @blur="focused=false">
-        <template v-slot:control>
-          <div class="editor">
-            <editor-menu v-if="focused" :editor="editor" @add_image="addEmbeddedField" />
-            <editor-content class="editor__content" :editor="editor" />
-          </div>
-        </template>
-      </nq-field>
-    </template>
-    <span v-else v-html="value" />
+    <!-- <template v-if="!readonly"> -->
+    <nq-field @focus="onFieldFocus" @blur="onFieldBlur" :readonly="readonly">
+      <template v-slot:control>
+        <div class="editor">
+          <editor-menu :hidden="!focused" :editor="editor" @add_image="addEmbeddedField" />
+          <editor-content class="editor__content" :editor="editor" :readonly="readonly" :fields="fields" />
+        </div>
+      </template>
+    </nq-field>
+    <!-- </template> -->
+    <!-- <span v-else v-html="value" /> -->
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
-import { Editor, EditorContent, EditorState, Transaction, Node, EditorMenuBar } from 'tiptap'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Editor, EditorContent, EditorView, EditorState, Transaction, Node, EditorMenuBar } from 'tiptap'
 import { DDField } from 'src/dynamic-documents/src/core/DDField';
 import {
   findChildren
 } from 'prosemirror-utils'
-import { v4 as uuidv4 } from 'uuid'
 import { throttle } from 'underscore/modules/index'
 import {
   BulletList,
@@ -48,11 +47,17 @@ export default class FieldTextEditorComponent extends Vue {
     @Prop({ type: Boolean, required: false, default: false }) readonly autoFocus!: boolean;
     @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
     @Prop({ type: Array, required: true }) readonly fields!: DDField[];
+    @Prop({ required: false, default: '' }) readonly doc_id!:string ;
 
-    editor:Editor = null
-    focused:boolean = false
+    editor:Editor = {}
+    focused:boolean = false;
+    embedded_fields:{[id:string]:boolean} = {}
 
-    mounted () {
+    get value () {
+      return this.field.value
+    }
+
+    created () {
       this.editor = new Editor({
         extensions: [
           new BulletList(),
@@ -66,33 +71,64 @@ export default class FieldTextEditorComponent extends Vue {
           new History(),
           new FieldEmbeded()
         ],
-        content: this.value,
-        autoFocus: this.autoFocus,
-        onUpdate: this.onUpdate,
-        onFocus: () => { this.focused = true }
-      })
+        onUpdate: this.onEditorUpdate.bind(this),
+        onInit: this.onEditorInit.bind(this),
+        content: this.value
+      });
+    }
+
+    mounted () {
+      if (!this.readonly && this.autoFocus) {
+        this.editor.focus()
+      }
+      this.$root.$on('get_field', this.onGetField.bind(this))
     }
 
     beforeDestroy () {
+      this.$root.$off('get_field', this.onGetField.bind(this))
       this.editor.destroy()
     }
 
-    get value () {
-      return this.field.value
+    @Watch('readonly')
+    onReadonlyChange (value: boolean, oldValue:boolean) {
+      // this.editor.setOptions({ editable: !value })
     }
 
-    onClick () {
-      console.log('click')
-      this.editor.focus()
+    onFieldFocus () {
+      if (!this.readonly) {
+        this.focused = true
+        // this.editor.setOptions({ editable: true })
+        this.editor.focus()
+      }
     }
 
-    onUpdate (event:{getHTML:()=>string, getJSON:()=>string, state: EditorState, transaction: Transaction}) {
+    onFieldBlur () {
+      this.focused = false
+      // this.editor.setOptions({ editable: false })
+    }
+
+    onGetField ({ id, set }) {
+      let f = this.fields.find(f => f.id === (id as string))
+      if (f) {
+        (set as (DDField)=>void)(f)
+      }
+    }
+
+    onEditorInit (event:{view: EditorView, state: EditorState}) {
+      let children = this.getEmbeddedChildren(event.state.doc)
+      children.forEach(c => {
+        this.embedded_fields[c.node.attrs.field_id] = true
+      })
+    }
+
+    onEditorUpdate (event:{getHTML:()=>string, getJSON:()=>string, state: EditorState, transaction: Transaction}) {
       this.field.value = event.getHTML()
-      // console.log(this.field.value)
-      console.log(event.transaction)
-      this.readEmbeddedFields(event.transaction.doc)
       console.log(this.field.value)
-      this.notifyUpdate({ id: this.field.id, value: this.field.value } as DDField)
+      let embedChanges = this.getEmbeddedFieldsChanges(event.transaction.doc)
+
+      let changes:DDField = { id: this.field.id, value: this.field.value } as DDField
+      Object.assign(changes, embedChanges)
+      this.notifyUpdate(changes)
     }
 
     // Avoiding overflow of update calls
@@ -109,34 +145,93 @@ export default class FieldTextEditorComponent extends Vue {
           fields: this.fields.filter(f => f.id !== this.field.id)
         })
         .onOk((toEmbed:DDField[]) => {
+          console.log(toEmbed)
+          this.editor.setOptions({ editable: false })
+
           toEmbed.forEach(f => {
-            command({ field_id: f.name, editor_id: uuidv4() })
+            /**
+             * Adding embedded fields to the editor
+             * command({component properties})
+             * WARNING: This properties are being stored in the backend since the editor
+             *    saves the html tags, so be careful with the properties.
+             *    Eg. Passing {fields:this.fields} with result in all the fields being copied
+             *    and stored in the resulting html tag
+             * */
+            command({ field_id: f.id, doc_id: this.doc_id })
           })
-
-          // Update field
-          if (toEmbed.length > 0) {
-            // this.field.use_embedded = true;
-            // this.field.embedded_fields = this.field.embedded_fields || []
-
-            // toEmbed.forEach(f => {
-            //   if (!this.field.embedded_fields!.find(e => e === f.id)) {
-            //   // No duplicated id's
-            //   this.field.embedded_fields!.push(f.id)
-            //   this.notifyUpdate({ id: this.field.id, use_embedded: this.field.use_embedded, embedded_fields: this.field.embedded_fields } as DDField)
-            //   }
-            // })
-          }
         });
     }
 
-    readEmbeddedFields (doc: Node) {
+    getEmbeddedFieldsChanges (doc: Node) {
+      let children = this.getEmbeddedChildren(doc).map(i => i.node)
+      let cangesToUpdate:{use_embedded?:boolean, embedded_fields?:string[]} = {};
+
+      // Invalidation of al lthe existing embeds
+      Object.keys(this.embedded_fields).forEach((k:string) => {
+        this.embedded_fields[k] = false
+      })
+
+      // Mark as avalid the existing embeds in the editor
+      children.forEach(c => {
+        let f_id:string = c.attrs.field_id
+        if (this.embedded_fields[f_id] !== undefined) {
+          // Existing with probable change
+          this.embedded_fields[f_id] = true;
+        } else {
+          // New embedded field
+          this.embedded_fields[f_id] = true
+
+          // Changes on local and remote field
+          if (!this.field.use_embedded) {
+            this.field.use_embedded = true
+            cangesToUpdate.use_embedded = true
+          }
+
+          // Avoiding duplicated id's
+          if (!this.field.embedded_fields?.find(e => e === f_id)) {
+            this.field.embedded_fields = this.field.embedded_fields || []
+            this.field.embedded_fields.push(f_id)
+            cangesToUpdate.embedded_fields = this.field.embedded_fields;
+          }
+        }
+      })
+
+      // Check for deleted fields
+      let deletion = false;
+      Object.keys(this.embedded_fields).forEach((k:string) => {
+        if (!this.embedded_fields[k]) {
+          // deleted
+          deletion = true
+          let i = this.field.embedded_fields?.findIndex(e => e === k)
+          this.field.embedded_fields?.splice(i || -1, 1)
+          delete this.embedded_fields[k]
+        }
+      })
+
+      // Avoid sending the embedded_fields without changes
+      if (deletion) {
+        if (this.field.embedded_fields?.length === 0) {
+          this.field.use_embedded = false;
+          cangesToUpdate.use_embedded = this.field.use_embedded
+        }
+        cangesToUpdate.embedded_fields = this.field.embedded_fields;
+      }
+
+      return cangesToUpdate
+    }
+
+    getEmbeddedChildren (from:Node) {
       const predicate = node => node.type.name === 'field_embedded';
-      // const predicate = node => true;
-      let children = findChildren(doc, predicate, true)
-      console.log(children)
+      return findChildren(from, predicate, true)
     }
 }
 </script>
+
+<style>
+.ProseMirror:focus {
+    outline: none;
+  }
+</style>
 
 <style scoped lang="scss">
 $color-black:rgb(.3,.3,.3);
@@ -266,45 +361,5 @@ $color-grey:rgb(.6,.6,.6);
     }
 
   }
-
-  .menubar {
-    margin-bottom: 1rem;
-    transition: visibility 0.2s 0.4s, opacity 0.2s 0.4s;
-
-    &.is-hidden {
-        visibility: hidden;
-        opacity: 0;
-    }
-
-    &.is-focused {
-        visibility: visible;
-        opacity: 1;
-        transition: visibility 0.2s, opacity 0.2s;
-    }
-
-    &__button {
-        font-weight: bold;
-        display: inline-flex;
-        background: transparent;
-        border: 0;
-        color: $color-black;
-        padding: 0.2rem 0.5rem;
-        margin-right: 0.2rem;
-        border-radius: 3px;
-        cursor: pointer;
-
-        &:hover {
-        background-color: rgba($color-black, 0.05);
-        }
-
-        &.is-active {
-        background-color: rgba($color-black, 0.1);
-        }
-    }
-
-    span#{&}__button {
-        font-size: 13.3333px;
-    }
-    }
 }
 </style>

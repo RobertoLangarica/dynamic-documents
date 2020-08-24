@@ -1,5 +1,5 @@
 import { Node } from 'tiptap'
-import FieldEmbeddedComponent from './FieldEmbeddedComponent'
+import FieldEmbeddedComponent from './FieldEmbeddedComponent.vue'
 
 export default class FieldEmbedded extends Node {
   get name () {
@@ -11,9 +11,6 @@ export default class FieldEmbedded extends Node {
       attrs: {
         field_id: {
           default: ''
-        },
-        editor_id: {
-          default: ''
         }
       },
       inline: true,
@@ -23,8 +20,7 @@ export default class FieldEmbedded extends Node {
       parseDOM: [{
         tag: 'field_embedded',
         getAttrs: dom => ({
-          field_id: dom.getAttribute('field_id'),
-          editor_id: dom.getAttribute('editor_id')
+          field_id: dom.getAttribute('field_id')
         })
       }],
       toDOM: node => ['field_embedded', node.attrs]
@@ -33,6 +29,7 @@ export default class FieldEmbedded extends Node {
 
   commands ({ type }) {
     return attrs => (state, dispatch) => {
+      console.log('adding')
       const { selection } = state
       const position = selection.$cursor ? selection.$cursor.pos : selection.$to.pos
       const node = type.create(attrs)

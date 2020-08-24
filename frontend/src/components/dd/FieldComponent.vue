@@ -15,10 +15,10 @@
                  :readonly="isReadOnly"
                  :group="field.id"
                  :fields="fields"
+                 :field="field"
                  :edit_view="isInEditView"
                  :capture_view="isInCaptureView"
                  :print_view="isInPrintView"
-                 :field="field"
       />
     </div>
     <div class="q-pt-md q-ml-sm field-config column justify-start" v-if="isInEditView">
