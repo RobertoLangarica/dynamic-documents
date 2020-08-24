@@ -30,7 +30,7 @@ export class FieldType1594165459308 implements MigrationInterface {
             { name: 'Opciones', description: 'Listado de opciones para elegir una', component: 'select', parameters: {}, validations: [] },
             { name: 'Verdadero / Falso', description: 'Casillas de selección para verdadero y falso', component: 'boolean', parameters: {}, validations: [] },
             { name: 'Selección múltiple', description: 'Casillas de selección para elegir más de una opción', component: 'select', parameters: { multiple: true }, validations: [] },
-            { name: 'Párrafo', description: 'Campo de texto para un párrafo', component: 'input-text', parameters: { type: 'textarea' }, validations: [] },
+            { name: 'Párrafo', description: 'Campo de texto para un párrafo', component: 'input-paragraph', parameters: {}, validations: [] },
             { name: 'Grupo', description: 'Campo que contiene a otros campos', component: 'group', parameters: {}, validations: [] },
             { name: 'Texto', description: 'Campo para captura de texto', component: 'input-text', parameters: {}, validations: [] },
 

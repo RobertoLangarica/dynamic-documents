@@ -1,10 +1,12 @@
 <template>
   <div class="embeded_container row items-center">
-    <q-btn @click="onClick" icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
-    <q-badge>{{ name }}</q-badge>
-    <q-badge>{{ field_id }}</q-badge>
-    <q-badge>{{ readonly }}</q-badge>
-    <q-btn icon="settings" flat round size="md" dense class="cursor-drag" color="grey" />
+    <template v-if="!readonly">
+      <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
+      <q-badge>{{ name }}</q-badge>
+      <q-btn icon="settings" flat round size="md" dense class="cursor-drag" color="grey" />
+    </template>
+    <span v-else-if="!isHTML">{{ value }}</span>
+    <span v-else v-html="value" />
   </div>
 </template>
 
@@ -13,18 +15,21 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { DDTemplate } from 'src/dynamic-documents/src/core/DDTemplate'
 import { DDDocument } from 'src/dynamic-documents/src/core/DDDocument';
 import { DDField } from 'src/dynamic-documents/src/core/DDField';
+import { EFieldComponentID } from 'src/dynamic-documents/src/core/DDFieldType';
 
 @Component({})
 export default class FieldEmbeddedComponent extends Vue {
   @Prop({ required: false }) readonly node!: Node;
   @Prop({ required: false }) readonly updateAttrs!:(any)=>any;
   @Prop({ required: false }) readonly view!;
-  field:DDField | null = null
+  // field:DDField | null = null
 
   get field_id ():string { return this.node.attrs.field_id }
   set field_id (value) { this.updateAttrs({ field_id: value }) }
 
   get name ():string { return this.field ? this.field.name : '' }
+  get value () { return this.field ? this.field.value : '' }
+  get isHTML () { return this.field?.type.component === EFieldComponentID.INPUT_PARAGRAPH || false }
 
   onClick () {
     this.field_id = 'test';
@@ -34,12 +39,8 @@ export default class FieldEmbeddedComponent extends Vue {
     return this.$parent.$attrs.readonly
   }
 
-  mounted () {
-    this.$root.$emit('get_field', { id: this.field_id, set: this.setField.bind(this) })
-  }
-
-  setField (field:DDField) {
-    this.field = field
+  get field ():DDField {
+    return this.$parent.$attrs.fields.find(f => f.id === this.field_id) as DDField
   }
 }
 </script>

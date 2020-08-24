@@ -67,6 +67,7 @@ export default class ClassComponent extends Vue {
   }
 
   getComponent (fieldType: DDFieldType) {
+    console.log(fieldType.component)
     if (FieldComponentUI[fieldType.component]) {
       let component = FieldComponentUI[fieldType.component].component || 'nq-input'
       return component

@@ -71,6 +71,7 @@ export default class FieldTextEditorComponent extends Vue {
           new History(),
           new FieldEmbeded()
         ],
+        editable: !this.readonly,
         onUpdate: this.onEditorUpdate.bind(this),
         onInit: this.onEditorInit.bind(this),
         content: this.value
@@ -81,30 +82,28 @@ export default class FieldTextEditorComponent extends Vue {
       if (!this.readonly && this.autoFocus) {
         this.editor.focus()
       }
-      this.$root.$on('get_field', this.onGetField.bind(this))
     }
 
     beforeDestroy () {
-      this.$root.$off('get_field', this.onGetField.bind(this))
       this.editor.destroy()
     }
 
     @Watch('readonly')
     onReadonlyChange (value: boolean, oldValue:boolean) {
-      // this.editor.setOptions({ editable: !value })
+      this.editor.setOptions({ editable: !value })
     }
 
     onFieldFocus () {
       if (!this.readonly) {
         this.focused = true
-        // this.editor.setOptions({ editable: true })
+        this.editor.setOptions({ editable: true })
         this.editor.focus()
       }
     }
 
     onFieldBlur () {
       this.focused = false
-      // this.editor.setOptions({ editable: false })
+      this.editor.setOptions({ editable: false })
     }
 
     onGetField ({ id, set }) {
@@ -123,7 +122,6 @@ export default class FieldTextEditorComponent extends Vue {
 
     onEditorUpdate (event:{getHTML:()=>string, getJSON:()=>string, state: EditorState, transaction: Transaction}) {
       this.field.value = event.getHTML()
-      console.log(this.field.value)
       let embedChanges = this.getEmbeddedFieldsChanges(event.transaction.doc)
 
       let changes:DDField = { id: this.field.id, value: this.field.value } as DDField
@@ -145,8 +143,7 @@ export default class FieldTextEditorComponent extends Vue {
           fields: this.fields.filter(f => f.id !== this.field.id)
         })
         .onOk((toEmbed:DDField[]) => {
-          console.log(toEmbed)
-          this.editor.setOptions({ editable: false })
+          this.editor.setOptions({ editable: true })
 
           toEmbed.forEach(f => {
             /**
