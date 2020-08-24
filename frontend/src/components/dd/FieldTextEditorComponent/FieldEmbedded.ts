@@ -29,7 +29,6 @@ export default class FieldEmbedded extends Node {
 
   commands ({ type }) {
     return attrs => (state, dispatch) => {
-      console.log('adding')
       const { selection } = state
       const position = selection.$cursor ? selection.$cursor.pos : selection.$to.pos
       const node = type.create(attrs)
