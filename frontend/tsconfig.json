@@ -13,11 +13,12 @@
   "exclude": [
     "/dist",
     ".quasar",
-    "node_modules"
+    "node_modules",
   ],
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "src/**/*.js"
   ]
 }
