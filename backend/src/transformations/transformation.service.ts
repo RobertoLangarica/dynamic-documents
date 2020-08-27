@@ -90,8 +90,6 @@ export class TransformationService {
             throw new HttpException('Unable to find the required transformation', HttpStatus.NOT_FOUND)
         }
 
-        // overriding the incoming validations (since validations are a relation the preload do a merge instead of a replacement)
-        transformation.supported_types = data.supported_types
         transformation = await this.transformation_repo.save(transformation)
 
         // Making a find so we are returning the full object (including relations)
