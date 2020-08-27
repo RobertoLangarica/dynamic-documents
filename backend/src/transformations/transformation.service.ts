@@ -12,22 +12,11 @@ export class TransformationService {
     ) { }
 
     async findAll(): Promise<Object> {
-        // Using query builder instead of find to avoid the eager relation between FieldType and Validations
-        return {
-            items: await this.transformation_repo.createQueryBuilder('ts')
-                .leftJoinAndSelect("ts.supported_types", "types")
-                .getMany()
-        }
-
+        return { items: await this.transformation_repo.find() }
     }
 
     async findById(id: string): Promise<Transformation> {
-        // Using query builder instead of find to avoid the eager relation between FieldType and Validations
-        // return await this.transformation_repo.findOne({ id: id })
-        let transform = await this.transformation_repo.createQueryBuilder("ts")
-            .where("ts.id = :id", { id: id })
-            .leftJoinAndSelect('ts.supported_types', 'types')
-            .getOne()
+        let transform = await this.transformation_repo.findOne(id)
 
         if (!transform) {
             throw new NotFoundException()

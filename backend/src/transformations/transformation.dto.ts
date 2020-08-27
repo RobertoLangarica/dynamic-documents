@@ -8,9 +8,6 @@ export class TransformationDto extends SimpleDto {
     @IsOptional() @IsJSON() @ApiPropertyOptional()
     parameters: string
 
-    @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
-    @Type(() => FieldType)
-    supported_types: FieldType[]
 }
 
 export class CreateTransformationDto {
@@ -22,8 +19,4 @@ export class CreateTransformationDto {
 
     @IsOptional() @IsJSON() @ApiPropertyOptional()
     parameters: string
-
-    @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
-    @Type(() => FieldType)
-    supported_types: FieldType[]
 }
