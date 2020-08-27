@@ -35,7 +35,6 @@ export default class FieldEmbeddedComponent extends Vue {
   @Prop({ required: false }) readonly node!: Node;
   @Prop({ required: false }) readonly updateAttrs!: (any) => any;
   @Prop({ required: false }) readonly view;
-  // field:DDField | null = null
 
   editor: Editor = {};
 

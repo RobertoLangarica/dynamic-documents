@@ -11,15 +11,19 @@ export enum EFieldComponentID {
   NOT_DEFINED = ''
 }
 
+export interface IFieldTypeParams {
+  [key: string]: any
+  field_override?: { [k: string]: any }
+}
 export class DDFieldType extends DDSimpleEntity {
-    component: EFieldComponentID = EFieldComponentID.NOT_DEFINED
-    description: string = ''
-    parameters: string = ''
-    name: string = ''
-    id: string = ''
+  component: EFieldComponentID = EFieldComponentID.NOT_DEFINED
+  description: string = ''
+  parameters: IFieldTypeParams = {}
+  name: string = ''
+  id: string = ''
 
-    @Type(() => DDValidation)
-    validations: DDValidation[] = []
+  @Type(() => DDValidation)
+  validations: DDValidation[] = []
 }
 
 export const FieldComponentUI: Record<EFieldComponentID, { component: string, parameters: any }> = {

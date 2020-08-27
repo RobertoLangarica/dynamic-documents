@@ -1,22 +1,17 @@
 <template>
-  <div>
-    <!-- <template v-if="!readonly"> -->
-    <nq-field @focus="onFieldFocus" @blur="onFieldBlur" :readonly="readonly">
-      <template v-slot:control>
-        <div class="editor">
-          <editor-menu :hidden="!focused" :editor="editor" @add_image="addEmbeddedField" />
-          <editor-content
-            class="editor__content"
-            :editor="editor"
-            :readonly="readonly"
-            :fields="fields"
-          />
-        </div>
-      </template>
-    </nq-field>
-    <!-- </template> -->
-    <!-- <span v-else v-html="value" /> -->
-  </div>
+  <nq-field @focus="onFieldFocus" @blur="onFieldBlur" :readonly="readonly">
+    <template v-slot:control>
+      <div class="editor">
+        <editor-menu :hidden="!focused" :editor="editor" @add_image="addEmbeddedField" />
+        <editor-content
+          class="editor__content"
+          :editor="editor"
+          :readonly="readonly"
+          :fields="fields"
+        />
+      </div>
+    </template>
+  </nq-field>
 </template>
 
 <script lang="ts">

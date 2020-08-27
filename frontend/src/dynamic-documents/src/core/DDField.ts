@@ -73,7 +73,7 @@ export class DDField {
   @Type(() => FDataReplication)
   replication?: FDataReplication
 
-  get allowReplication (): boolean {
+  get allowReplication(): boolean {
     return !this.replication ? false : this.replication.allow
   }
 
@@ -99,10 +99,18 @@ export class DDField {
   // Identifier used in the fillmaps
   map_id?: string
 
-  static createFromType (type: DDFieldType): DDField {
+  static createFromType(type: DDFieldType): DDField {
     let field = new DDField()
     field.name = type.name
     field.type = type
+
+    //Default values from the type
+    if (type.parameters.field_override) {
+      Object.keys(type.parameters.field_override).forEach(key => {
+        field[key] = type.parameters.field_override![key]
+      })
+    }
+
 
     return field
   }
@@ -116,7 +124,7 @@ export class DDField {
    *
    * @return DDField[]
    */
-  static copyField (source: DDField): DDField {
+  static copyField(source: DDField): DDField {
     let field = new DDField()
     Object.assign(field, source)
     field.id = uuidv4()
@@ -138,7 +146,7 @@ export class DDField {
     return field
   }
 
-  static isGroup (field: DDField): boolean {
+  static isGroup(field: DDField): boolean {
     return field.type.name === 'Grupo'
   }
 }

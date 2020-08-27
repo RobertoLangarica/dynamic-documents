@@ -9,6 +9,12 @@ export class FieldType extends SimpleEntity {
     @Column() @IsString()
     component: string;
 
+    /**
+     * Any parameter for the component.
+     * It is also posible to override properties from the field by providing field_override.
+     *      Eg. {#any parameter#, field_override:{readonly:true}} 
+     * The previous example with force the created field to be readonly after being created.
+     */
     @Column({ type: 'jsonb', default: '{}' }) @IsJSON()
     parameters: string
 
