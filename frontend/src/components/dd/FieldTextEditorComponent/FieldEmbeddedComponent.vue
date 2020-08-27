@@ -5,49 +5,103 @@
       <q-badge>{{ name }}</q-badge>
       <q-btn icon="settings" flat round size="md" dense class="cursor-drag" color="grey" />
     </template>
-    <span v-else-if="!isHTML">{{ value }}</span>
-    <span v-else v-html="value" />
+    <span v-else-if="!isParagraph">{{ value }}</span>
+    <editor-content v-else :editor="editor" :readonly="true" :fields="fields" />
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { DDTemplate } from 'src/dynamic-documents/src/core/DDTemplate'
-import { DDDocument } from 'src/dynamic-documents/src/core/DDDocument';
-import { DDField } from 'src/dynamic-documents/src/core/DDField';
-import { EFieldComponentID } from 'src/dynamic-documents/src/core/DDFieldType';
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
+import { DDTemplate } from "src/dynamic-documents/src/core/DDTemplate";
+import { DDDocument } from "src/dynamic-documents/src/core/DDDocument";
+import { DDField } from "src/dynamic-documents/src/core/DDField";
+import { EFieldComponentID } from "src/dynamic-documents/src/core/DDFieldType";
+import { Editor, EditorContent } from "tiptap";
+import {
+  BulletList,
+  Heading,
+  ListItem,
+  OrderedList,
+  Bold,
+  Italic,
+  Strike,
+  Underline,
+  History,
+} from "tiptap-extensions";
+import FieldEmbeded from "./FieldEmbedded";
 
-@Component({})
+@Component({ components: { "editor-content": EditorContent } })
 export default class FieldEmbeddedComponent extends Vue {
   @Prop({ required: false }) readonly node!: Node;
-  @Prop({ required: false }) readonly updateAttrs!:(any)=>any;
-  @Prop({ required: false }) readonly view!;
+  @Prop({ required: false }) readonly updateAttrs!: (any) => any;
+  @Prop({ required: false }) readonly view;
   // field:DDField | null = null
 
-  get field_id ():string { return this.node.attrs.field_id }
-  set field_id (value) { this.updateAttrs({ field_id: value }) }
+  editor: Editor = {};
 
-  get name ():string { return this.field ? this.field.name : '' }
-  get value () { return this.field ? this.field.value : '' }
-  get isHTML () { return this.field?.type.component === EFieldComponentID.INPUT_PARAGRAPH || false }
-
-  onClick () {
-    this.field_id = 'test';
+  get field_id(): string {
+    return this.node.attrs.field_id;
+  }
+  set field_id(value) {
+    this.updateAttrs({ field_id: value });
   }
 
-  get readonly () {
-    return this.$parent.$attrs.readonly
+  get name(): string {
+    return this.field ? this.field.name : "";
+  }
+  get value() {
+    if (this.field) {
+      this.editor.setContent(this.field.value);
+    }
+    return this.field ? this.field.value : "";
+  }
+  get isParagraph() {
+    return (
+      this.field?.type.component === EFieldComponentID.INPUT_PARAGRAPH || false
+    );
   }
 
-  get field ():DDField {
-    return this.$parent.$attrs.fields.find(f => f.id === this.field_id) as DDField
+  onClick() {
+    this.field_id = "test";
+  }
+
+  get readonly() {
+    return this.$parent.$attrs.readonly;
+  }
+
+  get fields() {
+    return this.$parent.$attrs.fields;
+  }
+
+  get field(): DDField {
+    return this.$parent.$attrs.fields.find(
+      (f) => f.id === this.field_id
+    ) as DDField;
+  }
+
+  created() {
+    this.editor = new Editor({
+      extensions: [
+        new BulletList(),
+        new Heading({ levels: [1, 2, 3] }),
+        new ListItem(),
+        new OrderedList(),
+        new Bold(),
+        new Italic(),
+        new Strike(),
+        new Underline(),
+        new History(),
+        new FieldEmbeded(),
+      ],
+      editable: false,
+      content: this.field.value,
+    });
   }
 }
 </script>
 
 <style scoped>
-    .embeded_container {
-        display: inline-block;
-
-    }
+.embeded_container {
+  display: inline-block;
+}
 </style>
