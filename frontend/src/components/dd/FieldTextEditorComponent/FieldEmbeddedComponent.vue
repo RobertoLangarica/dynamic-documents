@@ -3,7 +3,7 @@
     <template v-if="!readonly">
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
       <q-badge>{{ name }}</q-badge>
-      <q-btn icon="settings" flat round size="md" dense class="cursor-drag" color="grey" />
+      <q-btn icon="settings" flat round size="md" dense class="cursor-drag" color="grey" @click="onSettings"/>
     </template>
     <span v-else-if="!isParagraph">{{ value }}</span>
     <editor-content v-else :editor="editor" :readonly="true" :fields="fields" />
@@ -29,6 +29,7 @@ import {
   History,
 } from "tiptap-extensions";
 import FieldEmbeded from "./FieldEmbedded";
+import TransformationsDialog from "components/dd/TransformationsDialog.vue";
 
 @Component({ components: { "editor-content": EditorContent } })
 export default class FieldEmbeddedComponent extends Vue {
@@ -95,6 +96,13 @@ export default class FieldEmbeddedComponent extends Vue {
       editable: false,
       content: this.field.value,
     });
+  }
+
+  onSettings(){
+    this.$q.dialog({
+      component: TransformationsDialog,
+      parent:this
+    })
   }
 }
 </script>

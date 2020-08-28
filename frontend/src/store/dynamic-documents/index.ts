@@ -6,19 +6,23 @@ import { DDTemplate } from 'src/dynamic-documents/src/core/DDTemplate'
 import { DDFieldType } from 'src/dynamic-documents/src/core/DDFieldType'
 import { StateInterface } from '..'
 import { plainToClass } from 'class-transformer'
+import { DDTransformation } from 'src/dynamic-documents/src/core/DDTransformation'
+import { i18n } from 'src/boot/i18n'
 
 api.baseURL = process.env.API_URL!
 
 export interface IDDState {
   documents: DDDocument[],
   templates: DDTemplate[],
-  types: DDFieldType[]
+  types: DDFieldType[],
+  transformations: DDTransformation[]
 }
 
 const state: IDDState = {
   documents: [],
   templates: [],
-  types: []
+  types: [],
+  transformations: []
 }
 
 const mutations: MutationTree<IDDState> = {
@@ -60,6 +64,10 @@ const mutations: MutationTree<IDDState> = {
 
   types(state: IDDState, value: DDFieldType[]) {
     state.types = value
+  },
+
+  transformations(state: IDDState, value: DDTransformation[]) {
+    state.transformations = value
   }
 }
 
@@ -120,7 +128,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
 
     if (result.success) {
       // fields sorted
-      result.data.fields = result.data.fields.sort((a,b)=>a.sort_index - b.sort_index)
+      result.data.fields = result.data.fields.sort((a, b) => a.sort_index - b.sort_index)
       commit('updateDocument', result.data)
       return result.data
     }
@@ -130,7 +138,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
     let result = await api.get(`/templates/${id}`)
     if (result.success) {
       // fields sorted
-      result.data.fields = result.data.fields.sort((a,b)=>a.sort_index - b.sort_index)
+      result.data.fields = result.data.fields.sort((a, b) => a.sort_index - b.sort_index)
       commit('updateTemplate', result.data)
       return result.data
     }
@@ -140,6 +148,19 @@ const actions: ActionTree<IDDState, StateInterface> = {
     let result = await api.get(`/field_types`)
     if (result.success) {
       commit('types', result.data.items)
+      return result.data
+    }
+  },
+  async updateTransformations({ commit }): Promise<DDTransformation[] | undefined> {
+    console.log('GET', `/transformations`)
+    let result = await api.get(`/transformations`)
+    if (result.success) {
+      // using i18n to get the texts
+      result.data.items.forEach(i=>{
+        i.name = i18n.t(`transformations.${i.name}`)
+        i.description = i18n.t(`transformations.description_${i.description}`)
+      })
+      commit('transformations', result.data.items)
       return result.data
     }
   },

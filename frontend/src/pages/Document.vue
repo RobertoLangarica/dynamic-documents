@@ -9,13 +9,7 @@
         :label="view.label"
       />
     </div>
-    <h1
-      v-if="docReady"
-      :contenteditable="isInEditView"
-      @input="titleChanged"
-    >
-      {{ manager.name }}
-    </h1>
+    <h1 v-if="docReady" :contenteditable="isInEditView" @input="titleChanged">{{ manager.name }}</h1>
     <div v-if="docReady" class="fields-container" :class="currentView">
       <field-group-component
         :fields="fields"
@@ -34,7 +28,7 @@ import Component from "vue-class-component";
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 
-export enum IViews{
+export enum IViews {
   EDIT,
   CAPTURE,
   PRINT,
@@ -44,51 +38,52 @@ export enum IViews{
 export default class Document extends Vue {
   currentView: IViews = IViews.EDIT;
   manager!: DocumentEditionManager;
-  fields:DDField[] = []
+  fields: DDField[] = [];
   docReady = false;
 
   views = [
     { label: "Editar", value: IViews.EDIT },
     { label: "Capturar", value: IViews.CAPTURE },
-    { label: "Ver", value: IViews.PRINT }
+    { label: "Ver", value: IViews.PRINT },
   ];
 
-  get isInEditView () {
+  get isInEditView() {
     return this.currentView === IViews.EDIT;
   }
 
-  get isInCaptureView () {
+  get isInCaptureView() {
     return this.currentView === IViews.CAPTURE;
   }
 
-  get isInPrintView () {
+  get isInPrintView() {
     return this.currentView === IViews.PRINT;
   }
 
-  beforeDestroy () {
-    this.$root.$off('f-add', this.onFieldAdded.bind(this))
-    this.$root.$off('f-update', this.onFieldUpdated.bind(this))
-    this.$root.$off('f-delete', this.onFieldDeleted.bind(this))
-    this.$root.$off('f-sort_fields', this.onSortedFields.bind(this))
-    this.$root.$off('f-add_under_sort_index', this.onFieldInserted.bind(this))
+  beforeDestroy() {
+    this.$root.$off("f-add", this.onFieldAdded.bind(this));
+    this.$root.$off("f-update", this.onFieldUpdated.bind(this));
+    this.$root.$off("f-delete", this.onFieldDeleted.bind(this));
+    this.$root.$off("f-sort_fields", this.onSortedFields.bind(this));
+    this.$root.$off("f-add_under_sort_index", this.onFieldInserted.bind(this));
   }
 
-  async mounted () {
-    this.$root.$on('f-add', this.onFieldAdded.bind(this))
-    this.$root.$on('f-update', this.onFieldUpdated.bind(this))
-    this.$root.$on('f-delete', this.onFieldDeleted.bind(this))
-    this.$root.$on('f-sort_fields', this.onSortedFields.bind(this))
-    this.$root.$on('f-add_under_sort_index', this.onFieldInserted.bind(this))
+  async mounted() {
+    this.$root.$on("f-add", this.onFieldAdded.bind(this));
+    this.$root.$on("f-update", this.onFieldUpdated.bind(this));
+    this.$root.$on("f-delete", this.onFieldDeleted.bind(this));
+    this.$root.$on("f-sort_fields", this.onSortedFields.bind(this));
+    this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
 
     let document = await this.$store.dispatch(
       "getDocument",
       this.$route.params.id
     );
     await this.$store.dispatch("updateTypes");
+    await this.$store.dispatch("updateTransformations");
 
     // TODO remove this login since it is only for test purposes
     if (!document) {
-      return this.$router.push({ name: 'login' })
+      return this.$router.push({ name: "login" });
     }
 
     this.manager = DocumentEditionManager.createFromRemoteObject(document);
@@ -100,33 +95,37 @@ export default class Document extends Vue {
     this.manager.store = this.$store;
   }
 
-  onSortedFields (sorted:DDField[]) {
-    void this.manager.updateFields(sorted.map(item => {
-      // Minimizing the data being send
-      return { id: item.id, sort_index: item.sort_index } as DDField
-    }))
+  onSortedFields(sorted: DDField[]) {
+    void this.manager.updateFields(
+      sorted.map((item) => {
+        // Minimizing the data being send
+        return { id: item.id, sort_index: item.sort_index } as DDField;
+      })
+    );
     // sorting the fields
-    this.manager.fields = this.manager.fields.sort((a, b) => a.sort_index - b.sort_index)
+    this.manager.fields = this.manager.fields.sort(
+      (a, b) => a.sort_index - b.sort_index
+    );
   }
 
-  titleChanged (e) {
+  titleChanged(e) {
     console.log("titleChanged", e);
   }
 
-  onFieldUpdated (field: DDField) {
+  onFieldUpdated(field: DDField) {
     void this.manager.updateField(field);
   }
 
-  onFieldDeleted (field: DDField) {
+  onFieldDeleted(field: DDField) {
     void this.manager.deleteField(field);
   }
 
-  onFieldAdded (field: DDField) {
+  onFieldAdded(field: DDField) {
     void this.manager.addField(field);
   }
 
-  onFieldInserted (params:{field:DDField, index:number}) {
-    void this.manager.addFieldAtSortIndex(params.field, params.index)
+  onFieldInserted(params: { field: DDField; index: number }) {
+    void this.manager.addFieldAtSortIndex(params.field, params.index);
   }
 }
 </script>

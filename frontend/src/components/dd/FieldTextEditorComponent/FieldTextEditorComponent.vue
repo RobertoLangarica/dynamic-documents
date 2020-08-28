@@ -52,12 +52,9 @@ export default class FieldTextEditorComponent extends Vue {
   @Prop({ type: Boolean, required: true }) readonly edit_view!: boolean;
   @Prop({ type: Boolean, required: true }) readonly capture_view!: boolean;
   @Prop({ type: Boolean, required: true }) readonly print_view!: boolean;
-  @Prop({ type: Boolean, required: false, default: false })
-  readonly readonly!: boolean;
-  @Prop({ type: Boolean, required: false, default: false })
-  readonly autoFocus!: boolean;
-  @Prop({ type: Number, required: false, default: 500 })
-  readonly debounce!: number;
+  @Prop({ type: Boolean, required: false, default: false }) readonly readonly!: boolean;
+  @Prop({ type: Boolean, required: false, default: false }) readonly autoFocus!: boolean;
+  @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
   @Prop({ type: Array, required: true }) readonly fields!: DDField[];
   @Prop({ required: false, default: "" }) readonly doc_id!: string;
 

@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref="dialog">
-    <q-card>
+    <q-card class="q-dialog-plugin">
       <q-card-section>
         <span class="text-h6">{{ title }}</span>
       </q-card-section>

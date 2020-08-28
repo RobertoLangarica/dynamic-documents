@@ -18,9 +18,9 @@ export interface IFieldTypeParams {
 export class DDFieldType extends DDSimpleEntity {
   component: EFieldComponentID = EFieldComponentID.NOT_DEFINED
   description: string = ''
-  parameters: IFieldTypeParams = {}
   name: string = ''
   id: string = ''
+  parameters: IFieldTypeParams = {}
 
   @Type(() => DDValidation)
   validations: DDValidation[] = []
