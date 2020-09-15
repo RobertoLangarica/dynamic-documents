@@ -68,9 +68,9 @@ fi
 if [ $release -eq 1 ]; then
     # release
     #   We change some params for release:
-    #       It runs without rm so we can use a restart behaviour and process the container if stopped
+    #       It runs without rm so we can use a restart behaviour and do any processing to the container if stopped
     #       It runs dettached (to release the console after run)
-    #       It has a retart policy that will try to restart the container unless stoped
+    #       It has a restart policy that will try to restart the container unless stopped
     echo " -> Starting image"
     docker run  --name $name \
             -p $port:$cont_port \
@@ -82,7 +82,7 @@ if [ $release -eq 1 ]; then
 else
     # development
     #   We change some params for development:
-    #       It runs with rm so the container is removed whenever is stop and we can reuse its name
+    #       It runs with rm so the container is removed when stopped and we can reuse its name
     #       It runs interactive (it) so we have the console attached
     #       It has a folder binding to our dev folder so we can make changes an see the effects
     #       The binding ignores node_modules, so we are using the same dependencies always 
