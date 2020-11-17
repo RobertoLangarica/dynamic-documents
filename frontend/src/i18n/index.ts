@@ -1,5 +1,5 @@
 import esMx from './es-mx'
 
-export default {
+export let messages = {
   'es-mx': esMx
 }
