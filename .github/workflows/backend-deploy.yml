@@ -1,12 +1,13 @@
-name: Backend-RELEASE deployment
+name: Backend-DEPLOY
 
 # Trigger on push filter by branch
 on:
   push:
     branches:
       - release_back
+      - staging_back
 jobs:
-  back_test:
+  test:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
 
@@ -28,7 +29,7 @@ jobs:
     steps:
       - name: Checkout last version
         uses: actions/checkout@v2
-      
+
       # Performs a clean installation of all dependencies in the `package.json` file
       # For more information, see https://docs.npmjs.com/cli/ci.html
       - name: Install dependencies
@@ -43,26 +44,29 @@ jobs:
         working-directory: ./backend
         run: npm run test:e2e
 
-  back_build:
-    needs: back_test
+  build:
+    needs: migration
     runs-on: ubuntu-latest
     env:
       SERVER: fid@68.183.171.182
-      REMOTE_DIR: ~/dd/production
-      BRANCH: release_back
-      PROCESS_NAME: DD_production
     steps:
-      - name: Checkout last version
-        uses: actions/checkout@v2
-
-      # Performs a clean installation of all dependencies in the `package.json` file
-      # For more information, see https://docs.npmjs.com/cli/ci.html
-      - name: Install dependencies
-        working-directory: ./backend
-        run: npm ci
-      - name: Build
-        working-directory: ./backend
-        run: npm run build
+      # Setting the stage based on the branch
+      - name: Set stage
+        run: |
+          BRANCH=$(echo $GITHUB_REF | rev | cut -d "/" -f 1 | rev) \
+          && echo "::set-env name=BRANCH::$BRANCH"
+      # RELEASE values
+      - name: Release values
+        run: |
+          echo "::set-env name=REMOTE_DIR::~/dd/production" \
+          && echo "::set-env name=PROCESS_NAME::DD_production"
+        if: env.BRANCH == 'release_back'
+      # STAGING values
+      - name: Staging values
+        run: |
+          echo "::set-env name=REMOTE_DIR::~/dd/staging" \
+          && echo "::set-env name=PROCESS_NAME::DD_staging"
+        if: env.BRANCH == 'staging_back'
 
       - name: Adding SSH basics
         run: |
@@ -79,12 +83,68 @@ jobs:
           ssh "$SERVER" \
           "cd "$REMOTE_DIR"/backend && \
           yes | rm -r dist"
+
+      - name: Checkout last project version
+        uses: actions/checkout@v2
+
+      # Performs a clean installation of all dependencies in the `package.json` file
+      # For more information, see https://docs.npmjs.com/cli/ci.html
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Build latest version
+        working-directory: ./backend
+        run: npm run build
+
       - name: Sending new build to the remote server
         working-directory: ./backend
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           scp -r ./dist "$SERVER":"$REMOTE_DIR"/backend/dist
+
+      - name: Restart pm2
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "pm2 restart "$PROCESS_NAME""
+
+  migration:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      SERVER: fid@68.183.171.182
+    steps:
+      # Setting the stage based on the branch
+      - name: Set stage
+        run: |
+          BRANCH=$(echo $GITHUB_REF | rev | cut -d "/" -f 1 | rev) \
+          && echo "::set-env name=BRANCH::$BRANCH"
+      # RELEASE values
+      - name: Release values
+        run: |
+          echo "::set-env name=REMOTE_DIR::~/dd/production" \
+          && echo "::set-env name=PROCESS_NAME::DD_production"
+        if: env.BRANCH == 'release_back'
+      # STAGING values
+      - name: Staging values
+        run: |
+          echo "::set-env name=REMOTE_DIR::~/dd/staging" \
+          && echo "::set-env name=PROCESS_NAME::DD_staging"
+        if: env.BRANCH == 'staging_back'
+
+      - name: Checkout last project version
+        uses: actions/checkout@v2
+
+      - name: Adding SSH basics
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          mkdir ~/.ssh
+          echo > ~/.ssh/known_hosts
+          ssh-keyscan 68.183.171.182 > ~/.ssh/known_hosts
 
       - name: Getting last repo version on the remote server
         run: |
@@ -101,7 +161,7 @@ jobs:
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
           "cd "$REMOTE_DIR"/backend && npm install --production"
-          
+
       - name: Installing development dependencies on remote server
         run: |
           eval `ssh-agent`
@@ -115,10 +175,3 @@ jobs:
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
           "cd "$REMOTE_DIR"/backend && npm run migration:run"
-          
-      - name: Restart pm2
-        run: |
-          eval `ssh-agent`
-          ssh-add - <<< "${{secrets.DO_KEY}}"
-          ssh "$SERVER" \
-          "pm2 restart "$PROCESS_NAME""
