@@ -23,8 +23,7 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 
@@ -36,6 +35,9 @@ export enum IViews {
 
 @Component({})
 export default class Document extends Vue {
+  @Prop({ type: String, required: false, default: '' }) readonly id!: string;
+  @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
+
   currentView: IViews = IViews.EDIT;
   manager!: DocumentEditionManager;
   fields: DDField[] = [];
@@ -44,22 +46,22 @@ export default class Document extends Vue {
   views = [
     { label: "Editar", value: IViews.EDIT },
     { label: "Capturar", value: IViews.CAPTURE },
-    { label: "Ver", value: IViews.PRINT },
+    { label: "Ver", value: IViews.PRINT }
   ];
 
-  get isInEditView() {
+  get isInEditView () {
     return this.currentView === IViews.EDIT;
   }
 
-  get isInCaptureView() {
+  get isInCaptureView () {
     return this.currentView === IViews.CAPTURE;
   }
 
-  get isInPrintView() {
+  get isInPrintView () {
     return this.currentView === IViews.PRINT;
   }
 
-  beforeDestroy() {
+  beforeDestroy () {
     this.$root.$off("f-add", this.onFieldAdded.bind(this));
     this.$root.$off("f-update", this.onFieldUpdated.bind(this));
     this.$root.$off("f-delete", this.onFieldDeleted.bind(this));
@@ -67,35 +69,42 @@ export default class Document extends Vue {
     this.$root.$off("f-add_under_sort_index", this.onFieldInserted.bind(this));
   }
 
-  async mounted() {
+  
+  async beforeMount(){
+    await this.$store.dispatch("updateTypes");
+    await this.$store.dispatch("updateTransformations");
+  }
+
+  async mounted () {
     this.$root.$on("f-add", this.onFieldAdded.bind(this));
     this.$root.$on("f-update", this.onFieldUpdated.bind(this));
     this.$root.$on("f-delete", this.onFieldDeleted.bind(this));
     this.$root.$on("f-sort_fields", this.onSortedFields.bind(this));
     this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
 
-    let document = await this.$store.dispatch(
-      "getDocument",
-      this.$route.params.id
-    );
-    await this.$store.dispatch("updateTypes");
-    await this.$store.dispatch("updateTransformations");
-
-    // TODO remove this login since it is only for test purposes
-    if (!document) {
-      return this.$router.push({ name: "login" });
+    let document
+    if(this.id != ''){
+      document = await this.$store.dispatch(
+        "getDocument",
+        this.id
+      );
+    } else {
+      // This is an empty documents
     }
 
-    this.manager = DocumentEditionManager.createFromRemoteObject(document);
+    this.manager = document ? DocumentEditionManager.createFromRemoteObject(document) : new DocumentEditionManager();
+
     this.fields = this.manager.fields;
-    this.docReady = true;
-    // TODO: Set these properties with the real data (it should support templates)
-    this.manager.isTemplate = false;
+    this.manager.isTemplate = this.isTemplate;
     this.manager.isDocument = true;
-    this.manager.store = this.$store;
+    // The store syncs an existing doc
+    this.manager.store = document ? this.$store : null;
+
+    console.log(this.manager)
+    this.docReady = true;
   }
 
-  onSortedFields(sorted: DDField[]) {
+  onSortedFields (sorted: DDField[]) {
     void this.manager.updateFields(
       sorted.map((item) => {
         // Minimizing the data being send
@@ -108,23 +117,23 @@ export default class Document extends Vue {
     );
   }
 
-  titleChanged(e) {
+  titleChanged (e) {
     console.log("titleChanged", e);
   }
 
-  onFieldUpdated(field: DDField) {
+  onFieldUpdated (field: DDField) {
     void this.manager.updateField(field);
   }
 
-  onFieldDeleted(field: DDField) {
+  onFieldDeleted (field: DDField) {
     void this.manager.deleteField(field);
   }
 
-  onFieldAdded(field: DDField) {
+  onFieldAdded (field: DDField) {
     void this.manager.addField(field);
   }
 
-  onFieldInserted(params: { field: DDField; index: number }) {
+  onFieldInserted (params: { field: DDField; index: number }) {
     void this.manager.addFieldAtSortIndex(params.field, params.index);
   }
 }

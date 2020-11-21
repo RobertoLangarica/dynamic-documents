@@ -23,7 +23,7 @@ export class DocumentEditionManager {
   categories: DDCategory[] = [];
 
   @Type(() => DDField)
-  fields!: DDField[]
+  fields: DDField[] = [];
 
   isTemplate: boolean = false
 

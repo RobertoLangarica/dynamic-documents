@@ -29,6 +29,7 @@ import {
   History,
 } from "tiptap-extensions";
 import FieldEmbeded from "./FieldEmbedded";
+import { Node } from 'tiptap'
 import TransformationsDialog from "components/dd/TransformationsDialog.vue";
 
 @Component({ components: { "editor-content": EditorContent } })
