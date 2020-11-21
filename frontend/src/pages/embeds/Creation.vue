@@ -1,6 +1,5 @@
 <template>
     <div>
-        HOLA
         <dd-doc />
     </div>
 </template>
@@ -16,7 +15,7 @@ export default class Creation extends mixins(EmbedMixin) {
     @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
 
     mounted(){
-        // this.sendMessage('HOLA from within')
+        this.sendMessage('created',{hola:'Justo', id:'remote'})
     }
 }
 </script>

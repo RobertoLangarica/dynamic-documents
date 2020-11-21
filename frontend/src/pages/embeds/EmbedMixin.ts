@@ -41,5 +41,6 @@ export default class EmbedMixin extends Vue {
     })
 
     console.log(`sending => ${event}`)
+    window.parent.postMessage(event, '*')
   }
 }

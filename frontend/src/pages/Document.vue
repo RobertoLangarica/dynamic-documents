@@ -100,7 +100,6 @@ export default class Document extends Vue {
     // The store syncs an existing doc
     this.manager.store = document ? this.$store : null;
 
-    console.log(this.manager)
     this.docReady = true;
   }
 
