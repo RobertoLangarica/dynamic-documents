@@ -1,5 +1,4 @@
 <template>
-    <span>AUTHORIZING</span>
 </template>
 
 <script lang="ts">
@@ -21,7 +20,7 @@ export default class Authorize extends mixins(EmbedMixin){
                     This token should not be stored in the Vuex.store nor LocalStorage
                 */
                 this.$api.setAuthorization(data.token,'');
-                this.$router.replace({ name: data.location })
+                this.$router.replace({ name: data.location, params:data.params })
                 break;
             default:
                 console.log(`Unrecognized event->${message}`)

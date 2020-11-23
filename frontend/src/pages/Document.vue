@@ -1,15 +1,7 @@
 <template>
   <article class="q-pa-lg">
-    <div class="fixed-top-right bg-white q-pa-sm q-mr-md">
-      <q-radio
-        v-for="view in views"
-        :key="view.value"
-        v-model="currentView"
-        :val="view.value"
-        :label="view.label"
-      />
-    </div>
-    <h1 v-if="docReady" :contenteditable="isInEditView" @input="titleChanged">{{ manager.name }}</h1>
+    <h1 v-if="docReady" :contenteditable="isInEditView" 
+      @input="e=>name=e.target.innerText">{{ initialName }}</h1>
     <div v-if="docReady" class="fields-container" :class="currentView">
       <field-group-component
         :fields="fields"
@@ -19,6 +11,15 @@
       />
     </div>
     <q-spinner v-else color="primary" size="3em" :thickness="2" />
+    <div class="fixed-top-right bg-white q-pa-sm q-mr-md">
+      <q-radio
+        v-for="view in views"
+        :key="view.value"
+        v-model="currentView"
+        :val="view.value"
+        :label="view.label"
+      />
+    </div>
   </article>
 </template>
 
@@ -26,6 +27,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
+import { throttle } from "underscore/modules/index";
 
 export enum IViews {
   EDIT,
@@ -37,11 +39,14 @@ export enum IViews {
 export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
+  @Prop({ type: Number, required: false, default: 500 })
+  readonly debounce!: number;
 
   currentView: IViews = IViews.EDIT;
-  manager!: DocumentEditionManager;
+  manager: DocumentEditionManager = {} as any;
   fields: DDField[] = [];
   docReady = false;
+  initialName: string = "";
 
   views = [
     { label: "Editar", value: IViews.EDIT },
@@ -60,6 +65,14 @@ export default class Document extends Vue {
   get isInPrintView () {
     return this.currentView === IViews.PRINT;
   }
+
+  get name() {
+    return this.manager ? this.manager.name : '';
+  }
+  set name(value) {
+    this.manager.name = value;
+    this.updateDocument({name: value},this.manager)// Sending only the data that changed
+  }  
 
   beforeDestroy () {
     this.$root.$off("f-add", this.onFieldAdded.bind(this));
@@ -84,19 +97,23 @@ export default class Document extends Vue {
 
     let document
     if(this.id != ''){
-      document = await this.$store.dispatch(
-        "getDocument",
-        this.id
-      );
+      let action = this.isTemplate ? 'getTemplate':'getDocument'
+      document = await this.$store.dispatch(action, this.id );
     } else {
       // This is an empty documents
     }
 
     this.manager = document ? DocumentEditionManager.createFromRemoteObject(document) : new DocumentEditionManager();
+    if(!document){
+      // Placeholder name
+      this.manager.name = (this.isTemplate ? 'Plantilla':'Documento' ) + ' sin nombre'
+    }
+
+    this.initialName = this.manager.name;
 
     this.fields = this.manager.fields;
     this.manager.isTemplate = this.isTemplate;
-    this.manager.isDocument = true;
+    this.manager.isDocument = !this.isTemplate;
     // The store syncs an existing doc
     this.manager.store = document ? this.$store : null;
 
@@ -116,10 +133,6 @@ export default class Document extends Vue {
     );
   }
 
-  titleChanged (e) {
-    console.log("titleChanged", e);
-  }
-
   onFieldUpdated (field: DDField) {
     void this.manager.updateField(field);
   }
@@ -134,6 +147,28 @@ export default class Document extends Vue {
 
   onFieldInserted (params: { field: DDField; index: number }) {
     void this.manager.addFieldAtSortIndex(params.field, params.index);
+  }
+
+  // Avoiding overflow of update calls
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  updateDocument: (changes:{[key:string]:any}, manager) => void = throttle(
+    (changes,manager) => {
+      manager.update(changes)
+    },
+    this.debounce,
+    { leading: false }
+  );
+
+  /**
+   * @return The id assigned to the document
+   */
+  async saveAsNew():string{
+    // Letting the manager to know the store so it can save and update anything
+    this.manager.store = this.$store;
+    await this.manager.saveAsNew()
+
+    // Returning a copy
+    return this.manager.getCleanCopy()
   }
 }
 </script>

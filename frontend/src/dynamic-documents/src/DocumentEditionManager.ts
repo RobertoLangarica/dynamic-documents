@@ -141,6 +141,14 @@ export class DocumentEditionManager {
     }
   }
 
+  async update (changes:{[key:string]:any}) {
+    if (this.isDocument) {
+      await this.store?.dispatch('setDocument', Object.assign(changes, { id: this.id }))
+    } else {
+      await this.store?.dispatch('setTemplate', Object.assign(changes, { id: this.id }))
+    }
+  }
+
   async addFieldAtSortIndex (field: DDField, sort_index: number) {
     let indexToInsert = this.fields.findIndex(item => item.sort_index === sort_index)
 
@@ -360,12 +368,7 @@ export class DocumentEditionManager {
     copy.fields = sorted
 
     // Remove any unnecessary data to be send
-    let withoutExtraData: DocumentEditionManager = {} as any
-    Object.assign(withoutExtraData, copy)
-    delete withoutExtraData.isTemplate
-    delete withoutExtraData.isDocument
-    delete withoutExtraData.toUpdate
-    delete withoutExtraData.store
+    let withoutExtraData = copy.getCleanCopy()
 
     if (this.isDocument) {
       await this.store?.dispatch('addDocument', withoutExtraData)
@@ -374,6 +377,32 @@ export class DocumentEditionManager {
     }
 
     return copy
+  }
+
+  getCleanCopy ():DocumentEditionManager {
+    // Remove any unnecessary data to be send
+    let withoutExtraData: DocumentEditionManager = {} as any
+    Object.assign(withoutExtraData, this)
+    delete withoutExtraData.isTemplate
+    delete withoutExtraData.isDocument
+    delete withoutExtraData.toUpdate
+    delete withoutExtraData.store
+
+    return withoutExtraData
+  }
+
+  async saveAsNew () {
+    this.document_source = ''
+    this.template_source = ''
+
+    // Remove any unnecessary data to be send
+    let withoutExtraData = this.getCleanCopy()
+
+    if (this.isDocument) {
+      await this.store?.dispatch('addDocument', withoutExtraData)
+    } else {
+      await this.store?.dispatch('addTemplate', withoutExtraData)
+    }
   }
 
   static createFromRemoteObject (remote: DDTemplate | DDDocument): DocumentEditionManager {

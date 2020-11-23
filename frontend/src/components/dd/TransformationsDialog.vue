@@ -61,7 +61,6 @@ export default class TransformationsDialog extends Vue {
     selectedTransformations:Transformation[] = []
     
     created(){
-        console.log(this.$store.state.dd.transformations)
         this.transformations = this.$store.state.dd.transformations.map(i=>{
             let t = new Transformation()
             Object.assign(t,i)

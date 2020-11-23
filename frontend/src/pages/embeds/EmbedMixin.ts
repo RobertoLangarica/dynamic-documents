@@ -30,9 +30,9 @@ export default class EmbedMixin extends Vue {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onMessage (message:string, data:{[key:string]:any} = {}) {
-    console.log(`received => ${message}`)
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    console.log(`received => ${message},${data}`)
   }
 
   sendMessage (message:string, data:{[key:string]:any} = {}) {
@@ -40,7 +40,6 @@ export default class EmbedMixin extends Vue {
       [message]: data
     })
 
-    console.log(`sending => ${event}`)
     window.parent.postMessage(event, '*')
   }
 }
