@@ -73,7 +73,7 @@ export class DDField {
   @Type(() => FDataReplication)
   replication?: FDataReplication
 
-  get allowReplication(): boolean {
+  get allowReplication (): boolean {
     return !this.replication ? false : this.replication.allow
   }
 
@@ -99,54 +99,22 @@ export class DDField {
   // Identifier used in the fillmaps
   map_id?: string
 
-  static createFromType(type: DDFieldType): DDField {
+  static createFromType (type: DDFieldType): DDField {
     let field = new DDField()
     field.name = type.name
     field.type = type
 
-    //Default values from the type
+    // Default values from the type
     if (type.parameters.field_override) {
       Object.keys(type.parameters.field_override).forEach(key => {
         field[key] = type.parameters.field_override![key]
       })
     }
 
-
     return field
   }
 
-  /**
-   *
-   * @param {*} source Field to copy
-   * @param {*} sourceFields All the fields from the source document/template, used to copy all the fields from a group or by reference of some kind
-   * @param {*} templateID Source template id
-   * @param {*} documentID Source document id
-   *
-   * @return DDField[]
-   */
-  static copyField(source: DDField): DDField {
-    let field = new DDField()
-    Object.assign(field, source)
-    field.id = uuidv4()
-    field.source_field = source.id
-
-    if (!source.map_id) {
-      field.map_id = source.id
-    }
-
-    // Any relation is set to blank
-    field.use_embedded = false
-    delete field.dependent
-    delete field.source_template
-    delete field.source_document
-    delete field.group_by
-    delete field.embedded_fields
-    delete field.replicate_with
-
-    return field
-  }
-
-  static isGroup(field: DDField): boolean {
+  static isGroup (field: DDField): boolean {
     return field.type.name === 'Grupo'
   }
 }
