@@ -13,7 +13,6 @@ import { AllowedStatus } from "src/common/guards/decorators/AllowedStatus"
 import { SplitNamesFromIDsPipe } from "src/common/pipes/SplitNamesFromIDs.pipe"
 import { DocumentStatus } from "./document.config"
 import { AuthGuard } from "src/common/guards/Auth.guard"
-import { Grants } from "src/common/guards/decorators/Grants.decorator"
 
 @ApiBearerAuth()
 @ApiTags('Documents')
@@ -35,6 +34,11 @@ export class DocumentController {
     @Post()
     add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
         return this.service.addDocument(dto)
+    }
+
+    @Post('from-template')
+    addFromTemplate(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
+        return this.service.addDocumentFromTemplate(dto)
     }
 
     @Patch(':id')

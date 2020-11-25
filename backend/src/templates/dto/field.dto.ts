@@ -143,7 +143,7 @@ export class Field {
 
     @IsOptional() @IsString() @ApiPropertyOptional()
     @Expose()
-    map_id: boolean // Id used by the fill maps
+    map_id: string // Id used by the fill maps
 
     @IsOptional() @IsNumber() @ApiPropertyOptional()
     @Expose()

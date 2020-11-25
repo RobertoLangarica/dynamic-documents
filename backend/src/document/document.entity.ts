@@ -7,7 +7,6 @@ import { Category } from "src/categories/category.entity";
 import { TemplateBaseEntity } from "src/templates/template_base.entity";
 
 @Entity('documents')
-@Unique(['name'])
 export class Document extends TemplateBaseEntity {
 
     @Column({ type: 'uuid', nullable: true }) @IsUUID()

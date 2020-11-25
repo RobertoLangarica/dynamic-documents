@@ -27,6 +27,12 @@ const routes: RouteConfig[] = [
         component: () => import('pages/embeds/Edition.vue'),
         props: route => ({ isTemplate: true, id: route.params.id })
       },
+      {
+        name: 'document_edition',
+        path: 'document/edition/:id',
+        component: () => import('pages/embeds/Edition.vue'),
+        props: route => ({ isTemplate: false, id: route.params.id })
+      },
       { name: 'authorize', path: 'auth', component: () => import('pages/embeds/Authorize.vue') }
     ]
   },

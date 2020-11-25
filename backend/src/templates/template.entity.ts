@@ -5,7 +5,6 @@ import { TemplateBaseEntity } from "src/templates/template_base.entity"
 import { Type } from "class-transformer";
 
 @Entity('templates')
-@Unique(['name'])
 export class Template extends TemplateBaseEntity {
     @ManyToMany(type => Category, { eager: true, onDelete: 'CASCADE' })
     @JoinTable({

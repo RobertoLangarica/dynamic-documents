@@ -3,7 +3,7 @@ import { Column, ManyToOne } from "typeorm";
 import { IsString, IsArray } from "class-validator";
 import { TemplateType } from "src/template_types/template_type.entity";
 import { Field } from "./dto/field.dto";
-import { Type, Exclude } from "class-transformer";
+import { Type } from "class-transformer";
 
 export class TemplateBaseEntity extends EntityWithTimeStampt {
 
