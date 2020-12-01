@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { Repository } from "typeorm";
+import { AdvancedConsoleLogger, Repository } from "typeorm";
 import { Document } from "src/document/document.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { isUUID } from "class-validator";
@@ -33,7 +33,6 @@ export class DocumentStatusGuard implements CanActivate {
         if (!doc) {
             return false
         }
-
         return status.findIndex(item => item === doc.status.name) >= 0
     }
 }
