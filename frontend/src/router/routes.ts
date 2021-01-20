@@ -33,6 +33,12 @@ const routes: RouteConfig[] = [
         component: () => import('pages/embeds/Edition.vue'),
         props: route => ({ isTemplate: false, id: route.params.id })
       },
+      {
+        name: 'document_view',
+        path: 'document/edition/:id/view',
+        component: () => import('pages/embeds/View.vue'),
+        props: route => ({ isTemplate: false, id: route.params.id })
+      },
       { name: 'authorize', path: 'auth', component: () => import('pages/embeds/Authorize.vue') }
     ]
   },

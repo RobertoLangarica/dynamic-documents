@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <dd-doc ref="doc_creation" :isTemplate="isTemplate" :id="id" @hook:updated.once="onDocMounted"/>
-  </div>
+    <dd-doc ref="doc_creation" :isTemplate="isTemplate" :id="id" :forceViewOnly="true" @hook:updated.once="onDocMounted"/>
 </template>
 
 <script lang="ts">
@@ -17,11 +15,6 @@ export default class Creation extends mixins(EmbedMixin) {
 
     async onMessage (message, data) {
       switch (message) {
-        case 'create':
-          /* Saving */
-          let document = await this.$refs.doc_creation.saveAsNew()
-          this.sendMessage('created', document)
-          break;
         default:
           console.log(`Unrecognized event->${message}`)
       }

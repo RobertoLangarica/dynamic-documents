@@ -55,7 +55,7 @@ export class DocumentController {
 
     @Patch(':id/status')
     @UseGuards(DocumentStatusGuard)
-    @AllowedStatus(DocumentStatus.ONLY_CAPTURE, DocumentStatus.ONLY_EDITION, DocumentStatus.OPEN)
+    @AllowedStatus(DocumentStatus.ONLY_CAPTURE, DocumentStatus.ONLY_EDITION, DocumentStatus.OPEN, DocumentStatus.PREVENT_CHANGES)
     setStatus(@Param('id', ParseUUIDPipe) id: string, @Body('status') status: string) {
         return this.service.setStatus(id, status)
     }

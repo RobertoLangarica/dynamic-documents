@@ -1,7 +1,9 @@
 <template>
-  <article class="q-pa-lg">
-    <h1 v-if="docReady" :contenteditable="isInEditView" 
-      @input="e=>name=e.target.innerText">{{ initialName }}</h1>
+  <article class="q-pa-md">
+    <h1 v-if="docReady" :contenteditable="isInEditView"
+        @input="e=>name=e.target.innerText">
+      {{ initialName }}
+    </h1>
     <div v-if="docReady" class="fields-container" :class="currentView">
       <field-group-component
         :fields="fields"
@@ -11,15 +13,17 @@
       />
     </div>
     <q-spinner v-else color="primary" size="3em" :thickness="2" />
-    <div class="fixed-top-right bg-white q-pa-sm q-mr-md">
-      <q-radio
-        v-for="view in views"
-        :key="view.value"
-        v-model="currentView"
-        :val="view.value"
-        :label="view.label"
-      />
-    </div>
+    <template v-if="changesAllowed">
+      <div class="fixed-top-right bg-white q-pa-sm q-mr-md">
+        <q-radio
+          v-for="view in views"
+          :key="view.value"
+          v-model="currentView"
+          :val="view.value"
+          :label="view.label"
+        />
+      </div>
+    </template>
   </article>
 </template>
 
@@ -39,14 +43,15 @@ export enum IViews {
 export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
-  @Prop({ type: Number, required: false, default: 500 })
-  readonly debounce!: number;
+  @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
+  @Prop({ type: Boolean, required: false, default: false }) readonly forceViewOnly:boolean
 
   currentView: IViews = IViews.EDIT;
   manager: DocumentEditionManager = {} as any;
   fields: DDField[] = [];
   docReady = false;
   initialName: string = "";
+  changesAllowed:boolean = !this.forceViewOnly
 
   views = [
     { label: "Editar", value: IViews.EDIT },
@@ -55,24 +60,34 @@ export default class Document extends Vue {
   ];
 
   get isInEditView () {
+    if (!this.changesAllowed) {
+      return false
+    }
     return this.currentView === IViews.EDIT;
   }
 
   get isInCaptureView () {
+    if (!this.changesAllowed) {
+      return false
+    }
     return this.currentView === IViews.CAPTURE;
   }
 
   get isInPrintView () {
+    if (!this.changesAllowed) {
+      return true
+    }
     return this.currentView === IViews.PRINT;
   }
 
-  get name() {
+  get name () {
     return this.manager ? this.manager.name : '';
   }
-  set name(value) {
+
+  set name (value) {
     this.manager.name = value;
-    this.updateDocument({name: value},this.manager)// Sending only the data that changed
-  }  
+    this.updateDocument({ name: value }, this.manager)// Sending only the data that changed
+  }
 
   beforeDestroy () {
     this.$root.$off("f-add", this.onFieldAdded.bind(this));
@@ -82,8 +97,7 @@ export default class Document extends Vue {
     this.$root.$off("f-add_under_sort_index", this.onFieldInserted.bind(this));
   }
 
-  
-  async beforeMount(){
+  async beforeMount () {
     await this.$store.dispatch("updateTypes");
     await this.$store.dispatch("updateTransformations");
   }
@@ -96,17 +110,20 @@ export default class Document extends Vue {
     this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
 
     let document
-    if(this.id != ''){
-      let action = this.isTemplate ? 'getTemplate':'getDocument'
-      document = await this.$store.dispatch(action, this.id );
+    if (this.id !== '') {
+      let action = this.isTemplate ? 'getTemplate' : 'getDocument'
+      document = await this.$store.dispatch(action, this.id);
+      if (document.status === 'closed' || document.status === 'prevent_changes') {
+        this.changesAllowed = false
+      }
     } else {
       // This is an empty documents
     }
 
     this.manager = document ? DocumentEditionManager.createFromRemoteObject(document) : new DocumentEditionManager();
-    if(!document){
+    if (!document) {
       // Placeholder name
-      this.manager.name = (this.isTemplate ? 'Plantilla':'Documento' ) + ' sin nombre'
+      this.manager.name = (this.isTemplate ? 'Plantilla' : 'Documento') + ' sin nombre'
     }
 
     this.initialName = this.manager.name;
@@ -118,9 +135,14 @@ export default class Document extends Vue {
     this.manager.store = document ? this.$store : null;
 
     this.docReady = true;
+
+    if (this.forceViewOnly) {
+      this.changesAllowed = false
+    }
   }
 
   onSortedFields (sorted: DDField[]) {
+    console.log('FIRST update')
     void this.manager.updateFields(
       sorted.map((item) => {
         // Minimizing the data being send
@@ -152,7 +174,7 @@ export default class Document extends Vue {
   // Avoiding overflow of update calls
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   updateDocument: (changes:{[key:string]:any}, manager) => void = throttle(
-    (changes,manager) => {
+    (changes, manager) => {
       manager.update(changes)
     },
     this.debounce,
@@ -162,7 +184,7 @@ export default class Document extends Vue {
   /**
    * @return The id assigned to the document
    */
-  async saveAsNew():string{
+  async saveAsNew ():string {
     // Letting the manager to know the store so it can save and update anything
     this.manager.store = this.$store;
     await this.manager.saveAsNew()

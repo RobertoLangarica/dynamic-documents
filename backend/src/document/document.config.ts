@@ -1,7 +1,8 @@
 import { truncate } from "fs";
 
 export enum DocumentStatus {
-    CLOSED = 'closed',
+    CLOSED = 'closed', // Closed is a permanent status
+    PREVENT_CHANGES = 'prevent_changes',
     ONLY_CAPTURE = 'only_capture',
     ONLY_EDITION = 'only_edition',
     OPEN = 'open',
