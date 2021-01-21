@@ -33,6 +33,10 @@ export class DocumentStatusGuard implements CanActivate {
         if (!doc) {
             return false
         }
-        return status.findIndex(item => item === doc.status.name) >= 0
+        let can = status.findIndex(item => item === doc.status.name) >= 0
+        if(!can){
+            console.log('Acción INVALIDA en el documento que tiene el estado: ',doc.status.name)
+        }
+        return can
     }
 }
