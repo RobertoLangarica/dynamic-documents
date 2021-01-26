@@ -33,7 +33,6 @@ let actions = {
   async login ({ commit }, payload) {
     let path = `/login`
     console.log(`POST ${path}`)
-
     let result = await api.post(path, payload)
     if (result.success) {
       commit('token', result.data.token)

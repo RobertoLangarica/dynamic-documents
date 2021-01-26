@@ -1,15 +1,13 @@
 <template>
   <div class="row justify-center">
-    <div class="row q-col-gutter-y-md col-12 justify-center">
       <h1 class="col-12 text-center">
         Login
       </h1>
-      <form>
-      <q-input v-model="email" class="col-8" label="Email" />
-      <q-input v-model="password" class="col-8 q-mt-xl" label="Password" secure/>
-      <q-btn label="login" class="col-4" color="primary" @click.prevent="onSend" />
+      <form class="col-12 row justify-center">
+      <q-input v-model="email" class="col-7" label="Email" autocomplete="username"/>
+      <q-input v-model="password" class="col-7 q-mt-xl" label="Password" type="password" autocomplete="current-password" />
+      <q-btn label="login" class="col-7" color="primary" @click.prevent="onSend" />
       </form>
-    </div>
   </div>
 </template>
 
@@ -21,8 +19,8 @@ export default {
   },
   data() {
     return {
-      email: "roberto.langarica@gmail.com",
-      password: "roberto.langarica"
+      email: "",
+      password: ""
     };
   },
   methods: {
