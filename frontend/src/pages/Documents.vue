@@ -40,11 +40,6 @@ import DocumentCreationDialog from "components/dd/DocumentCreationDialog.vue";
 @Component({ components: { DocumentCreationDialog } })
 export default class Documents extends Vue {
   mounted() {
-    this.$store.commit("init");
-    // TODO remove this setAuthorization that overrides the authorization
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    this.$api.setAuthorization(this.$store.state.login.token);
     void this.$store.dispatch("getDocuments");
   }
 
