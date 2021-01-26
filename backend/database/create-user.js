@@ -49,7 +49,7 @@ client.connect()
     })
     .then(id=>{
         console.log('Adding grants')
-        return client.query(`INSERT INTO grants (user_id,name) VALUES ($1,'user')`,[id])
+        return client.query(`INSERT INTO grants (user_id,name) VALUES ($1,'admin')`,[id])
     })
     .then(()=>{
         console.log('User CREATED:')
