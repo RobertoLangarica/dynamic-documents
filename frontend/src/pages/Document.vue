@@ -132,11 +132,31 @@ export default class Document extends Vue {
     this.manager.isDocument = !this.isTemplate;
     // The store is only present if the manager has a document to maintain in sync
     this.manager.store = document ? this.$store : null;
+    this.setAvailableStatus(document)
 
     this.docReady = true;
 
     if (this.forceViewOnly) {
       this.changesAllowed = false
+    }
+  }
+  setAvailableStatus(document){
+    if(document){
+      this.views = [{ label: "Ver", value: IViews.PRINT }]
+      switch(document.status.name){
+        case 'only_capture':
+          this.views.unshift({ label: "Capturar", value: IViews.CAPTURE })
+          break
+        case 'only_edition':
+          this.views.unshift({ label: "Editar", value: IViews.EDIT })
+          break;
+        case 'open':
+          this.views.unshift({ label: "Capturar", value: IViews.CAPTURE })
+          this.views.unshift({ label: "Editar", value: IViews.EDIT })
+          break;
+      }
+
+      this.currentView = this.views[0].value
     }
   }
 
