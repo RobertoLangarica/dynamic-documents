@@ -3,7 +3,7 @@ import { PipeTransform, ArgumentMetadata, Injectable } from "@nestjs/common";
 @Injectable()
 export class FieldsValueValidationPipe implements PipeTransform {
     /**
-     * Take all the values present in value.fields[].value|default_value and apply
+     * Take all the values present in value.fields[].value and apply
      * the validations listed in value.fields[].validations[]. If there is any validation fail
      * a warning is saved in value.warnings[].
      * 

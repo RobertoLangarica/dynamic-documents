@@ -1,12 +1,15 @@
 <template>
   <div class="embeded_container row items-center">
+    <!-- EDIT MODE -->
     <template v-if="!readonly">
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
       <q-badge>{{ name }}</q-badge>
-      <q-btn icon="settings" flat round size="md" dense class="cursor-drag" color="grey" @click="onSettings"/>
+      <q-btn icon="settings" flat round size="md" dense class="cursor-drag" color="grey" @click="onSettings" />
     </template>
-    <span v-else-if="!isParagraph">{{ value }}</span>
-    <editor-content v-else :editor="editor" :readonly="true" :fields="fields" />
+    <template v-else>
+      <span v-if="!isParagraph">{{ value }}</span>
+      <editor-content v-else :editor="editor" :readonly="true" :fields="fields" />
+    </template>
   </div>
 </template>
 
@@ -16,7 +19,7 @@ import { DDTemplate } from "src/dynamic-documents/src/core/DDTemplate";
 import { DDDocument } from "src/dynamic-documents/src/core/DDDocument";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { EFieldComponentID } from "src/dynamic-documents/src/core/DDFieldType";
-import { Editor, EditorContent } from "tiptap";
+import { Editor, EditorContent, Node } from "tiptap";
 import {
   BulletList,
   Heading,
@@ -26,10 +29,10 @@ import {
   Italic,
   Strike,
   Underline,
-  History,
+  History
 } from "tiptap-extensions";
 import FieldEmbeded from "./FieldEmbedded";
-import { Node } from 'tiptap'
+
 import TransformationsDialog from "components/dd/TransformationsDialog.vue";
 
 @Component({ components: { "editor-content": EditorContent } })
@@ -40,47 +43,46 @@ export default class FieldEmbeddedComponent extends Vue {
 
   editor: Editor = {};
 
-  get field_id(): string {
+  get field_id (): string {
     return this.node.attrs.field_id;
   }
-  set field_id(value) {
+
+  set field_id (value) {
     this.updateAttrs({ field_id: value });
   }
 
-  get name(): string {
+  get name (): string {
     return this.field ? this.field.name : "";
   }
-  get value() {
+
+  get value () {
     if (this.field) {
       this.editor.setContent(this.field.value);
     }
     return this.field ? this.field.value : "";
   }
-  get isParagraph() {
+
+  get isParagraph () {
     return (
       this.field?.type.component === EFieldComponentID.INPUT_PARAGRAPH || false
     );
   }
 
-  onClick() {
-    this.field_id = "test";
-  }
-
-  get readonly() {
+  get readonly () {
     return this.$parent.$attrs.readonly;
   }
 
-  get fields() {
+  get fields () {
     return this.$parent.$attrs.fields;
   }
 
-  get field(): DDField {
+  get field (): DDField {
     return this.$parent.$attrs.fields.find(
       (f) => f.id === this.field_id
     ) as DDField;
   }
 
-  created() {
+  created () {
     this.editor = new Editor({
       extensions: [
         new BulletList(),
@@ -92,17 +94,17 @@ export default class FieldEmbeddedComponent extends Vue {
         new Strike(),
         new Underline(),
         new History(),
-        new FieldEmbeded(),
+        new FieldEmbeded()
       ],
       editable: false,
-      content: this.field.value,
+      content: this.field.value
     });
   }
 
-  onSettings(){
+  onSettings () {
     this.$q.dialog({
       component: TransformationsDialog,
-      parent:this
+      parent: this
     })
   }
 }

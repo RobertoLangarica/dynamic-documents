@@ -97,9 +97,8 @@ export default class Document extends Vue {
     this.$root.$off("f-add_under_sort_index", this.onFieldInserted.bind(this));
   }
 
-  async beforeMount () {
-    await this.$store.dispatch("updateTypes");
-    await this.$store.dispatch("updateTransformations");
+  beforeMount () {
+    void this.$store.dispatch("getTypes");
   }
 
   async mounted () {
@@ -131,7 +130,7 @@ export default class Document extends Vue {
     this.fields = this.manager.fields;
     this.manager.isTemplate = this.isTemplate;
     this.manager.isDocument = !this.isTemplate;
-    // The store syncs an existing doc
+    // The store is only present if the manager has a document to maintain in sync
     this.manager.store = document ? this.$store : null;
 
     this.docReady = true;
@@ -142,7 +141,6 @@ export default class Document extends Vue {
   }
 
   onSortedFields (sorted: DDField[]) {
-    console.log('FIRST update')
     void this.manager.updateFields(
       sorted.map((item) => {
         // Minimizing the data being send

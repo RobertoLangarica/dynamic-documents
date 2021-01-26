@@ -128,8 +128,8 @@ export class DocumentEditionManager {
   }
 
   async addField (field: DDField) {
-    // Adding a copy so the is_new flag get deleted immediatley
     field.sort_index = this.fields.length
+    // Adding a copy so the is_new flag get deleted immediatley
     let copy = classToClass(field)
     this.fields.push(copy)
     field.is_new = true
@@ -216,14 +216,12 @@ export class DocumentEditionManager {
   static createFromRemoteObject (remote: DDTemplate | DDDocument): DocumentEditionManager {
     let manager = new DocumentEditionManager()
     Object.assign(manager, remote)
-    // TODO validate what happen with the categories and the reactivity
 
-    // To avoid mutation errors we need copies of the fields instead of references
-    manager.fields = remote.fields!.map(item => {
-      let obj: DDField = {} as any
-      // TODO validate what happen with the properties passed as reference between Objects
-      Object.assign(obj, item)
-      return obj
+    // any array gets copied instead of using the reference that Object.assign gives us
+    Object.keys(manager).forEach(k => {
+      if (Array.isArray(manager[k])) {
+        manager[k] = manager[k].map(item => Object.assign({}, item))
+      }
     })
 
     manager.toUpdate = []

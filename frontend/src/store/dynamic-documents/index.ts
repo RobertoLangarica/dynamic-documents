@@ -6,7 +6,6 @@ import { DDTemplate } from 'src/dynamic-documents/src/core/DDTemplate'
 import { DDFieldType } from 'src/dynamic-documents/src/core/DDFieldType'
 import { StateInterface } from '..'
 import { plainToClass } from 'class-transformer'
-import { DDTransformation } from 'src/dynamic-documents/src/core/DDTransformation'
 import { i18n } from 'src/boot/i18n'
 
 api.baseURL = process.env.API_URL!
@@ -15,7 +14,7 @@ export interface IDDState {
   documents: DDDocument[],
   templates: DDTemplate[],
   types: DDFieldType[],
-  transformations: DDTransformation[]
+  transformations:any[]
 }
 
 const state: IDDState = {
@@ -66,7 +65,7 @@ const mutations: MutationTree<IDDState> = {
     state.types = value
   },
 
-  transformations(state: IDDState, value: DDTransformation[]) {
+  transformations(state: IDDState, value: any[]) {
     state.transformations = value
   }
 }
@@ -143,7 +142,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
       return result.data
     }
   },
-  async updateTypes({ commit }): Promise<DDFieldType[] | undefined> {
+  async getTypes({ commit }): Promise<DDFieldType[] | undefined> {
     console.log('GET', `/field_types`)
     let result = await api.get(`/field_types`)
     if (result.success) {
@@ -151,7 +150,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
       return result.data
     }
   },
-  async updateTransformations({ commit }): Promise<DDTransformation[] | undefined> {
+  async getTransformations({ commit }): Promise<any[] | undefined> {
     console.log('GET', `/transformations`)
     let result = await api.get(`/transformations`)
     if (result.success) {

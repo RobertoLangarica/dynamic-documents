@@ -31,6 +31,7 @@
     "migration:revert": "npm run typeorm -- migration:revert",
     "migration:refresh": "npm run typeorm -- schema:drop && npm run migration:run",
     "migration:generate": "npm run typeorm -- migration:generate -n ",
+    "create:user": "node database/create-user",
     "start:db": "./start_db.sh -n dd_back_net",
     "stop:db": "docker rm $(docker stop db_server)"
   },
@@ -62,6 +63,7 @@
     "@types/jest": "^26.0.0",
     "@types/node": "^12.7.5",
     "@types/supertest": "^2.0.8",
+    "dotenv": "^8.2.0",
     "jest": "^26.0.0",
     "pg": "^7.18.2",
     "prettier": "^1.18.2",

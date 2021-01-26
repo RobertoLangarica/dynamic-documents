@@ -1,26 +1,22 @@
-import { store } from 'quasar/wrappers'
 import Vuex from 'vuex'
-import login, { ILoginState } from './login'
+import Vue from 'vue'
+import session, { ISessionState } from './session'
 import dd, { IDDState } from './dynamic-documents'
 
-/*
- * If not building with SSR mode, you can
- * directly export the Store instantiation
- */
+Vue.use(Vuex)
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface StateInterface {
-  login:ILoginState,
+  session:ISessionState,
   dd:IDDState
 }
 
-export default store(function ({ Vue }) {
-  Vue.use(Vuex)
-
-  const Store = new Vuex.Store<StateInterface>({
-    modules: { dd, login },
-    strict: !!process.env.DEV
-  })
-
-  return Store
+const Store = new Vuex.Store<StateInterface>({
+  modules: {
+    dd,
+    session
+  },
+  strict: !!process.env.DEV
 })
+
+export default Store

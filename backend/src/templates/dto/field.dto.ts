@@ -70,10 +70,6 @@ export class Field {
     @Expose()
     value: any
 
-    @IsOptional() @ApiPropertyOptional()
-    @Expose()
-    default_value: any
-
     @IsOptional() @IsArray() @ApiPropertyOptional()
     @Expose()
     @Type(() => Validation)

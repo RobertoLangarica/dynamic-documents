@@ -5,10 +5,31 @@ const routes: RouteConfig[] = [
     path: '/',
     component: () => import('layouts/ExternalLayout.vue'),
     children: [
-      { name: 'index', path: '', component: () => import('pages/Index.vue') },
-      { name: 'login', path: 'login', component: () => import('pages/Login.vue') },
-      { name: 'documents', path: 'documents', component: () => import('pages/Documents.vue') },
-      { name: 'embed-document', props: true, path: 'document/:id', component: () => import('pages/Document.vue') }
+      {
+        name: 'login',
+        path: 'login',
+        component: () => import('pages/Login.vue'),
+        props: route => ({ redirect: route.query.redirect || null })
+      },
+      {
+        name: 'index',
+        path: '',
+        component: () => import('pages/Index.vue'),
+        meta: { protected: true }
+      },
+      {
+        name: 'documents',
+        path: 'documents',
+        component: () => import('pages/Documents.vue'),
+        meta: { protected: true }
+      },
+      {
+        name: 'embed-document',
+        props: true,
+        path: 'document/:id',
+        component: () => import('pages/Document.vue'),
+        meta: { protected: true }
+      }
     ]
   },
   {

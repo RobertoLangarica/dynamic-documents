@@ -4,15 +4,11 @@
       <h1 class="col-12 text-center">
         Login
       </h1>
-      <q-input v-model="token" class="col-8" label="Token" />
-      <div class="col-8 row">
-        <q-btn label="Use Token" class="col-4" color="primary" @click="useToken" />
-      </div>
-
-      <q-input v-model="secret" class="col-8 q-mt-xl" label="API Secret" />
-      <div class="col-8 row">
-        <q-btn label="Use API Secret" class="col-4" color="green" @click="useSecret" />
-      </div>
+      <form>
+      <q-input v-model="email" class="col-8" label="Email" />
+      <q-input v-model="password" class="col-8 q-mt-xl" label="Password" secure/>
+      <q-btn label="login" class="col-4" color="primary" @click.prevent="onSend" />
+      </form>
     </div>
   </div>
 </template>
@@ -20,52 +16,25 @@
 <script>
 /* eslint-disable */
 export default {
+  props:{
+    redirect: {type: String,default: null,required: false}
+  },
   data() {
     return {
       email: "roberto.langarica@gmail.com",
       password: "roberto.langarica"
     };
   },
-  mounted() {
-    this.$store.commit("init");
-  },
-  computed: {
-    token: {
-      get: function() {
-        return this.$store.state.login.token;
-      },
-      set: function(value) {
-        this.$store.commit("token", value);
-      }
-    },
-    secret: {
-      get: function() {
-        return this.$store.state.login.secret;
-      },
-      set: function(value) {
-        this.$store.commit("secret", value);
-      }
-    }
-  },
   methods: {
-    useToken() {
-      this.$api.setAuthorization(this.token);
-      this.$router.push({ name: "index" });
-    },
-    useSecret() {
-      this.$api.setAuthorization(this.secret, "APIKey");
-      this.$router.push({ name: "index" });
-    },
     async onSend() {
-      let result = await this.$api.post("/login", {
-        email: this.email,
-        password: this.password
-      });
-
+      let result = await this.$store.dispatch('session/login', { email: this.email, password: this.password })
       if (result.success) {
-        this.$api.setAuthorization(result.data.token);
-        LocalStorage.set("token", result.data.token);
-        this.$router.push({ name: "secrets" });
+        
+        if (this.redirect) {
+          this.$router.push({ path: this.redirect })
+        } else {
+          this.$router.push({ name: "index" });
+        }
       }
     }
   }
