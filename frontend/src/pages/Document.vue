@@ -14,7 +14,7 @@
     </div>
     <q-spinner v-else color="primary" size="3em" :thickness="2" />
     <template v-if="changesAllowed">
-      <div class="fixed-top-right bg-white q-pa-sm q-mr-md">
+      <div class="fixed-top-right q-pa-sm q-mr-md">
         <q-radio
           v-for="view in views"
           :key="view.value"
