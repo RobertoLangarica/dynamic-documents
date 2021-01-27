@@ -29,7 +29,7 @@
         v-model="value"
         :is="getComponent(field.type)"
         :label="field.label"
-        :hint="field.hint"
+        :hint="!isInPrintView ? field.hint : null"
         :readonly="isReadOnly"
         :group="field.id"
         :fields="fields"
