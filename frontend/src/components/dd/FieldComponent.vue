@@ -22,7 +22,9 @@
         color="secondary"
         contenteditable="true"
         @input="e=>name=e.target.innerText"
-      >{{ initialName }}</q-badge>
+      >
+        {{ initialName }}
+      </q-badge>
       <component
         v-model="value"
         :is="getComponent(field.type)"
@@ -67,7 +69,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 import {
   DDFieldType,
   FieldComponentUI,
-  EFieldComponentID,
+  EFieldComponentID
 } from "src/dynamic-documents/src/core/DDFieldType";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import FieldTypeDialog from "components/FieldTypeDialog.vue";
@@ -83,33 +85,36 @@ export default class ClassComponent extends Vue {
   @Prop({ type: Boolean, required: true }) readonly isInPrintView!: boolean;
   @Prop({ type: Number, required: false, default: 500 })
   readonly debounce!: number;
+
   initialName: string = "";
 
-  mounted() {
+  mounted () {
     this.initialName = this.field.name;
   }
 
-  get isReadOnly() {
+  get isReadOnly () {
     return this.isInPrintView || (this.isInCaptureView && this.field.readonly);
   }
 
-  get name() {
+  get name () {
     return this.field.name;
   }
-  set name(value) {
+
+  set name (value) {
     this.field.name = value;
     this.notifyUpdate({ id: this.field.id, name: value } as DDField); // Sending only the data that changed
   }
 
-  get value() {
+  get value () {
     return this.field.value;
   }
-  set value(value) {
+
+  set value (value) {
     this.field.value = value;
     this.notifyUpdate({ id: this.field.id, value: value } as DDField); // Sending only the data that changed
   }
 
-  getComponent(fieldType: DDFieldType) {
+  getComponent (fieldType: DDFieldType) {
     if (FieldComponentUI[fieldType.component]) {
       let component =
         FieldComponentUI[fieldType.component].component || "nq-input";
@@ -119,7 +124,7 @@ export default class ClassComponent extends Vue {
     }
   }
 
-  onDelete() {
+  onDelete () {
     this.$root.$emit("f-delete", this.field);
   }
 
@@ -133,35 +138,35 @@ export default class ClassComponent extends Vue {
     { leading: false }
   );
 
-  showAddFieldDialog() {
+  showAddFieldDialog () {
     this.$q
       .dialog({
         component: FieldTypeDialog,
         parent: this,
-        text: "something",
+        text: "something"
       })
       .onOk((type) => {
         this.onFieldTypeSelected(type as DDFieldType);
       });
   }
 
-  onShowConfigDiaog() {
+  onShowConfigDiaog () {
     this.$q.dialog({
       maximized: true,
       fullWidth: true,
       component: FieldConfigDialog,
       parent: this,
-      field: this.field,
+      field: this.field
     });
   }
 
-  onFieldTypeSelected(type: DDFieldType) {
+  onFieldTypeSelected (type: DDFieldType) {
     let field = DDField.createFromType(type);
     // All the new fields are group brothers
     field.group_by = this.field.group_by;
     this.$root.$emit("f-add_under_sort_index", {
       field: field,
-      index: this.field.sort_index,
+      index: this.field.sort_index
     });
   }
 }
@@ -169,17 +174,9 @@ export default class ClassComponent extends Vue {
 
 <style lang="scss">
 .fields-container {
-  &.edit {
-    .field-container {
-      margin: 0.5em 0;
-      &:hover {
-        background-color: #f8f8f8;
-      }
-    }
-  }
   .field-container {
     display: flex;
-    padding: 0.5em;
+    margin: 0.5em 0;
     .field-controls {
       display: flex;
       width: 5em;
@@ -205,6 +202,14 @@ export default class ClassComponent extends Vue {
       .field-config {
         opacity: 1;
       }
+    }
+  }
+}
+.fields-container.edit-view {
+  .field-container {
+    margin: 1em -1cm 1em -1.75cm;
+    &:hover {
+      background-color: #f8f8f8;
     }
   }
 }

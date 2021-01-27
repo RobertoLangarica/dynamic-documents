@@ -1,10 +1,10 @@
 <template>
-  <article class="q-pa-md">
+  <article class="document-container q-pa-md">
     <h1 v-if="docReady" :contenteditable="isInEditView"
         @input="e=>name=e.target.innerText">
       {{ initialName }}
     </h1>
-    <div v-if="docReady" class="fields-container" :class="currentView">
+    <div v-if="docReady" class="fields-container page" :class="{'edit-view': isInEditView, 'capture-view': isInCaptureView, 'print-view': isInPrintView}">
       <field-group-component
         :fields="fields"
         :edit_view="isInEditView"
@@ -140,10 +140,11 @@ export default class Document extends Vue {
       this.changesAllowed = false
     }
   }
-  setAvailableStatus(document){
-    if(document){
+
+  setAvailableStatus (document) {
+    if (document) {
       this.views = [{ label: "Ver", value: IViews.PRINT }]
-      switch(document.status.name){
+      switch (document.status.name) {
         case 'only_capture':
           this.views.unshift({ label: "Capturar", value: IViews.CAPTURE })
           break
@@ -212,3 +213,21 @@ export default class Document extends Vue {
   }
 }
 </script>
+<style lang="scss">
+.document-container {
+  background-color: #eeeeee;
+  height: 100vh;
+  h1 {
+    max-width: 21.5cm;
+    margin: 0.5rem auto 1rem auto;
+  }
+  .page {
+    background-color: white;
+    max-width: 21.5cm;
+    margin: 0 auto;
+    padding: 1.5cm;
+    border-radius: 1px;
+    box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1);
+  }
+}
+</style>
