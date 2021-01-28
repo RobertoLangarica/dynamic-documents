@@ -12,7 +12,6 @@
         :print_view="isInPrintView"
       />
     </div>
-    <q-spinner v-else color="primary" size="3em" :thickness="2" />
 
     <template v-if="docReady && changesAllowed">
       <div class="fixed-top-right q-pa-sm q-mr-md">
@@ -135,7 +134,6 @@ export default class Document extends Vue {
       // Placeholder name
       this.manager.name = (this.isTemplate ? 'Plantilla' : 'Documento') + ' sin nombre'
     }
-
     this.initialName = this.manager.name;
 
     this.fields = this.manager.fields;

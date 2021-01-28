@@ -46,6 +46,7 @@ export class DocumentService {
         if(includeVersions){
             query.addSelect('d.versions')
         }
+        query.leftJoinAndSelect('d.status','name')
         query.where('d.id=:id', { id: id })
 
         let doc = await query.getOne()
