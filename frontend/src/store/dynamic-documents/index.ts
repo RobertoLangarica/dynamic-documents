@@ -154,11 +154,6 @@ const actions: ActionTree<IDDState, StateInterface> = {
     console.log('GET', `/transformations`)
     let result = await api.get(`/transformations`)
     if (result.success) {
-      // using i18n to get the texts
-      result.data.items.forEach(i=>{
-        i.name = i18n.t(`transformations.${i.name}`)
-        i.description = i18n.t(`transformations.description_${i.description}`)
-      })
       commit('transformations', result.data.items)
       return result.data
     }

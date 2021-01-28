@@ -7,9 +7,10 @@
       <q-btn icon="settings" flat round size="md" dense class="cursor-drag" color="grey" @click="onSettings" />
     </template>
     <template v-else>
-      <span v-if="!isParagraph">{{ value }}</span>
+      <span v-if="!isParagraph">{{ transformedValue }}</span>
       <editor-content v-else :editor="editor" :readonly="true" :fields="fields" />
     </template>
+    <transformations-dialog v-model="showTransforms" :field_value="value" @ok="onSaveTransformations" :initial_transformations="transformations.split(',')"/>
   </div>
 </template>
 
@@ -32,15 +33,21 @@ import {
   History
 } from "tiptap-extensions";
 import FieldEmbeded from "./FieldEmbedded";
+import Transforms from 'src/transformations'
 
 import TransformationsDialog from "components/dd/TransformationsDialog.vue";
 
-@Component({ components: { "editor-content": EditorContent } })
+@Component({ 
+  components: { 
+    "editor-content": EditorContent,
+  'transformations-dialog':TransformationsDialog
+  } })
 export default class FieldEmbeddedComponent extends Vue {
   @Prop({ required: false }) readonly node!: Node;
   @Prop({ required: false }) readonly updateAttrs!: (any) => any;
   @Prop({ required: false }) readonly view;
 
+  showTransforms = false
   editor: Editor = {};
 
   get field_id (): string {
@@ -49,6 +56,14 @@ export default class FieldEmbeddedComponent extends Vue {
 
   set field_id (value) {
     this.updateAttrs({ field_id: value });
+  }
+
+  get transformations (): string {
+    return this.node.attrs.transformations;
+  }
+
+  set transformations (value) {
+    this.updateAttrs({ transformations: value });
   }
 
   get name (): string {
@@ -60,6 +75,10 @@ export default class FieldEmbeddedComponent extends Vue {
       this.editor.setContent(this.field.value);
     }
     return this.field ? this.field.value : "";
+  }
+
+  get transformedValue(){
+    return Transforms.apply(this.transformations.split(','),this.value)
   }
 
   get isParagraph () {
@@ -102,10 +121,11 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 
   onSettings () {
-    this.$q.dialog({
-      component: TransformationsDialog,
-      parent: this
-    })
+    this.showTransforms = true
+  }
+
+  onSaveTransformations(toSave){
+    this.transformations = toSave
   }
 }
 </script>

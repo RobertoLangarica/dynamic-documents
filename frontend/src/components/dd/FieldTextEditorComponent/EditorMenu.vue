@@ -1,7 +1,7 @@
 <template>
   <editor-menu-bar class="q-mb-md q-mt-sm menubar" :class="{ 'is-hidden':hidden }" :editor="editor" v-slot="{ commands, isActive }">
     <div class="row justify-between">
-      <q-btn class="col-1 menubar__button" @click="$emit('add_image',commands.field_embedded) " size="xs">
+      <q-btn class="col-1 menubar__button" @click="$emit('embed_field',commands.field_embedded) " size="xs">
         <q-icon name="image" />
       </q-btn>
 

@@ -2,7 +2,7 @@
   <nq-field @focus="onFieldFocus" @blur="onFieldBlur" :readonly="readonly">
     <template v-slot:control>
       <div class="editor">
-        <editor-menu :hidden="!focused" :editor="editor" @add_image="addEmbeddedField" />
+        <editor-menu :hidden="!focused" :editor="editor" @embed_field="addEmbeddedField" />
         <editor-content
           class="editor__content"
           :editor="editor"
@@ -185,7 +185,7 @@ export default class FieldTextEditorComponent extends Vue {
            *    Eg. Passing {fields:this.fields} with result in all the fields being copied
            *    and stored in the resulting html tag
            * */
-          command({ field_id: f.id, doc_id: this.doc_id });
+          command({ field_id: f.id, transformations:'hola' });
         });
       });
   }

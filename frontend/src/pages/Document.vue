@@ -98,6 +98,7 @@ export default class Document extends Vue {
   }
 
   beforeMount () {
+    void this.$store.dispatch("getTransformations");
     void this.$store.dispatch("getTypes");
   }
 
