@@ -112,7 +112,7 @@ onFieldTypeSelected (type:DDFieldType) {
 <style lang="scss">
 .dd-edit-view {
   .dd-field-group .dd-field-group {
-    padding: 0.5em;
+    padding: 0.5em 0.5em 0.5em 1.75em;
     border: 1px dotted grey;
     border-radius: 0.25rem;
   }
