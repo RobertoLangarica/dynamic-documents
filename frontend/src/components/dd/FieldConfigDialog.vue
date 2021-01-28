@@ -2,22 +2,22 @@
   <q-dialog ref="fc_dialog">
     <q-card>
       <q-card-section>
-        <span class="text-h5">{{ field.name }}</span>
-      </q-card-section>
-      <q-card-section>
-        <div class="row q-mt-lg q-col-gutter-y-md">
-          <nq-input v-model="hint" class="col-12" label="Texto de ayuda" :debounce="debounce" />
+        <div class="row q-mt-none q-col-gutter-y-md">
+          <nq-input v-model="name" class="col-12 q-mt-none q-pt-none" label="Nombre del elemento" hint="Para poder identificarlo al editar el documento" :debounce="debounce" />
 
-          <nq-input v-model="label" class="col-12" label="Etiqueta del campo" :debounce="debounce" />
+          <nq-input v-model="hint" class="col-12" label="Texto de ayuda" hint="Podrá ser visto por quienes capturen el documento" :debounce="debounce" />
+
+          <nq-input v-model="label" class="col-12" label="Etiqueta del campo" hint="Podrá ser visto tanto en captura como en impresión" :debounce="debounce" />
 
           <!-- Descripción -->
           <nq-input
             v-model="description"
             class="col-12"
-            label="Descripción"
-            hint="Esta descripción se mostrara en los menús de búqueda."
+            label="Descripción interna"
+            hint="Una nota para uso interno de quienes creen documentos dinámicos."
             :debounce="debounce"
             type="textarea"
+            style="height: 12em"
           />
 
           <!-- readonly -->
@@ -29,7 +29,9 @@
               <q-item-label>Campo de sólo lectura</q-item-label>
               <q-item-label
                 caption
-              >Un campo de sólo lectura no puede ser editado al momento de capturarse.</q-item-label>
+              >
+                Un campo de sólo lectura no puede ser editado al momento de capturarse.
+              </q-item-label>
             </q-item-section>
           </q-item>
 
@@ -68,7 +70,9 @@
               <q-item-label>Se muestra durante la captura</q-item-label>
               <q-item-label
                 caption
-              >Indica si este campo se debe mostrar durante la fase de captura. Si no se marca la casilla entonces el campo aparece oculto en modo de captura.</q-item-label>
+              >
+                Indica si este campo se debe mostrar durante la fase de captura. Si no se marca la casilla entonces el campo aparece oculto en modo de captura.
+              </q-item-label>
             </q-item-section>
           </q-item>
 
@@ -81,7 +85,9 @@
               <q-item-label>Se muestra durante la vista de impresión</q-item-label>
               <q-item-label
                 caption
-              >Indica si este campo se debe mostrar durante en la vista de impresión. Si no se marca la casilla entonces el campo aparece oculto en la impresión.</q-item-label>
+              >
+                Indica si este campo se debe mostrar durante en la vista de impresión. Si no se marca la casilla entonces el campo aparece oculto en la impresión.
+              </q-item-label>
             </q-item-section>
           </q-item>
         </div>
@@ -100,7 +106,7 @@ import { QDialog } from "quasar";
 import { Prop } from "vue-property-decorator";
 import {
   DDField,
-  FDataReplication,
+  FDataReplication
 } from "src/dynamic-documents/src/core/DDField";
 @Component({})
 export default class FieldConfigDialog extends Vue {
@@ -108,25 +114,25 @@ export default class FieldConfigDialog extends Vue {
   @Prop({ required: false, default: 500 }) readonly debounce!: number;
   allowReplication: boolean = false;
 
-  mounted() {
+  mounted () {
     this.allowReplication = !this.field.replication
       ? false
       : this.field.replication.allow;
   }
 
-  show() {
+  show () {
     (this.$refs.fc_dialog as QDialog).show();
   }
 
-  hide() {
+  hide () {
     (this.$refs.fc_dialog as QDialog).hide();
   }
 
-  onClose() {
+  onClose () {
     this.hide();
   }
 
-  get config_properties() {
+  get config_properties () {
     let result: any[] = [];
 
     // Description
@@ -136,49 +142,54 @@ export default class FieldConfigDialog extends Vue {
       props: {
         label: "Descripción para menú",
         clearable: true,
-        "stack-label": true,
-      },
+        "stack-label": true
+      }
     });
 
     return result;
   }
 
-  get description() {
+  get description () {
     return this.field.description;
   }
-  set description(value) {
+
+  set description (value) {
     this.field.description = value;
     this.notifyUpdate({ id: this.field.id, description: value });
   }
 
-  get name() {
+  get name () {
     return this.field.name;
   }
-  set name(value) {
+
+  set name (value) {
     this.field.name = value;
     this.notifyUpdate({ id: this.field.id, name: value });
   }
 
-  get readonly() {
+  get readonly () {
     return this.field.readonly;
   }
-  set readonly(value) {
+
+  set readonly (value) {
     this.field.readonly = value;
     this.notifyUpdate({ id: this.field.id, readonly: value });
   }
 
-  get required() {
+  get required () {
     return this.field.required;
   }
-  set required(value) {
+
+  set required (value) {
     this.field.required = value;
     this.notifyUpdate({ id: this.field.id, required: value });
   }
 
-  get replication(): boolean {
+  get replication (): boolean {
     return this.allowReplication;
   }
-  set replication(value: boolean) {
+
+  set replication (value: boolean) {
     if (!this.field.replication) {
       this.field.replication = new FDataReplication();
     }
@@ -186,43 +197,47 @@ export default class FieldConfigDialog extends Vue {
     this.allowReplication = value;
     this.notifyUpdate({
       id: this.field.id,
-      replication: this.field.replication,
+      replication: this.field.replication
     });
   }
 
-  get show_in_capture() {
+  get show_in_capture () {
     return this.field.show_in_capture;
   }
-  set show_in_capture(value) {
+
+  set show_in_capture (value) {
     this.field.show_in_capture = value;
     this.notifyUpdate({ id: this.field.id, show_in_capture: value });
   }
 
-  get show_in_print() {
+  get show_in_print () {
     return this.field.show_in_print;
   }
-  set show_in_print(value) {
+
+  set show_in_print (value) {
     this.field.show_in_print = value;
     this.notifyUpdate({ id: this.field.id, show_in_print: value });
   }
 
-  get hint() {
+  get hint () {
     return this.field.hint;
   }
-  set hint(value) {
+
+  set hint (value) {
     this.field.hint = value;
     this.notifyUpdate({ id: this.field.id, hint: value });
   }
 
-  get label() {
+  get label () {
     return this.field.label;
   }
-  set label(value) {
+
+  set label (value) {
     this.field.label = value;
     this.notifyUpdate({ id: this.field.id, label: value });
   }
 
-  notifyUpdate(field) {
+  notifyUpdate (field) {
     this.$root.$emit("f-update", field);
   }
 }

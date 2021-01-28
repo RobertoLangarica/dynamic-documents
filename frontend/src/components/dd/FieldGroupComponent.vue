@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dd-field-group">
     <draggable v-model="myFields" handle=".cursor-drag" @end="onDragEnded" :animation="200">
       <field-component
         v-for="field in myFields"
@@ -17,9 +17,9 @@
            rounded
            flat
            size="md"
-           class="cursor-pointer"
+           class="cursor-pointer add-a-field"
            color="grey"
-           label="Agregar un campo"
+           label="Agregar un elemento"
            @click="showAddFieldDialog"
     />
     <div />
@@ -109,3 +109,12 @@ onFieldTypeSelected (type:DDFieldType) {
 }
 }
 </script>
+<style lang="scss">
+.dd-edit-view {
+  .dd-field-group .dd-field-group {
+    padding: 0.5em 0.5em 0.5em 1.75em;
+    border: 1px dotted grey;
+    border-radius: 0.25rem;
+  }
+}
+</style>
