@@ -94,6 +94,7 @@ module.exports = {
     '@typescript-eslint/require-await': 'warn',
     '@typescript-eslint/no-unsafe-call':'warn',
     '@typescript-eslint/restrict-template-expressions':'warn',
+    '@typescript-eslint/restrict-plus-operands':'warn',
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }

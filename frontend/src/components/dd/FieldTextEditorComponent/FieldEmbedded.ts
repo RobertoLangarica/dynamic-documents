@@ -9,9 +9,8 @@ export default class FieldEmbedded extends Node {
   get schema () {
     return {
       attrs: {
-        field_id: {
-          default: ''
-        }
+        field_id: { default: '' },
+        transformations: { default: '' }
       },
       inline: true,
       group: "inline",
@@ -20,7 +19,8 @@ export default class FieldEmbedded extends Node {
       parseDOM: [{
         tag: 'field_embedded',
         getAttrs: dom => ({
-          field_id: dom.getAttribute('field_id')
+          field_id: dom.getAttribute('field_id'),
+          transformations: dom.getAttribute('transformations')
         })
       }],
       toDOM: node => ['field_embedded', node.attrs]
