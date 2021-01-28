@@ -8,13 +8,13 @@ import { Type } from "class-transformer";
 export class FieldType extends SimpleEntity {
 
     @Column() @IsString() @IsOptional()
-    category
+    category:string
 
     @Column() @IsNumber() @IsOptional()
-    order
+    order:number
 
     @Column() @IsString()
-    component
+    component:string
 
     /**
      * Any parameter for the component.
@@ -23,7 +23,7 @@ export class FieldType extends SimpleEntity {
      * The previous example with force the created field to be readonly after being created.
      */
     @Column({ type: 'jsonb', default: '{}' }) @IsJSON()
-    parameters
+    parameters:string
 
     @ManyToMany(type => Validation, { eager: true, onDelete: 'CASCADE' })
     @JoinTable({

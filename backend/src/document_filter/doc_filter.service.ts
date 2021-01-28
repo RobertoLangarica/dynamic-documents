@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus, forwardRef, Inject, NotFoundException, ConflictException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DocumentFilter, FilterField } from "./doc_filter.entity";
-import { DocFilterDto } from "./doc_filter.dto";
+import { CreateDocFilterDto, DocFilterDto } from "./doc_filter.dto";
 import { Repository } from "typeorm";
 import { User } from "src/user/user.entity";
 import { DocumentService } from "src/document/document.service";
@@ -43,7 +43,7 @@ export class DocumentFilterService {
         return filter
     }
 
-    async addFilter(data: DocFilterDto, owner: User): Promise<DocumentFilter> {
+    async addFilter(data: CreateDocFilterDto, owner: User): Promise<DocumentFilter> {
         data.owner = owner.id
         let filter = await this.filter_repo.create(data)
 
@@ -138,15 +138,23 @@ export class DocumentFilterService {
 
     async saveFilteredDocument(id: string, data: CaptureDto) {
         let filter = await this.filter_repo.findOneOrFail(id)
-        let document = await this.doc_service.findById(filter.document)
+        let document = await this.doc_service.findById(filter.document, true)
 
         filter.fields = plainToClass(FilterField, filter.fields, { excludeExtraneousValues: true })
+        data.fields = data.fields.map(f=>{
+            return {
+                // @ts-ignore
+                field:f.id,
+                value:f.value,
+                added:false,
+                deleted:false
+            }
+        })
         data.fields = plainToClass(DocumentChange, data.fields, { excludeExtraneousValues: true })
 
         //Saving the version for the document
         let version = new DocumentVersion()
         version.source_filter = id
-
         for (let d = 0; d < data.fields.length; d++) {
             let df = data.fields[d]
             let ff = filter.fields.find(f => f.field == df.field)
@@ -178,5 +186,23 @@ export class DocumentFilterService {
             document.versions.push(version)
             await this.doc_service.doc_repo.save(document)
         }
+
+        // Returning the updated value
+        let result = {
+            id: id,
+            fields: []
+        };
+
+        filter.fields.forEach(filter_field => {
+            let field = document.fields.find(df => df.id == filter_field.field)
+
+            if (field) {
+                // the document.field.readonly has precedence over filter.field.readonly
+                field.readonly = field.readonly ? field.readonly : filter_field.readonly
+                result.fields.push(field)
+            }
+        })
+
+        return result
     }
 }

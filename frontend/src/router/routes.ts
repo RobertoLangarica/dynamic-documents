@@ -60,6 +60,18 @@ const routes: RouteConfig[] = [
         component: () => import('pages/embeds/View.vue'),
         props: route => ({ isTemplate: false, id: route.params.id })
       },
+      {
+        name: 'filtered_document',
+        path: 'filter/capture/:id',
+        component: () => import('pages/embeds/FilteredDoc.vue'),
+        props: route => ({ id: route.params.id, readonly: false })
+      },
+      {
+        name: 'filtered_document_view',
+        path: 'filter/capture/:id/view',
+        component: () => import('pages/embeds/FilteredDoc.vue'),
+        props: route => ({ id: route.params.id, readonly: true })
+      },
       { name: 'authorize', path: 'auth', component: () => import('pages/embeds/Authorize.vue') }
     ]
   },

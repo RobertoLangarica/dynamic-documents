@@ -41,8 +41,15 @@ export class DocumentService {
         return { items: await query.getMany() }
     }
 
-    async findById(id: string): Promise<Document> {
-        let doc = await this.doc_repo.findOne({ id: id })
+    async findById(id: string, includeVersions:boolean = false): Promise<Document> {
+        let query = this.doc_repo.createQueryBuilder('d')
+        if(includeVersions){
+            query.addSelect('d.versions')
+        }
+        query.where('d.id=:id', { id: id })
+
+        let doc = await query.getOne()
+
         if (!doc) {
             throw new NotFoundException()
         }
@@ -296,7 +303,7 @@ export class DocumentService {
 
     async updateDocument(id: string, data: DocumentDto, user: User): Promise<Document> {
 
-        // Completing the version info before preload
+        // Completing the new version before using preload (that rewrites it)
         if (data.versions && data.versions.length > 0) {
             data.versions[0].source_filter = null;
             data.versions[0].source_user = user.id;
