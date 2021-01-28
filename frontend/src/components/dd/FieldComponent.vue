@@ -1,9 +1,9 @@
 <template>
   <div
     v-show="isInEditView || (isInCaptureView && field.show_in_capture) || (isInPrintView && field.show_in_print)"
-    class="field-container"
+    class="dd-field-container"
   >
-    <div class="field-controls q-pt-md" v-if="isInEditView">
+    <div class="dd-field-controls q-pt-md" v-if="isInEditView">
       <q-btn
         icon="add"
         flat
@@ -16,7 +16,7 @@
       />
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
-    <div class="field-content">
+    <div class="dd-field-content">
       <q-badge
         v-if="isInEditView"
         color="secondary"
@@ -39,7 +39,7 @@
         :print_view="isInPrintView"
       />
     </div>
-    <div class="q-pt-md q-ml-sm field-config column justify-start" v-if="isInEditView">
+    <div class="q-pt-md q-ml-sm dd-field-config column items-start justify-start" v-if="isInEditView">
       <q-btn
         icon="settings"
         flat
@@ -49,16 +49,6 @@
         class="cursor-pointer"
         color="grey"
         @click="onShowConfigDiaog"
-      />
-      <q-btn
-        icon="delete"
-        flat
-        round
-        size="md"
-        dense
-        class="cursor-pointer"
-        color="grey"
-        @click="onDelete"
       />
     </div>
   </div>
@@ -173,44 +163,43 @@ export default class ClassComponent extends Vue {
 </script>
 
 <style lang="scss">
-.fields-container {
-  .field-container {
+.dd-fields-container {
+  .dd-field-container {
     display: flex;
     margin: 0.5em 0;
-    .field-controls {
+    .dd-field-controls {
       display: flex;
       width: 5em;
       opacity: 0;
       transition: opacity 0.25s;
       justify-content: flex-end;
       align-items: flex-start;
+      > button {
+        margin-right: -0.25rem;
+      }
     }
-    .field-config {
+    .dd-field-config {
       display: flex;
       width: 2em;
       opacity: 0;
       transition: opacity 0.25s;
-      justify-content: flex-end;
       align-items: flex-start;
     }
-    .field-content {
+    .dd-field-content {
       flex: 1;
     }
     &:hover,
     &:active {
-      .field-controls,
-      .field-config {
+      .dd-field-controls,
+      .dd-field-config {
         opacity: 1;
       }
     }
   }
 }
-.fields-container.edit-view {
-  .field-container {
+.dd-fields-container.dd-edit-view {
+  .dd-field-container {
     margin: 1em -1cm 1em -1.75cm;
-    &:hover {
-      background-color: #f8f8f8;
-    }
   }
 }
 </style>

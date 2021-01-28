@@ -4,7 +4,7 @@
         @input="e=>name=e.target.innerText">
       {{ initialName }}
     </h1>
-    <div v-if="docReady" class="fields-container page" :class="{'edit-view': isInEditView, 'capture-view': isInCaptureView, 'print-view': isInPrintView}">
+    <div v-if="docReady" class="dd-fields-container page" :class="{'dd-edit-view': isInEditView, 'dd-capture-view': isInCaptureView, 'dd-print-view': isInPrintView}">
       <field-group-component
         :fields="fields"
         :edit_view="isInEditView"
@@ -217,6 +217,9 @@ export default class Document extends Vue {
 .document-container {
   background-color: #eeeeee;
   height: 100vh;
+  .add-a-field {
+    margin-left: -1rem;
+  }
   h1 {
     max-width: 21.5cm;
     margin: 0.5rem auto 1rem auto;
