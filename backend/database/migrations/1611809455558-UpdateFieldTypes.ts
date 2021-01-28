@@ -19,7 +19,7 @@ export class UpdateFieldTypes1611809455558 implements MigrationInterface {
             { category: '2. Captura',   order: 6, name: 'Grupo',        description: 'Campo que contiene a otros campos', component: 'group', parameters: {}, validations: [] },
             { category: '3. Utilerías', order: 0, name: 'Texto',        description: 'Campo para captura de texto', component: 'input-text', parameters: {}, validations: [] },
         ]
-        await queryRunner.manager.getRepository(FieldType).save(values as FieldType[])
+        await queryRunner.manager.getRepository(FieldType).save(values as any)
         await this.fillValidations(values, queryRunner)
     }
 
