@@ -16,7 +16,7 @@ export class FieldTypeDto extends SimpleDto {
     component: string;
 
     @IsOptional() @IsJSON() @ApiPropertyOptional()
-    parameters: string
+    parameters: {[key:string]:any}
 
     @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
     @Type(() => Validation)
@@ -41,7 +41,7 @@ export class CreateFieldTypeDto {
     component: string;
 
     @IsOptional() @IsJSON() @ApiPropertyOptional()
-    parameters: string
+    parameters: {[key:string]:any}
 
     @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
     @Type(() => Validation)

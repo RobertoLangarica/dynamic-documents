@@ -1,20 +1,20 @@
-import { Entity, Column, ManyToMany, JoinTable } from "typeorm";
-import { SimpleEntity } from "src/common/entities/simple_entity.entity";
-import { IsJSON, IsArray, IsString, IsOptional, IsNumber } from "class-validator";
-import { Validation } from "../validations/validation.entity";
-import { Type } from "class-transformer";
+import { Entity, Column, ManyToMany, JoinTable } from 'typeorm'
+import { SimpleEntity } from 'src/common/entities/simple_entity.entity'
+import { IsJSON, IsArray, IsString, IsOptional, IsNumber } from 'class-validator'
+import { Validation } from '../validations/validation.entity'
+import { Type } from 'class-transformer'
 
 @Entity('field_types')
 export class FieldType extends SimpleEntity {
 
     @Column() @IsString() @IsOptional()
-    category
+    category: string
 
     @Column() @IsNumber() @IsOptional()
-    order
+    order: number
 
     @Column() @IsString()
-    component
+    component: string
 
     /**
      * Any parameter for the component.
@@ -23,13 +23,13 @@ export class FieldType extends SimpleEntity {
      * The previous example with force the created field to be readonly after being created.
      */
     @Column({ type: 'jsonb', default: '{}' }) @IsJSON()
-    parameters
+    parameters: {[key:string]:any}
 
     @ManyToMany(type => Validation, { eager: true, onDelete: 'CASCADE' })
     @JoinTable({
         name: 'field_types_validations',
         joinColumn: { name: 'field_type_id', referencedColumnName: 'id' },
-        inverseJoinColumn: { name: 'validation_id', referencedColumnName: 'id' }
+        inverseJoinColumn: { name: 'validation_id', referencedColumnName: 'id' },
     })
     @Type(() => Validation) @IsArray()
     validations: Validation[]
