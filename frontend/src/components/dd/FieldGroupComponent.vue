@@ -19,7 +19,7 @@
            size="md"
            class="cursor-pointer add-a-field"
            color="grey"
-           label="Agregar contenido"
+           label="Agregar un elemento"
            @click="showAddFieldDialog"
     />
     <div />
