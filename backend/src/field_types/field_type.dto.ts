@@ -1,10 +1,16 @@
 import { SimpleDto } from "src/common/dto/simple_entity.dto";
-import { IsArray, IsString, IsOptional, IsJSON, IsNotEmpty } from "class-validator";
+import {IsArray, IsString, IsOptional, IsJSON, IsNotEmpty, IsNumber} from "class-validator";
 import { ApiPropertyOptional, ApiProperty } from "@nestjs/swagger";
 import { Validation } from "src/validations/validation.entity";
 import { Type } from "class-transformer";
 
 export class FieldTypeDto extends SimpleDto {
+
+    @IsOptional() @IsString() @ApiPropertyOptional()
+    category: string;
+
+    @IsOptional() @IsNumber() @ApiPropertyOptional()
+    order: number
 
     @IsOptional() @IsString() @ApiPropertyOptional()
     component: string;
@@ -18,6 +24,13 @@ export class FieldTypeDto extends SimpleDto {
 }
 
 export class CreateFieldTypeDto {
+
+    @IsOptional() @IsString() @ApiPropertyOptional()
+    category: string;
+
+    @IsOptional() @IsNumber() @ApiPropertyOptional()
+    order: number
+
     @IsNotEmpty() @IsString() @ApiProperty()
     name: string
 
