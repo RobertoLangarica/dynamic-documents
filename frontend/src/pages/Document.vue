@@ -12,8 +12,8 @@
         :print_view="isInPrintView"
       />
     </div>
-    <q-spinner v-else color="primary" size="3em" :thickness="2" />
-    <template v-if="changesAllowed">
+
+    <template v-if="docReady && changesAllowed">
       <div class="fixed-top-right q-pa-sm q-mr-md">
         <q-radio
           v-for="view in views"
@@ -43,6 +43,7 @@ export enum IViews {
 export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
+  @Prop({ type: Boolean, required: false, default: false }) readonly isFilter!: boolean;
   @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
   @Prop({ type: Boolean, required: false, default: false }) readonly forceViewOnly:boolean
 
@@ -111,13 +112,21 @@ export default class Document extends Vue {
 
     let document
     if (this.id !== '') {
-      let action = this.isTemplate ? 'getTemplate' : 'getDocument'
+      let action = this.isTemplate ? 'getTemplate' : this.isFilter ? 'doc_filters/getFilteredDocument' : 'getDocument'
       document = await this.$store.dispatch(action, this.id);
       if (document.status === 'closed' || document.status === 'prevent_changes') {
         this.changesAllowed = false
       }
+      if(this.isFilter && document.success === false){
+        // TODO maybe this screen could block any further edition
+        if(!document.filter_expired){
+          this.$emit('404')
+        } else {
+          this.$emit('expired')
+        }
+      }
     } else {
-      // This is an empty documents
+      // Empty doc
     }
 
     this.manager = document ? DocumentEditionManager.createFromRemoteObject(document) : new DocumentEditionManager();
@@ -125,14 +134,16 @@ export default class Document extends Vue {
       // Placeholder name
       this.manager.name = (this.isTemplate ? 'Plantilla' : 'Documento') + ' sin nombre'
     }
-
     this.initialName = this.manager.name;
 
     this.fields = this.manager.fields;
     this.manager.isTemplate = this.isTemplate;
-    this.manager.isDocument = !this.isTemplate;
+    this.manager.isDocument = !this.isTemplate && !this.isFilter;
+    this.manager.isFilter = this.isFilter;
     // The store is only present if the manager has a document to maintain in sync
     this.manager.store = document ? this.$store : null;
+    // To know when a filter is expired
+    this.manager.onExpiredCB=()=>{this.$emit('expired')}
     this.setAvailableStatus(document)
 
     this.docReady = true;
@@ -143,7 +154,10 @@ export default class Document extends Vue {
   }
 
   setAvailableStatus (document) {
-    if (document) {
+    if(this.isFilter){
+      this.views=[{ label: "Capturar", value: IViews.CAPTURE }]
+      this.views.push({ label: "Ver", value: IViews.PRINT })
+    } else if (document) {
       this.views = [{ label: "Ver", value: IViews.PRINT }]
       switch (document.status.name) {
         case 'only_capture':
@@ -157,9 +171,8 @@ export default class Document extends Vue {
           this.views.unshift({ label: "Editar", value: IViews.EDIT })
           break;
       }
-
-      this.currentView = this.views[0].value
     }
+    this.currentView = this.views[0].value
   }
 
   onSortedFields (sorted: DDField[]) {

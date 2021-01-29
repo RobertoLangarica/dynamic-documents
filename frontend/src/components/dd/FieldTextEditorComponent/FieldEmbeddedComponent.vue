@@ -59,7 +59,7 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 
   get transformations (): string {
-    return this.node.attrs.transformations;
+    return this.node.attrs.transformations || '';
   }
 
   set transformations (value) {

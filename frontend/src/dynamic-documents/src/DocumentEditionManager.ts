@@ -29,6 +29,8 @@ export class DocumentEditionManager {
 
   isDocument: boolean = false
 
+  isFilter: boolean = false
+
   template_source: string = ''
 
   document_source: string = ''
@@ -37,20 +39,37 @@ export class DocumentEditionManager {
 
   store: Store<StateInterface> | null = null; // Vuex instance
 
-  async updateFields (fields:DDField[]) {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  onExpiredCB = () => {}
+
+  async update (changes:{[key:string]:any}) {
+    let action
     if (this.isDocument) {
-      await this.store?.dispatch('setDocument', { id: this.id, fields: fields })
+      action = 'setDocument'
+    } else if (this.isTemplate) {
+      action = 'setTemplate'
     } else {
-      await this.store?.dispatch('setTemplate', { id: this.id, fields: fields })
+      action = 'doc_filters/setFilteredDocument'
+    }
+    let payload = Object.assign({}, changes, { id: this.id })
+    let result = await this.store?.dispatch(action, payload)
+
+    if (!result.success) {
+      if (this.isFilter && result.filter_expired) {
+      // Expired filter
+        this.onExpiredCB()
+      } else {
+      // TODO do something with the error
+      }
     }
   }
 
+  async updateFields (fields:DDField[]) {
+    return this.update({ fields })
+  }
+
   async updateField (field: DDField) {
-    if (this.isDocument) {
-      await this.store?.dispatch('setDocument', { id: this.id, fields: [field] })
-    } else {
-      await this.store?.dispatch('setTemplate', { id: this.id, fields: [field] })
-    }
+    return this.updateFields([field])
   }
 
   async deleteField (field: DDField) {
@@ -76,11 +95,7 @@ export class DocumentEditionManager {
     let forUpdate = this.toUpdate.concat()
     this.toUpdate = []
 
-    if (this.isDocument) {
-      await this.store?.dispatch('setDocument', { id: this.id, fields: deleted.concat(forUpdate) })
-    } else {
-      await this.store?.dispatch('setTemplate', { id: this.id, fields: deleted.concat(forUpdate) })
-    }
+    await this.updateFields(deleted.concat(forUpdate))
   }
 
   removeUpdateDuplicates () {
@@ -134,19 +149,7 @@ export class DocumentEditionManager {
     this.fields.push(copy)
     field.is_new = true
 
-    if (this.isDocument) {
-      await this.store?.dispatch('setDocument', { id: this.id, fields: [field] })
-    } else {
-      await this.store?.dispatch('setTemplate', { id: this.id, fields: [field] })
-    }
-  }
-
-  async update (changes:{[key:string]:any}) {
-    if (this.isDocument) {
-      await this.store?.dispatch('setDocument', Object.assign(changes, { id: this.id }))
-    } else {
-      await this.store?.dispatch('setTemplate', Object.assign(changes, { id: this.id }))
-    }
+    await this.updateFields([field])
   }
 
   async addFieldAtSortIndex (field: DDField, sort_index: number) {
@@ -180,11 +183,7 @@ export class DocumentEditionManager {
     field.is_new = true
     forUpdate.push(field)
 
-    if (this.isDocument) {
-      await this.store?.dispatch('setDocument', { id: this.id, fields: forUpdate })
-    } else {
-      await this.store?.dispatch('setTemplate', { id: this.id, fields: forUpdate })
-    }
+    await this.updateFields(forUpdate)
   }
 
   getCleanCopy ():DocumentEditionManager {
