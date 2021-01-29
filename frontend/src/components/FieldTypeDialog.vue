@@ -14,7 +14,7 @@
                 @click="onTypeSelect(type)"
               >
                 <q-item-section top avatar>
-                  <q-avatar color="white" text-color="primary" icon="bluetooth" />
+                  <q-avatar color="white" text-color="primary" :icon="fieldTypeIcon(type.component)" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ type.name }}</q-item-label>
@@ -59,6 +59,17 @@ export default class FieldTypeDialog extends Vue {
 
   get fieldTypesCategories () {
     return this.$store.getters.fieldTypesCategories
+  }
+
+  fieldTypeIcon (component) {
+    switch (component) {
+      case 'input-paragraph':
+        return 'format_align_justify'
+      case 'group':
+        return 'select_all'
+      default:
+        return 'keyboard'
+    }
   }
 }
 </script>
