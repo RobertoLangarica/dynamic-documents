@@ -17,6 +17,10 @@ export default class Creation extends mixins(EmbedMixin) {
 
     async onMessage (message, data) {
       switch (message) {
+        case 'get_fields':
+          let fields = this.$refs.doc_creation.getFields()
+          this.sendMessage('set_fields',fields)
+          break;
         case 'create':
           /* Saving */
           let document = await this.$refs.doc_creation.saveAsNew()

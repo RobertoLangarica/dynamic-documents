@@ -29,8 +29,9 @@ export class DocumentFilterService {
         if (expired !== undefined) {
             query.andWhere("(f.expired = :e)", { e: expired })
         }
-
-        return { items: await query.getMany() }
+        let res = { items: await query.getMany() }
+        console.log(res)
+        return res
     }
 
     async findById(id: string): Promise<DocumentFilter> {

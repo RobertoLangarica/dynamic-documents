@@ -29,7 +29,7 @@ export class DocFilterDto {
 }
 
 export class CreateDocFilterDto {
-    @IsNotEmpty() @IsString() @ApiProperty()
+    @IsString() @ApiProperty()
     name: string
 
     @IsNotEmpty() @IsString() @ApiProperty({ description: "Name or UUID accepted" })

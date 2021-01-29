@@ -1,14 +1,14 @@
 <template>
   <div>
     <dd-doc ref="doc_creation"
-        v-if="exists && !expired"
+        v-if="canShowDoc"
         :isTemplate="false" 
         :isFilter="true" 
         :id="id" 
-        @hook:updated.once="onDocMounted" 
         :forceViewOnly="readonly"
-        @404="exists=false"
-        @expired="expired=true"
+        @404="nonExistent"
+        @expired="onExpired"
+        @mount_ready="onReady"
         />
     <div v-else class="row justify-center items-center" >
         <h3>Este documento ya no está disponible</h3>
@@ -29,7 +29,15 @@ export default class Creation extends mixins(EmbedMixin) {
 
     exists:boolean = true
     expired:boolean = false
+    ready:boolean = false
 
+    get canShowDoc(){
+        if(!this.ready){
+            return true
+        }
+
+        return !this.expired && this.exists
+    }
     async onMessage (message, data) {
       switch (message) {
         default:
@@ -37,18 +45,20 @@ export default class Creation extends mixins(EmbedMixin) {
       }
     }
 
-    onDocMounted(){
-      // We need to wait a little bit in order to have the correct height
-      // TODO remove this artificial wait
-      // setTimeout(()=>{
-      //   let el =  this.$refs.doc_creation.$el
-      //   console.log(this.$refs.doc_creation)
-      //   this.sendMessage('dd_resize',{width:Math.max(el.scrollWidth,el.offsetWidth), height:Math.max(el.scrollHeight,el.offsetHeight)})
-      // },5000)
-      this.$nextTick(()=>{
+    onExpired(){
+        this.expired = true
+    }
+
+    nonExistent(){
+        this.exists = false
+    }
+    onReady(){
         let el =  this.$refs.doc_creation.$el
         this.sendMessage('dd_resize',{width:Math.max(el.scrollWidth,el.offsetWidth), height:Math.max(el.scrollHeight,el.offsetHeight)})
-      })
+
+        this.$nextTick(()=>{
+            this.ready = true
+        })
     }
 }
 </script>

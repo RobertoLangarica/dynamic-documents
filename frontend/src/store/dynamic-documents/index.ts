@@ -164,6 +164,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
     if (result.success) {
       commit('updateDocument', result.data)
     }
+    return result
   },
   async setTemplate({ commit }, data) {
     console.log('PATCH', `/templates/${data.id}`)
@@ -171,6 +172,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
     if (result.success) {
       commit('updateTemplate', result.data)
     }
+    return result
   },
   async addDocument({ commit }, data) {
     console.log('POST', `/documents/`)

@@ -30,7 +30,6 @@ export class FilterValidationPipe implements PipeTransform {
                 value.document = id["id"]
             }
         }
-
         return value
     }
 }
