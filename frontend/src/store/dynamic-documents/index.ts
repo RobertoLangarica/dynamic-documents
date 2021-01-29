@@ -85,8 +85,22 @@ const getters: GetterTree<IDDState, StateInterface> = {
     if (!owner) {
       owner = state.documents.find(t => t.id === id)
     }
-
     return owner
+  },
+
+  fieldTypes: (state: IDDState): DDFieldType[] => {
+    return state.types
+  },
+
+  fieldTypesCategories: (state: IDDState) => {
+    return state.types.reduce((accumulator: Array<string>, current: DDFieldType) => {
+      if (!accumulator.includes(current.category))  accumulator.push(current.category)
+      return accumulator
+    }, [])
+  },
+
+  fieldsTypesByCategory: (state: IDDState) => (category: string): DDFieldType[] => {
+    return state.types.filter((fieldType: DDFieldType) => fieldType.category === category)
   }
 }
 

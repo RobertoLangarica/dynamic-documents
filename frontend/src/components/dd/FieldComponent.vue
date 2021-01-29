@@ -28,6 +28,7 @@
       <component
         v-model="value"
         :is="getComponent(field.type)"
+        :class="`dd-field dd-${field.type.component}`"
         :label="field.label"
         :hint="!isInPrintView ? field.hint : null"
         :readonly="isReadOnly"
@@ -200,6 +201,47 @@ export default class ClassComponent extends Vue {
 .dd-fields-container.dd-edit-view {
   .dd-field-container {
     margin: 1em -1cm 1em -1.75cm;
+  }
+  .nq-select.q-field--outlined.dd-field .q-field__control,
+  .nq-input.q-field--outlined.dd-field .q-field__control,
+  .nq-field.q-field--outlined.dd-field .q-field__control {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  .nq-field.q-field--outlined.dd-field.dd-input-paragraph .q-field__control {
+    background-color: transparent;
+  }
+}
+.dd-fields-container.dd-capture-view {
+  .nq-field.q-field--outlined.dd-field.dd-input-paragraph .q-field__control {
+    background-color: transparent;
+    padding: 0;
+    &::before {
+      border: none;
+    }
+    .menubar {
+      display: none;
+    }
+  }
+}
+.dd-fields-container.dd-print-view {
+  .dd-field.q-field--readonly .q-field__control {
+    background-color: white;
+    &::before {
+      border-style: solid;
+    }
+  }
+  .nq-field.q-field--outlined.dd-field .q-field__control {
+    background-color: white;
+  }
+  .nq-field.q-field--outlined.dd-field.dd-input-paragraph .q-field__control {
+    background-color: white;
+    padding: 0;
+    &::before {
+      border: none;
+    }
+    .menubar {
+      display: none;
+    }
   }
 }
 </style>
