@@ -12,7 +12,7 @@ export class FieldTypeService {
     ) { }
 
     async findAll(): Promise<Object> {
-        return { items: await this.type_repo.find() }
+        return { items: await this.type_repo.createQueryBuilder('f').orderBy('f.category', 'ASC').addOrderBy('f.order', 'ASC').getMany() }
     }
 
     async findById(id: string): Promise<FieldType> {

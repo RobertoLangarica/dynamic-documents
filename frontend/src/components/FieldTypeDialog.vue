@@ -4,22 +4,24 @@
       <q-card-section>
         <q-scroll-area class="dialog-scroll-list">
           <q-list bordered separator>
-            <q-item-label header>Textos</q-item-label>
-            <q-item
-              clickable
-              v-ripple
-              v-for="(type, index) in $store.state.dd.types"
-              :key="index"
-              @click="onTypeSelect(type)"
-            >
-              <q-item-section top avatar>
-                <q-avatar color="white" text-color="primary" icon="bluetooth" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ type.name }}</q-item-label>
-                <q-item-label caption lines="2">{{ type.description }}.</q-item-label>
-              </q-item-section>
-            </q-item>
+            <div v-for="category in fieldTypesCategories" :key="category">
+              <q-item-label header>{{ category }}</q-item-label>
+              <q-item
+                clickable
+                v-ripple
+                v-for="(type, index) in $store.getters.fieldsTypesByCategory(category)"
+                :key="index"
+                @click="onTypeSelect(type)"
+              >
+                <q-item-section top avatar>
+                  <q-avatar color="white" text-color="primary" icon="bluetooth" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ type.name }}</q-item-label>
+                  <q-item-label caption lines="2">{{ type.description }}.</q-item-label>
+                </q-item-section>
+              </q-item>
+            </div>
           </q-list>
         </q-scroll-area>
       </q-card-section>
@@ -38,21 +40,25 @@ import { QDialog } from "quasar";
 
 @Component({})
 export default class FieldTypeDialog extends Vue {
-  show() {
+  show () {
     (this.$refs.dialog as QDialog).show();
   }
 
-  hide() {
+  hide () {
     (this.$refs.dialog as QDialog).hide();
   }
 
-  onTypeSelect(type: DDFieldType) {
+  onTypeSelect (type: DDFieldType) {
     this.$emit("ok", type);
     this.hide();
   }
 
-  onCancel() {
+  onCancel () {
     this.hide();
+  }
+
+  get fieldTypesCategories () {
+    return this.$store.getters.fieldTypesCategories
   }
 }
 </script>

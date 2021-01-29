@@ -16,6 +16,8 @@ export interface IFieldTypeParams {
   field_override?: { [k: string]: any }
 }
 export class DDFieldType extends DDSimpleEntity {
+  category: string = ''
+  order: number = 0
   component: EFieldComponentID = EFieldComponentID.NOT_DEFINED
   description: string = ''
   name: string = ''
