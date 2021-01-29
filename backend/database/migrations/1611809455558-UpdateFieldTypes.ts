@@ -9,13 +9,13 @@ export class UpdateFieldTypes1611809455558 implements MigrationInterface {
         await queryRunner.addColumn('field_types', new TableColumn({ name: 'category', type: 'varchar' }))
         await queryRunner.addColumn('field_types', new TableColumn({ name: 'order', type: 'int' }))
         const values = [
-            { category: '1. Texto',     order: 5, name: 'Párrafos',       description: 'Párrafos de contenido donde se pueden incluir valores de otros campos', component: 'input-paragraph', parameters: { field_override: { readonly: true } }, validations: [] },
-            { category: '2. Captura',   order: 0, name: 'Texto',          description: 'Campo para captura de texto', component: 'input-text', parameters: {}, validations: [] },
-            { category: '2. Captura',   order: 0, name: 'Número entero',  description: 'Campo para captura de un número entero', component: 'input-number', parameters: { pattern: '0,0' }, validations: ['integer'] },
-            { category: '2. Captura',   order: 1, name: 'Número decimal', description: 'Campo para captura de un número con decimales', component: 'input-number', parameters: { pattern: '0,0.000' }, validations: ['decimal'] },
-            { category: '2. Captura',   order: 2, name: 'Porcentaje',     description: 'Campo para captura de un número decimal con el postfijo %', component: 'input-percentage', parameters: { pattern: '0,0.00' }, validations: ['decimal'] },
-            { category: '2. Captura',   order: 3, name: 'Moneda',         description: 'Campo para captura de una cantidad con el formato $000.00', component: 'input-currency', parameters: {}, validations: ['decimal'] },
-            { category: '2. Captura',   order: 4, name: 'Fecha',          description: 'Campo para captura de una fecha', component: 'date-time', parameters: { 'null-text': 'Fecha no definida', 'no-time': true }, validations: [] },
+            { category: '1. Texto',     order: 5, name: 'Texto libre',       description: 'Párrafos de contenido donde se pueden incluir valores de otros campos', component: 'input-paragraph', parameters: { field_override: { readonly: true } }, validations: [] },
+            { category: '2. Captura',   order: 0, name: 'Campo de texto',          description: 'Campo para captura de texto', component: 'input-text', parameters: {}, validations: [] },
+            { category: '2. Captura',   order: 0, name: 'Campo de número entero',  description: 'Campo para captura de un número entero', component: 'input-number', parameters: { pattern: '0,0' }, validations: ['integer'] },
+            { category: '2. Captura',   order: 1, name: 'Campo de número decimal', description: 'Campo para captura de un número con decimales', component: 'input-number', parameters: { pattern: '0,0.000' }, validations: ['decimal'] },
+            { category: '2. Captura',   order: 2, name: 'Campo de porcentaje',     description: 'Campo para captura de un número decimal con el postfijo %', component: 'input-percentage', parameters: { pattern: '0,0.00' }, validations: ['decimal'] },
+            { category: '2. Captura',   order: 3, name: 'Campo de moneda',         description: 'Campo para captura de una cantidad con el formato $000.00', component: 'input-currency', parameters: {}, validations: ['decimal'] },
+            { category: '2. Captura',   order: 4, name: 'Campo de fecha',          description: 'Campo para captura de una fecha', component: 'date-time', parameters: { 'null-text': 'Fecha no definida', 'no-time': true }, validations: [] },
             { category: '3. Herramientas', order: 6, name: 'Grupo',       description: 'Agrupar a otros campos', component: 'group', parameters: {}, validations: [] },
         ]
         await queryRunner.manager.getRepository(FieldType).save(values as any)

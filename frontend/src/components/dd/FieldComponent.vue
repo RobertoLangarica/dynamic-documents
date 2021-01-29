@@ -18,12 +18,15 @@
     </div>
     <div class="dd-field-content">
       <q-badge
+        class="dd-field-name"
         v-if="isInEditView"
-        color="secondary"
+        color="grey-8"
         contenteditable="true"
         @input="e=>name=e.target.innerText"
       >
         {{ initialName }}
+        <q-icon name="keyboard" class="q-ml-sm" v-if="field.show_in_capture" />
+        <q-icon name="print" class="q-ml-sm" v-if="field.show_in_print" />
       </q-badge>
       <component
         v-model="value"
@@ -40,7 +43,7 @@
         :print_view="isInPrintView"
       />
     </div>
-    <div class="q-pt-md q-ml-sm dd-field-config column items-start justify-start" v-if="isInEditView">
+    <div class="q-ml-sm dd-field-config column items-start justify-start" v-if="isInEditView">
       <q-btn
         icon="settings"
         flat
@@ -178,6 +181,7 @@ export default class ClassComponent extends Vue {
   .dd-field-container {
     display: flex;
     margin: 0.5em 0;
+    position: relative;
     .dd-field-controls {
       display: flex;
       width: 5em;
@@ -198,6 +202,16 @@ export default class ClassComponent extends Vue {
     }
     .dd-field-content {
       flex: 1;
+      .dd-field-name {
+        position: absolute;
+        top: -1rem;
+        padding-bottom: 0.5rem;
+        border-bottom-left-radius: 0;
+      }
+      &:hover, &:active {
+        .dd-field-name {
+        }
+      }
     }
     &:hover,
     &:active {
@@ -215,15 +229,15 @@ export default class ClassComponent extends Vue {
   .nq-select.q-field--outlined.dd-field .q-field__control,
   .nq-input.q-field--outlined.dd-field .q-field__control,
   .nq-field.q-field--outlined.dd-field .q-field__control {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(250, 250, 250, 1);
   }
   .nq-field.q-field--outlined.dd-field.dd-input-paragraph .q-field__control {
-    background-color: transparent;
+    background-color: white;
   }
 }
 .dd-fields-container.dd-capture-view {
   .nq-field.q-field--outlined.dd-field.dd-input-paragraph .q-field__control {
-    background-color: transparent;
+    background-color: white;
     padding: 0;
     &::before {
       border: none;
