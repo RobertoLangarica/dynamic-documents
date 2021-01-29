@@ -151,6 +151,8 @@ export default class Document extends Vue {
     if (this.forceViewOnly) {
       this.changesAllowed = false
     }
+
+    this.$emit('mount_ready')
   }
 
   setAvailableStatus (document) {
@@ -224,6 +226,16 @@ export default class Document extends Vue {
 
     // Returning a copy
     return this.manager.getCleanCopy()
+  }
+
+  getFields(){
+    return this.fields.map(f=>{
+      return {
+        id:f.id,
+        name:f.name,
+        readonly:f.readonly,
+      }
+    })
   }
 }
 </script>

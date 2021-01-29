@@ -15,6 +15,10 @@ export default class Creation extends mixins(EmbedMixin) {
 
     async onMessage (message, data) {
       switch (message) {
+        case 'get_fields':
+          let fields = this.$refs.doc_creation.getFields()
+          this.sendMessage('set_fields',fields)
+          break;
         default:
           console.log(`Unrecognized event->${message}`)
       }
