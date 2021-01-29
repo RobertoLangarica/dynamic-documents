@@ -51,6 +51,16 @@
         color="grey"
         @click="onShowConfigDiaog"
       />
+      <q-btn
+        icon="delete"
+        flat
+        round
+        size="md"
+        dense
+        class="cursor-pointer"
+        color="grey"
+        @click="onDelete"
+      />
     </div>
   </div>
 </template>
