@@ -112,14 +112,33 @@ export class DocumentFilterService {
             id: id,
             fields: []
         };
-
+        let embedded:string[] = []
         filter.fields.forEach(filter_field => {
             let field = document.fields.find(df => df.id == filter_field.field)
+            if (field) {
+                let toAdd = Object.assign({},field)
+                // the document.field.readonly has precedence over filter.field.readonly
+                toAdd.readonly = field.readonly ? field.readonly : filter_field.readonly
+                result.fields.push(toAdd)
+
+                // Allowing for the embedded fields to show as embedded (hidden from capture and view)
+                if(toAdd.use_embedded){
+                    embedded = embedded.concat(toAdd.embedded_fields)
+                }
+            }
+        })
+
+        // Adding missing embedded fields
+        embedded = embedded.filter((f, index)=> index=== embedded.findIndex(e=>e===f)) // avoiding duplicates
+        embedded = embedded.filter(f=> !result.fields.find(a=>a.id === f)) // only unexistent
+        embedded.forEach(id => {
+            let field = document.fields.find(df => df.id == id)
 
             if (field) {
-                // the document.field.readonly has precedence over filter.field.readonly
-                field.readonly = field.readonly ? field.readonly : filter_field.readonly
-                result.fields.push(field)
+                let toAdd = Object.assign({},field)
+                toAdd.show_in_capture = false
+                toAdd.show_in_print = false
+                result.fields.push(toAdd)
             }
         })
         return result
