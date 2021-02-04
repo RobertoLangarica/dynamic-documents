@@ -367,8 +367,7 @@ export class DocumentService {
                 document.fields[i] = Object.assign(document.fields[i], item)
             })
 
-            // TODO maybe we could trust on the incomming sort_index
-            // adding and sorting fields
+            // Saving sorted
             document.fields = document.fields
                 .concat(toAdd)
                 .sort((a, b) => a.sort_index - b.sort_index)
@@ -376,7 +375,6 @@ export class DocumentService {
                     value.sort_index = index
                     return value
                 })
-
         }
 
         try {

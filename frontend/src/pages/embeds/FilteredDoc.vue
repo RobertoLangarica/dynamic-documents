@@ -1,23 +1,23 @@
 <template>
   <div>
     <dd-doc ref="doc_creation"
-        v-if="canShowDoc"
-        :isTemplate="false" 
-        :isFilter="true" 
-        :id="id" 
-        :forceViewOnly="readonly"
-        @404="nonExistent"
-        @expired="onExpired"
-        @mount_ready="onReady"
-        />
-    <div v-else class="row justify-center items-center" >
-        <h3>Este documento ya no está disponible</h3>
+            v-if="canShowDoc"
+            :isTemplate="false"
+            :isFilter="true"
+            :id="id"
+            :forceViewOnly="readonly"
+            @404="nonExistent"
+            @expired="onExpired"
+            @mount_ready="onReady"
+    />
+    <div v-else class="row justify-center items-center">
+      <h3>Este documento ya no está disponible</h3>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Component, Prop } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import EmbedMixin from './EmbedMixin'
 import Document from 'src/pages/Document'
@@ -31,13 +31,14 @@ export default class Creation extends mixins(EmbedMixin) {
     expired:boolean = false
     ready:boolean = false
 
-    get canShowDoc(){
-        if(!this.ready){
-            return true
-        }
+    get canShowDoc () {
+      if (!this.ready) {
+        return true
+      }
 
-        return !this.expired && this.exists
+      return !this.expired && this.exists
     }
+
     async onMessage (message, data) {
       switch (message) {
         default:
@@ -45,20 +46,20 @@ export default class Creation extends mixins(EmbedMixin) {
       }
     }
 
-    onExpired(){
-        this.expired = true
+    onExpired () {
+      this.expired = true
     }
 
-    nonExistent(){
-        this.exists = false
+    nonExistent () {
+      this.exists = false
     }
-    onReady(){
-        let el =  this.$refs.doc_creation.$el
-        this.sendMessage('dd_resize',{width:Math.max(el.scrollWidth,el.offsetWidth), height:Math.max(el.scrollHeight,el.offsetHeight)})
 
-        this.$nextTick(()=>{
-            this.ready = true
-        })
+    onReady () {
+      this.$nextTick(() => {
+        let el = this.$refs.doc_creation.$el
+        this.sendMessage('dd_resize', { width: Math.max(el.scrollWidth, el.offsetWidth), height: Math.max(el.scrollHeight, el.offsetHeight) })
+        this.ready = true
+      })
     }
 }
 </script>

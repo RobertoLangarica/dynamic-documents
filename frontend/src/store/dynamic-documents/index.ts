@@ -141,7 +141,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
 
     if (result.success) {
       // fields sorted
-      result.data.fields = result.data.fields.sort((a, b) => a.sort_index - b.sort_index)
+      // result.data.fields = result.data.fields.sort((a, b) => a.sort_index - b.sort_index)
       commit('updateDocument', result.data)
       return result.data
     }
@@ -151,7 +151,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
     let result = await api.get(`/templates/${id}`)
     if (result.success) {
       // fields sorted
-      result.data.fields = result.data.fields.sort((a, b) => a.sort_index - b.sort_index)
+      // result.data.fields = result.data.fields.sort((a, b) => a.sort_index - b.sort_index)
       commit('updateTemplate', result.data)
       return result.data
     }

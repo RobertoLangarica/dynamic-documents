@@ -23,7 +23,7 @@
         contenteditable="true"
         @input="e=>name=e.target.innerText"
       >
-        {{ initialName }}
+        {{ initialName }}-{{ field.sort_index }}
       </q-badge>
       <component
         v-model="value"

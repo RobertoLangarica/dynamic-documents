@@ -94,7 +94,7 @@ export default class Document extends Vue {
     this.$root.$off("f-add", this.onFieldAdded.bind(this));
     this.$root.$off("f-update", this.onFieldUpdated.bind(this));
     this.$root.$off("f-delete", this.onFieldDeleted.bind(this));
-    this.$root.$off("f-sort_fields", this.onSortedFields.bind(this));
+    this.$root.$off("f-sort_field", this.onSortField.bind(this));
     this.$root.$off("f-add_under_sort_index", this.onFieldInserted.bind(this));
   }
 
@@ -107,22 +107,28 @@ export default class Document extends Vue {
     this.$root.$on("f-add", this.onFieldAdded.bind(this));
     this.$root.$on("f-update", this.onFieldUpdated.bind(this));
     this.$root.$on("f-delete", this.onFieldDeleted.bind(this));
-    this.$root.$on("f-sort_fields", this.onSortedFields.bind(this));
+    this.$root.$on("f-sort_field", this.onSortField.bind(this));
     this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
 
     let document
     if (this.id !== '') {
       let action = this.isTemplate ? 'getTemplate' : this.isFilter ? 'doc_filters/getFilteredDocument' : 'getDocument'
       document = await this.$store.dispatch(action, this.id);
-      if (document.status === 'closed' || document.status === 'prevent_changes') {
-        this.changesAllowed = false
-      }
-      if(this.isFilter && document.success === false){
-        // TODO maybe this screen could block any further edition
-        if(!document.filter_expired){
-          this.$emit('404')
+      if (!document || document.success === false) {
+        // Load failed
+        if (this.isFilter) {
+          // TODO maybe this screen could block any further edition
+          if (!document.filter_expired) {
+            this.$emit('404')
+          } else {
+            this.$emit('expired')
+          }
         } else {
-          this.$emit('expired')
+          // TODO do something
+        }
+      } else {
+        if (document.status === 'closed' || document.status === 'prevent_changes') {
+          this.changesAllowed = false
         }
       }
     } else {
@@ -142,8 +148,8 @@ export default class Document extends Vue {
     this.manager.isFilter = this.isFilter;
     // The store is only present if the manager has a document to maintain in sync
     this.manager.store = document ? this.$store : null;
-    // To know when a filter is expired
-    this.manager.onExpiredCB=()=>{this.$emit('expired')}
+    // To know when a filter is expired after an update try
+    this.manager.onExpiredCB = () => { this.$emit('expired') }
     this.setAvailableStatus(document)
 
     this.docReady = true;
@@ -151,13 +157,14 @@ export default class Document extends Vue {
     if (this.forceViewOnly) {
       this.changesAllowed = false
     }
-
-    this.$emit('mount_ready')
+    this.$nextTick(() => {
+      this.$emit('mount_ready')
+    })
   }
 
   setAvailableStatus (document) {
-    if(this.isFilter){
-      this.views=[{ label: "Capturar", value: IViews.CAPTURE }]
+    if (this.isFilter) {
+      this.views = [{ label: "Capturar", value: IViews.CAPTURE }]
       this.views.push({ label: "Ver", value: IViews.PRINT })
     } else if (document) {
       this.views = [{ label: "Ver", value: IViews.PRINT }]
@@ -177,17 +184,8 @@ export default class Document extends Vue {
     this.currentView = this.views[0].value
   }
 
-  onSortedFields (sorted: DDField[]) {
-    void this.manager.updateFields(
-      sorted.map((item) => {
-        // Minimizing the data being send
-        return { id: item.id, sort_index: item.sort_index } as DDField;
-      })
-    );
-    // sorting the fields
-    this.manager.fields = this.manager.fields.sort(
-      (a, b) => a.sort_index - b.sort_index
-    );
+  onSortField ({ field, sort_index }) {
+    void this.manager.addFieldAtSortIndex(field, sort_index)
   }
 
   onFieldUpdated (field: DDField) {
@@ -228,12 +226,12 @@ export default class Document extends Vue {
     return this.manager.getCleanCopy()
   }
 
-  getFields(){
-    return this.fields.map(f=>{
+  getFields () {
+    return this.fields.map(f => {
       return {
-        id:f.id,
-        name:f.name,
-        readonly:f.readonly,
+        id: f.id,
+        name: f.name,
+        readonly: f.readonly
       }
     })
   }

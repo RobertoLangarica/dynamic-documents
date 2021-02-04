@@ -30,7 +30,6 @@ export class DocumentFilterService {
             query.andWhere("(f.expired = :e)", { e: expired })
         }
         let res = { items: await query.getMany() }
-        console.log(res)
         return res
     }
 
@@ -73,17 +72,6 @@ export class DocumentFilterService {
     }
 
     async updateFilter(id: string, data: DocFilterDto): Promise<DocumentFilter> {
-        // Prevent duplicated names
-        if (data.name) {
-            let duplicated = await this.filter_repo.createQueryBuilder('f')
-                .where("f.name = :name AND f.id != :id ", { name: data.name, id: id })
-                .getRawOne()
-
-            if (duplicated) {
-                throw new ConflictException(`There is an already existing document filter with the name: ${data.name}`)
-            }
-        }
-
         data['id'] = id;
         let filter = await this.filter_repo.preload(data)
 
@@ -97,11 +85,11 @@ export class DocumentFilterService {
 
     async expire(id: string) {
         let filter = await this.filter_repo.findOne(id)
-
+        
         if (!filter) {
             throw new NotFoundException()
         }
-
+        
         filter.expired = true;
         return await this.filter_repo.save(filter)
     }
@@ -120,6 +108,7 @@ export class DocumentFilterService {
         filter.fields = plainToClass(FilterField, filter.fields, { excludeExtraneousValues: true })
 
         let result = {
+            name:document.name,
             id: id,
             fields: []
         };
@@ -133,7 +122,6 @@ export class DocumentFilterService {
                 result.fields.push(field)
             }
         })
-
         return result
     }
 
