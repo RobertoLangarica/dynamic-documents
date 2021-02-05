@@ -30,7 +30,6 @@ export class DocumentFilterService {
             query.andWhere("(f.expired = :e)", { e: expired })
         }
         let res = { items: await query.getMany() }
-        console.log(res)
         return res
     }
 
@@ -73,17 +72,6 @@ export class DocumentFilterService {
     }
 
     async updateFilter(id: string, data: DocFilterDto): Promise<DocumentFilter> {
-        // Prevent duplicated names
-        if (data.name) {
-            let duplicated = await this.filter_repo.createQueryBuilder('f')
-                .where("f.name = :name AND f.id != :id ", { name: data.name, id: id })
-                .getRawOne()
-
-            if (duplicated) {
-                throw new ConflictException(`There is an already existing document filter with the name: ${data.name}`)
-            }
-        }
-
         data['id'] = id;
         let filter = await this.filter_repo.preload(data)
 
@@ -97,11 +85,11 @@ export class DocumentFilterService {
 
     async expire(id: string) {
         let filter = await this.filter_repo.findOne(id)
-
+        
         if (!filter) {
             throw new NotFoundException()
         }
-
+        
         filter.expired = true;
         return await this.filter_repo.save(filter)
     }
@@ -120,20 +108,39 @@ export class DocumentFilterService {
         filter.fields = plainToClass(FilterField, filter.fields, { excludeExtraneousValues: true })
 
         let result = {
+            name:document.name,
             id: id,
             fields: []
         };
-
+        let embedded:string[] = []
         filter.fields.forEach(filter_field => {
             let field = document.fields.find(df => df.id == filter_field.field)
-
             if (field) {
+                let toAdd = Object.assign({},field)
                 // the document.field.readonly has precedence over filter.field.readonly
-                field.readonly = field.readonly ? field.readonly : filter_field.readonly
-                result.fields.push(field)
+                toAdd.readonly = field.readonly ? field.readonly : filter_field.readonly
+                result.fields.push(toAdd)
+
+                // Allowing for the embedded fields to show as embedded (hidden from capture and view)
+                if(toAdd.use_embedded){
+                    embedded = embedded.concat(toAdd.embedded_fields)
+                }
             }
         })
 
+        // Adding missing embedded fields
+        embedded = embedded.filter((f, index)=> index=== embedded.findIndex(e=>e===f)) // avoiding duplicates
+        embedded = embedded.filter(f=> !result.fields.find(a=>a.id === f)) // only unexistent
+        embedded.forEach(id => {
+            let field = document.fields.find(df => df.id == id)
+
+            if (field) {
+                let toAdd = Object.assign({},field)
+                toAdd.show_in_capture = false
+                toAdd.show_in_print = false
+                result.fields.push(toAdd)
+            }
+        })
         return result
     }
 

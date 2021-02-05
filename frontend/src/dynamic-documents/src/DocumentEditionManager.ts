@@ -153,34 +153,62 @@ export class DocumentEditionManager {
 
   async addFieldAtSortIndex (field: DDField, sort_index: number) {
     let indexToInsert = this.fields.findIndex(item => item.sort_index === sort_index)
-
+    let currentIndex = this.fields.findIndex(item => item.id === field.id)
     let forUpdate: any[] = []
-    // Minimizing data transfer
-    if (indexToInsert < this.fields.length - indexToInsert) {
-      field.sort_index = this.fields[indexToInsert].sort_index
-      // Zero to index
-      for (let i = 0; i <= indexToInsert; i++) {
-        // this.fields[i].sort_index -= 1
+
+    if (currentIndex >= 0) {
+      // Existing field
+      let a = currentIndex < indexToInsert ? currentIndex : indexToInsert
+      let b = currentIndex > indexToInsert ? currentIndex : indexToInsert
+
+      for (let i = a; i <= b; i++) {
+        if (indexToInsert < currentIndex) {
+          // The fields go down
+          if (i === b) {
+            this.fields[i].sort_index = this.fields[indexToInsert].sort_index - 1
+          } else {
+            this.fields[i].sort_index += 1;
+          }
+        } else {
+          // The fields go up
+          if (i === a) {
+            this.fields[i].sort_index = this.fields[b].sort_index
+          } else {
+            this.fields[i].sort_index -= 1;
+          }
+        }
         forUpdate.push({ id: this.fields[i].id, sort_index: this.fields[i].sort_index })
       }
+
+      // Add the field to its correct position
+      this.fields.splice(currentIndex, 1)
+      this.fields.splice(indexToInsert, 0, field)
     } else {
-      field.sort_index = this.fields[indexToInsert].sort_index + 1
-      // Index to length
-      for (let i = indexToInsert + 1; i < this.fields.length; i++) {
-        this.fields[i].sort_index += 2
-        forUpdate.push({ id: this.fields[i].id, sort_index: this.fields[i].sort_index })
+      // Inserting a new field
+      field.sort_index = sort_index
+      // Minimizing data transfer
+      if (indexToInsert < this.fields.length - indexToInsert) {
+      // Zero to index
+        for (let i = 0; i <= indexToInsert; i++) {
+          this.fields[i].sort_index--;
+          forUpdate.push({ id: this.fields[i].id, sort_index: this.fields[i].sort_index })
+        }
+      } else {
+        // Index to length
+        field.sort_index = indexToInsert + 1 < this.fields.length ? this.fields[indexToInsert + 1].sort_index : sort_index + 1
+        for (let i = indexToInsert + 1; i < this.fields.length; i++) {
+          this.fields[i].sort_index++
+          forUpdate.push({ id: this.fields[i].id, sort_index: this.fields[i].sort_index })
+        }
       }
+      // Add the field to its correct position
+      this.fields.splice(indexToInsert + 1, 0, field)
+
+      // Preparing to save the new added field
+      let copy = classToClass(field)
+      copy.is_new = true
+      forUpdate.push(copy)
     }
-
-    // Adding a copy so the is_new flag get deleted immediatley
-    let copy = classToClass(field)
-    this.fields.push(copy)
-    // Sorting of the fields
-    this.fields = this.fields.sort((a, b) => a.sort_index - b.sort_index)
-
-    // Save remote changes
-    field.is_new = true
-    forUpdate.push(field)
 
     await this.updateFields(forUpdate)
   }

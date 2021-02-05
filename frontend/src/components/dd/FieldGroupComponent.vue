@@ -62,31 +62,7 @@ get readonly () {
 
 onDragEnded (e:{oldIndex:number, newIndex:number}) {
   if (e.oldIndex === e.newIndex) return;
-
-  let a = e.oldIndex < e.newIndex ? e.oldIndex : e.newIndex
-  let b = e.oldIndex > e.newIndex ? e.oldIndex : e.newIndex
-  let toUpdate:DDField[] = []
-
-  for (let i = a; i <= b; i++) {
-    toUpdate.push(this.myFields[i])
-    if (e.newIndex < e.oldIndex) {
-      // The fields go down
-      if (i === b) {
-        this.myFields[i].sort_index = this.myFields[e.newIndex].sort_index - 1
-      } else {
-        this.myFields[i].sort_index += 1;
-      }
-    } else {
-      // The fields go up
-      if (i === a) {
-        this.myFields[i].sort_index = this.myFields[b].sort_index
-      } else {
-        this.myFields[i].sort_index -= 1;
-      }
-    }
-  }
-
-  this.$root.$emit('f-sort_fields', toUpdate)
+  this.$root.$emit('f-sort_field', { field: this.myFields[e.oldIndex], sort_index: this.myFields[e.newIndex].sort_index })
 }
 
 showAddFieldDialog () {
