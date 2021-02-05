@@ -21,10 +21,9 @@
         class="dd-field-name"
         v-if="isInEditView"
         color="grey-8"
-        contenteditable="true"
-        @input="e=>name=e.target.innerText"
       >
-        {{ initialName }}
+        <span contenteditable="true"
+              @input="e=>name=e.target.innerText">{{ initialName }}</span>
         <q-icon name="keyboard" class="q-ml-sm" v-if="field.show_in_capture" />
         <q-icon name="print" class="q-ml-sm" v-if="field.show_in_print" />
       </q-badge>
