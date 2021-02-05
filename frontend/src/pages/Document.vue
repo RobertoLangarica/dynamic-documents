@@ -91,11 +91,11 @@ export default class Document extends Vue {
   }
 
   beforeDestroy () {
-    this.$root.$off("f-add", this.onFieldAdded.bind(this));
-    this.$root.$off("f-update", this.onFieldUpdated.bind(this));
-    this.$root.$off("f-delete", this.onFieldDeleted.bind(this));
-    this.$root.$off("f-sort_field", this.onSortField.bind(this));
-    this.$root.$off("f-add_under_sort_index", this.onFieldInserted.bind(this));
+    this.$root.$off("f-add");
+    this.$root.$off("f-update");
+    this.$root.$off("f-delete");
+    this.$root.$off("f-sort_field");
+    this.$root.$off("f-add_under_sort_index");
   }
 
   beforeMount () {

@@ -23,7 +23,7 @@ import {
   EditorState,
   Transaction,
   Node,
-  EditorMenuBar,
+  EditorMenuBar
 } from "tiptap";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { findChildren } from "prosemirror-utils";
@@ -37,7 +37,7 @@ import {
   Italic,
   Strike,
   Underline,
-  History,
+  History
 } from "tiptap-extensions";
 import EditorMenu from "./EditorMenu.vue";
 import FieldEmbeded from "./FieldEmbedded";
@@ -45,7 +45,7 @@ import FieldSelectorDialog from "components/dd/FieldSelectorDialog.vue";
 
 @Component({
   components: { EditorContent, EditorMenuBar, EditorMenu },
-  name: "field-text-editor-component",
+  name: "field-text-editor-component"
 })
 export default class FieldTextEditorComponent extends Vue {
   @Prop({ required: true }) readonly field!: DDField;
@@ -60,13 +60,11 @@ export default class FieldTextEditorComponent extends Vue {
 
   editor: Editor = {};
   focused: boolean = false;
-  embedded_fields: { [id: string]: boolean } = {};
+  value:string = ''
 
-  get value() {
-    return this.field.value;
-  }
+  created () {
+    this.value = this.field.value
 
-  created() {
     this.editor = new Editor({
       extensions: [
         new BulletList(),
@@ -78,31 +76,31 @@ export default class FieldTextEditorComponent extends Vue {
         new Strike(),
         new Underline(),
         new History(),
-        new FieldEmbeded(),
+        new FieldEmbeded()
       ],
       editable: !this.readonly,
       onUpdate: this.onEditorUpdate.bind(this),
       onInit: this.onEditorInit.bind(this),
-      content: this.value,
+      content: this.value
     });
   }
 
-  mounted() {
+  mounted () {
     if (!this.readonly && this.autoFocus) {
       this.editor.focus();
     }
   }
 
-  beforeDestroy() {
+  beforeDestroy () {
     this.editor.destroy();
   }
 
   @Watch("readonly")
-  onReadonlyChange(value: boolean, oldValue: boolean) {
+  onReadonlyChange (value: boolean, oldValue: boolean) {
     this.editor.setOptions({ editable: !value });
   }
 
-  onFieldFocus() {
+  onFieldFocus () {
     if (!this.readonly) {
       this.focused = true;
       this.editor.setOptions({ editable: true });
@@ -110,37 +108,34 @@ export default class FieldTextEditorComponent extends Vue {
     }
   }
 
-  onFieldBlur() {
+  onFieldBlur () {
     this.focused = false;
     this.editor.setOptions({ editable: false });
   }
 
-  onGetField({ id, set }) {
+  onGetField ({ id, set }) {
     let f = this.fields.find((f) => f.id === (id as string));
     if (f) {
       (set as (DDField) => void)(f);
     }
   }
 
-  onEditorInit(event: { view: EditorView; state: EditorState }) {
-    let children = this.getEmbeddedChildren(event.state.doc);
-    children.forEach((c) => {
-      this.embedded_fields[c.node.attrs.field_id] = true;
-    });
+  onEditorInit (event: { view: EditorView; state: EditorState }) {
+    /**/
   }
 
-  onEditorUpdate(event: {
+  onEditorUpdate (event: {
     getHTML: () => string;
     getJSON: () => string;
     state: EditorState;
     transaction: Transaction;
   }) {
-    this.field.value = event.getHTML();
+    this.value = event.getHTML();
     let embedChanges = this.getEmbeddedFieldsChanges(event.transaction.doc);
 
     let changes: DDField = {
       id: this.field.id,
-      value: this.field.value,
+      value: event.getHTML()
     } as DDField;
     Object.assign(changes, embedChanges);
     this.notifyUpdate(changes);
@@ -156,7 +151,7 @@ export default class FieldTextEditorComponent extends Vue {
     { leading: false }
   );
 
-  addEmbeddedField(command) {
+  addEmbeddedField (command) {
     this.$q
       .dialog({
         component: FieldSelectorDialog,
@@ -171,7 +166,7 @@ export default class FieldTextEditorComponent extends Vue {
           }
 
           return allowed;
-        }),
+        })
       })
       .onOk((toEmbed: DDField[]) => {
         this.editor.setOptions({ editable: true });
@@ -185,73 +180,76 @@ export default class FieldTextEditorComponent extends Vue {
            *    Eg. Passing {fields:this.fields} with result in all the fields being copied
            *    and stored in the resulting html tag
            * */
-          command({ field_id: f.id, transformations:'hola' });
+          command({ field_id: f.id, transformations: '' });
         });
       });
   }
 
-  getEmbeddedFieldsChanges(doc: Node) {
-    let children = this.getEmbeddedChildren(doc).map((i) => i.node);
+  getEmbeddedFieldsChanges (doc: Node) {
+    let children = this.getEmbeddedChildren(doc).map((i) => i.node.attrs.field_id);
     let cangesToUpdate: {
       use_embedded?: boolean;
       embedded_fields?: string[];
     } = {};
 
-    // Invalidation of al lthe existing embeds
-    Object.keys(this.embedded_fields).forEach((k: string) => {
-      this.embedded_fields[k] = false;
-    });
+    let existing_fields = {}
+    if (this.field.embedded_fields) {
+      this.field.embedded_fields.forEach(f => {
+        existing_fields[`${f}`] = false;
+      })
+    }
 
-    // Mark as avalid the existing embeds in the editor
-    children.forEach((c) => {
-      let f_id: string = c.attrs.field_id;
-      if (this.embedded_fields[f_id] !== undefined) {
+    // Mark as avalid the existing embeds in the editor, and add the new ones
+    let addingOrDeletingFields = false
+    children.forEach((f_id:string) => {
+      if (existing_fields[f_id] !== undefined) {
         // Existing with probable change
-        this.embedded_fields[f_id] = true;
+        existing_fields[f_id] = true;
       } else {
-        // New embedded field
-        this.embedded_fields[f_id] = true;
+        // Adding new embedded field
+        existing_fields[f_id] = true;
 
-        // Changes on local and remote field
-        if (!this.field.use_embedded) {
-          this.field.use_embedded = true;
-          cangesToUpdate.use_embedded = true;
-        }
-
-        // Avoiding duplicated id's
-        if (!this.field.embedded_fields?.find((e) => e === f_id)) {
-          this.field.embedded_fields = this.field.embedded_fields || [];
-          this.field.embedded_fields.push(f_id);
-          cangesToUpdate.embedded_fields = this.field.embedded_fields;
-        }
+        // To notify the change
+        addingOrDeletingFields = true
       }
+      cangesToUpdate.embedded_fields = cangesToUpdate.embedded_fields || []
+      cangesToUpdate.embedded_fields.push(f_id)
     });
 
-    // Check for deleted fields
-    let deletion = false;
-    Object.keys(this.embedded_fields).forEach((k: string) => {
-      if (!this.embedded_fields[k]) {
-        // deleted
-        deletion = true;
-        let i = this.field.embedded_fields?.findIndex((e) => e === k);
-        this.field.embedded_fields?.splice(i || -1, 1);
-        delete this.embedded_fields[k];
+    // Any field was deleted
+    let keys = Object.keys(existing_fields)
+    for (let i = 0; i < keys.length; i++) {
+      if (!existing_fields[keys[i]]) {
+        // There was a delete
+        addingOrDeletingFields = true
       }
-    });
+    }
 
-    // Avoid sending the embedded_fields without changes
-    if (deletion) {
-      if (this.field.embedded_fields?.length === 0) {
-        this.field.use_embedded = false;
-        cangesToUpdate.use_embedded = this.field.use_embedded;
+    if (!addingOrDeletingFields) {
+      // there is no need for the embedded_fields to change
+      delete cangesToUpdate.embedded_fields
+    } else {
+      // Avoiding duplicated id's
+      if (cangesToUpdate.embedded_fields) {
+        cangesToUpdate.embedded_fields = cangesToUpdate.embedded_fields.filter((f, index) => index === cangesToUpdate.embedded_fields?.findIndex(i => i === f))
+      } else {
+        // empty array in case of every field being deleted
+        cangesToUpdate.embedded_fields = []
       }
-      cangesToUpdate.embedded_fields = this.field.embedded_fields;
+
+      if ((!cangesToUpdate.embedded_fields || cangesToUpdate.embedded_fields.length === 0) && this.field.use_embedded) {
+        // Change to false
+        cangesToUpdate.use_embedded = false
+      } else if ((!!cangesToUpdate.embedded_fields && cangesToUpdate.embedded_fields.length > 0) && !this.field.use_embedded) {
+        // Change to true
+        cangesToUpdate.use_embedded = true
+      }
     }
 
     return cangesToUpdate;
   }
 
-  getEmbeddedChildren(from: Node) {
+  getEmbeddedChildren (from: Node) {
     const predicate = (node) => node.type.name === "field_embedded";
     return findChildren(from, predicate, true);
   }

@@ -86,27 +86,12 @@ export class DocumentEditionManager {
       }
     }
 
-    // Mark for update only those fields not marked for deletion
-    this.toUpdate = this.toUpdate.filter(item => !item.deleted)
-
-    this.removeUpdateDuplicates()
     // Avoid any local field remaining for update
-    let forUpdate = this.toUpdate.concat()
+    let forUpdate = this.toUpdate.filter(item => !item.deleted)
+    forUpdate = forUpdate.filter((f, index) => index === forUpdate.findIndex(i => i.id === f.id))
     this.toUpdate = []
 
     await this.updateFields(deleted.concat(forUpdate))
-  }
-
-  removeUpdateDuplicates () {
-    let copy: DDField[] = []
-    let existing: Map<string, boolean> = new Map<string, boolean>()
-    this.toUpdate.forEach(item => {
-      if (!existing.get(item.id)) {
-        copy.push(item)
-        existing.set(item.id, true)
-      }
-    })
-    this.toUpdate = copy
   }
 
   markForDelete (toDelete: DDField) {
