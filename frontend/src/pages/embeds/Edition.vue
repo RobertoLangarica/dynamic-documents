@@ -23,8 +23,12 @@ export default class Creation extends mixins(EmbedMixin) {
           break;
         case 'create':
           /* Saving */
+          // eslint-disable-next-line no-case-declarations
           let document = await this.$refs.doc_creation.saveAsNew()
           this.sendMessage('created', document)
+          break;
+        case 'complete_dialog_action':
+          this.$root.$emit('complete_dialog_action', data)
           break;
         default:
           console.log(`Unrecognized event->${message}`)

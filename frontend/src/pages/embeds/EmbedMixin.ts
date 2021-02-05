@@ -4,19 +4,21 @@ import Component from 'vue-class-component'
 @Component
 export default class EmbedMixin extends Vue {
   mounted () {
+    // @ts-ignore
+    this.$root.invisibleDialogs = true
     this.$root.$on('opening_dialog', this.onOpeningDialog.bind(this))
     this.$root.$on('closing_dialog', this.onClosingDialog.bind(this))
     window.addEventListener("message", this.onEventMessageReceived.bind(this), false);
   }
 
   beforeUnmount () {
-    this.$root.$off('opening_dialog', this.onOpeningDialog.bind(this))
-    this.$root.$off('closing_dialog', this.onClosingDialog.bind(this))
+    this.$root.$off('opening_dialog')
+    this.$root.$off('closing_dialog')
     window.removeEventListener('message', this.onEventMessageReceived.bind(this))
   }
 
-  onOpeningDialog () {
-    this.sendMessage('opening_dialog')
+  onOpeningDialog (data) {
+    this.sendMessage('opening_dialog', data || {})
   }
 
   onClosingDialog () {
@@ -37,14 +39,15 @@ export default class EmbedMixin extends Vue {
         message = event.data
         data = {}
       } finally {
-        this.onMessage(message, data)
+        void this.onMessage(message, data)
       }
     }
   }
 
-  onMessage (message:string, data:{[key:string]:any} = {}) {
+  async onMessage (message:string, data:{[key:string]:any} = {}) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`received => ${message},${data}`)
+    // THIS function should have an override
   }
 
   sendMessage (message:string, data:{[key:string]:any} = {}) {

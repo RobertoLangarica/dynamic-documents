@@ -1,6 +1,6 @@
 <template>
-  <q-dialog ref="dialog" @before-show="onBeforeOpen" @show="onOpen" @before-hide="onBeforeClose">
-    <q-card ref="main_card">
+  <q-dialog ref="dialog" @before-show="onBeforeOpen" @before-hide="onBeforeClose">
+    <q-card ref="main_card" :class="{'invisible':invisible}">
       <q-card-section>
         <h5 class="q-my-none">Elige el tipo de campo</h5>
       </q-card-section>
@@ -43,6 +43,11 @@ import { QDialog } from "quasar";
 
 @Component({})
 export default class FieldTypeDialog extends Vue {
+  isOpen = false
+  get open () {
+    return this.isOpen
+  }
+
   show () {
     (this.$refs.dialog as QDialog).show();
   }
@@ -60,17 +65,24 @@ export default class FieldTypeDialog extends Vue {
     this.hide();
   }
 
-  onOpen () {
-    console.log(this.$refs.dialog.$el)
-    this.$refs.dialog.$el.scrollIntoView()
-  }
-
   onBeforeOpen () {
-    this.$root.$emit('opening_dialog')
+    this.isOpen = true
+    if (this.invisible) {
+      this.$root.$emit('opening_dialog', { type: 'FieldTypeDialog', categories: this.$store.getters.fieldTypesCategories, types: this.$store.getters.fieldTypes })
+      this.$root.$on('complete_dialog_action', this.onTypeSelect.bind(this))
+    }
   }
 
   onBeforeClose () {
-    this.$root.$emit('closing_dialog')
+    if (this.invisible) {
+      this.$root.$off('complete_dialog_action')
+    }
+    // this.$root.$emit('closing_dialog')
+  }
+
+  get invisible () {
+    // @ts-ignore
+    return this.$root.invisibleDialogs
   }
 
   get fieldTypesCategories () {
@@ -96,5 +108,9 @@ export default class FieldTypeDialog extends Vue {
   min-width: 240px;
   max-width: 540px;
   height: 70vh;
+}
+
+.invisible {
+  opacity: 0;
 }
 </style>
