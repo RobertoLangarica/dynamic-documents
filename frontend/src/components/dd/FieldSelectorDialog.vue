@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="dialog">
+  <q-dialog ref="dialog" @before-show="onBeforeOpen" @before-hide="onBeforeClose">
     <q-card class="q-dialog-plugin">
       <q-card-section>
         <span class="text-h6">{{ title }}</span>
@@ -111,6 +111,14 @@ export default class FieldSelectorDialog extends Vue {
 
     onClose () {
       this.hide()
+    }
+
+    onBeforeOpen () {
+      this.$root.$emit('opening_dialog')
+    }
+
+    onBeforeClose () {
+      this.$root.$emit('closing_dialog')
     }
 }
 </script>

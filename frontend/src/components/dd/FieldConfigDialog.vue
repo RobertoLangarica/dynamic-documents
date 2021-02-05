@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="fc_dialog">
+  <q-dialog ref="fc_dialog" @before-show="onBeforeOpen" @before-hide="onBeforeClose">
     <q-card>
       <q-card-section>
         <div class="row q-mt-none q-col-gutter-y-md">
@@ -130,6 +130,14 @@ export default class FieldConfigDialog extends Vue {
 
   onClose () {
     this.hide();
+  }
+
+  onBeforeOpen () {
+    this.$root.$emit('opening_dialog')
+  }
+
+  onBeforeClose () {
+    this.$root.$emit('closing_dialog')
   }
 
   get config_properties () {

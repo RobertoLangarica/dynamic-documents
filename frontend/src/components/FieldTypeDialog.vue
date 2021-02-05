@@ -1,29 +1,32 @@
 <template>
-  <q-dialog ref="dialog">
-    <q-card>
+  <q-dialog ref="dialog" @before-show="onBeforeOpen" @show="onOpen" @before-hide="onBeforeClose">
+    <q-card ref="main_card">
       <q-card-section>
-        <q-scroll-area class="dialog-scroll-list">
-          <q-list bordered separator>
-            <div v-for="category in fieldTypesCategories" :key="category">
-              <q-item-label header>{{ category }}</q-item-label>
-              <q-item
-                clickable
-                v-ripple
-                v-for="(type, index) in $store.getters.fieldsTypesByCategory(category)"
-                :key="index"
-                @click="onTypeSelect(type)"
-              >
-                <q-item-section top avatar>
-                  <q-avatar color="white" text-color="primary" :icon="fieldTypeIcon(type.component)" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ type.name }}</q-item-label>
-                  <q-item-label caption lines="2">{{ type.description }}.</q-item-label>
-                </q-item-section>
-              </q-item>
-            </div>
-          </q-list>
-        </q-scroll-area>
+        <h5 class="q-my-none">Elige el tipo de campo</h5>
+      </q-card-section>
+      <q-card-section>
+        <!-- <q-scroll-area class="dialog-scroll-list"> -->
+        <q-list separator>
+          <div v-for="category in fieldTypesCategories" :key="category">
+            <q-item-label header>{{ category }}</q-item-label>
+            <q-item
+              clickable
+              v-ripple
+              v-for="(type, index) in $store.getters.fieldsTypesByCategory(category)"
+              :key="index"
+              @click="onTypeSelect(type)"
+            >
+              <q-item-section top avatar>
+                <q-avatar color="white" text-color="primary" :icon="fieldTypeIcon(type.component)" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ type.name }}</q-item-label>
+                <q-item-label caption lines="2">{{ type.description }}.</q-item-label>
+              </q-item-section>
+            </q-item>
+          </div>
+        </q-list>
+        <!-- </q-scroll-area> -->
       </q-card-section>
       <q-card-actions align="center">
         <q-btn flat rounded color="secondary" label="Cancelar" @click="onCancel" />
@@ -55,6 +58,19 @@ export default class FieldTypeDialog extends Vue {
 
   onCancel () {
     this.hide();
+  }
+
+  onOpen () {
+    console.log(this.$refs.dialog.$el)
+    this.$refs.dialog.$el.scrollIntoView()
+  }
+
+  onBeforeOpen () {
+    this.$root.$emit('opening_dialog')
+  }
+
+  onBeforeClose () {
+    this.$root.$emit('closing_dialog')
   }
 
   get fieldTypesCategories () {

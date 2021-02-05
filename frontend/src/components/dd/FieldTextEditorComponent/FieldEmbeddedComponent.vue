@@ -10,14 +10,12 @@
       <span v-if="!isParagraph">{{ transformedValue }}</span>
       <editor-content v-else :editor="editor" :readonly="true" :fields="fields" />
     </template>
-    <transformations-dialog v-model="showTransforms" :field_value="value" @ok="onSaveTransformations" :initial_transformations="transformations.split(',')"/>
+    <transformations-dialog v-model="showTransforms" :field_value="value" @ok="onSaveTransformations" :initial_transformations="transformations.split(',')" />
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import { DDTemplate } from "src/dynamic-documents/src/core/DDTemplate";
-import { DDDocument } from "src/dynamic-documents/src/core/DDDocument";
+import { Vue, Component, Prop } from "vue-property-decorator";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { EFieldComponentID } from "src/dynamic-documents/src/core/DDFieldType";
 import { Editor, EditorContent, Node } from "tiptap";
@@ -37,11 +35,12 @@ import Transforms from 'src/transformations'
 
 import TransformationsDialog from "components/dd/TransformationsDialog.vue";
 
-@Component({ 
-  components: { 
+@Component({
+  components: {
     "editor-content": EditorContent,
-  'transformations-dialog':TransformationsDialog
-  } })
+    'transformations-dialog': TransformationsDialog
+  }
+})
 export default class FieldEmbeddedComponent extends Vue {
   @Prop({ required: false }) readonly node!: Node;
   @Prop({ required: false }) readonly updateAttrs!: (any) => any;
@@ -77,8 +76,8 @@ export default class FieldEmbeddedComponent extends Vue {
     return this.field ? this.field.value : "";
   }
 
-  get transformedValue(){
-    return Transforms.apply(this.transformations.split(','),this.value)
+  get transformedValue () {
+    return Transforms.apply(this.transformations.split(','), this.value)
   }
 
   get isParagraph () {
@@ -124,7 +123,7 @@ export default class FieldEmbeddedComponent extends Vue {
     this.showTransforms = true
   }
 
-  onSaveTransformations(toSave){
+  onSaveTransformations (toSave) {
     this.transformations = toSave
   }
 }
