@@ -1,6 +1,6 @@
 <template>
-  <q-dialog ref="dialog" v-model="show" @before-show="onOpen" @before-hide="onClose">
-    <q-card class="row justify-between" dense>
+  <q-dialog ref="dialog" v-model="show" @before-show="onOpen" @before-hide="onBeforeClose">
+    <q-card v-if="!invisible" class="row justify-between" dense>
       <q-card-section class="col-12">
         <h6 class="q-ma-none">{{ title }}</h6>
         <q-option-group
@@ -29,7 +29,7 @@
 
       <q-card-actions align="right" class="col-12">
         <q-btn flat rounded color="secondary" label="Cancelar" @click="onCancel" />
-        <q-btn rounded color="primary" label="Aceptar" @click="onOk" />
+        <q-btn rounded color="primary" label="Aceptar" @click="onOk()" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -72,12 +72,20 @@ export default class TransformationsDialog extends Vue {
       this.$emit('input', value)
     }
 
-    onClose () {
-      this.$root.$emit('closing_dialog')
+    get invisible () {
+    // @ts-ignore
+      return this.$root.invisibleDialogs
+    }
+
+    onBeforeClose () {
+      /**/
+      if (this.invisible) {
+        this.$root.$off('complete_dialog_action')
+        this.$root.$off('cancel_dialog_action')
+      }
     }
 
     onOpen () {
-      this.$root.$emit('opening_dialog')
       this.selectedTransformations = []
       this.initial_transformations.forEach(s => {
         let tr = this.transformations.find(t => t.value.name === s)
@@ -85,10 +93,25 @@ export default class TransformationsDialog extends Vue {
           this.selectedTransformations.push(tr.value)
         }
       })
+      if (this.invisible) {
+        this.$root.$on('complete_dialog_action', this.onOk.bind(this))
+        this.$root.$on('cancel_dialog_action', () => { this.show = false })
+        this.$root.$emit('send_message', {
+          message: 'opening_dialog',
+          data: {
+            type: 'TransformationsDialog',
+            title: this.title,
+            options: this.transformations,
+            initial_options: this.initial_transformations,
+            field_value: this.field_value
+          }
+        })
+      }
     }
 
-    onOk () {
-      this.$emit("ok", this.selectedTransformations.map(t => t.name).join());
+    onOk (selected:any[]|undefined = undefined) {
+      selected = selected || this.selectedTransformations
+      this.$emit("ok", selected.map(t => t.name).join());
       this.show = false
     }
 

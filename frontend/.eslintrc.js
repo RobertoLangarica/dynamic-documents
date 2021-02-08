@@ -96,6 +96,7 @@ module.exports = {
     '@typescript-eslint/restrict-template-expressions':'warn',
     '@typescript-eslint/restrict-plus-operands':'warn',
     '@typescript-eslint/ban-ts-comment':'off',
+    'no-case-declarations':'off',
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
