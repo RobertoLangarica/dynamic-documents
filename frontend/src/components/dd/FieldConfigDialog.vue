@@ -1,12 +1,10 @@
 <template>
   <q-dialog ref="fc_dialog" @before-show="onBeforeOpen" @before-hide="onBeforeClose">
-    <q-card>
+    <q-card v-if="!invisible">
       <q-card-section>
         <div class="row q-mt-none q-col-gutter-y-md">
           <nq-input v-model="name" class="col-12 q-mt-none q-pt-none" label="Nombre del elemento" hint="Para poder identificarlo al editar el documento" :debounce="debounce" />
-
           <nq-input v-model="hint" class="col-12" label="Texto de ayuda" hint="Podrá ser visto por quienes capturen el documento" :debounce="debounce" />
-
           <nq-input v-model="label" class="col-12" label="Etiqueta del campo" hint="Podrá ser visto tanto en captura como en impresión" :debounce="debounce" />
 
           <!-- Descripción -->
@@ -27,39 +25,11 @@
             </q-item-section>
             <q-item-section>
               <q-item-label>Campo de sólo lectura</q-item-label>
-              <q-item-label
-                caption
-              >
+              <q-item-label caption>
                 Un campo de sólo lectura no puede ser editado al momento de capturarse.
               </q-item-label>
             </q-item-section>
           </q-item>
-
-          <!-- required -->
-          <!-- <q-item tag="label" v-ripple>
-            <q-item-section avatar top>
-              <q-checkbox v-model="required" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Requerido</q-item-label>
-              <q-item-label caption>
-                Cuando un campo es requerido, el documento no se encuentra completamente capturado hasta que se ingrese un valor a este campo.
-              </q-item-label>
-            </q-item-section>
-          </q-item>-->
-
-          <!-- replication -->
-          <!-- <q-item tag="label" v-ripple>
-            <q-item-section avatar top>
-              <q-checkbox v-model="replication" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Se puede replicar</q-item-label>
-              <q-item-label caption>
-                Cuando un campo se puede "replicar", en modo de captura se puede clonar este acmpo las veces que se quiera.
-              </q-item-label>
-            </q-item-section>
-          </q-item>-->
 
           <!-- Show in capture -->
           <q-item tag="label" v-ripple>
@@ -132,29 +102,49 @@ export default class FieldConfigDialog extends Vue {
     this.hide();
   }
 
+  get invisible () {
+    // @ts-ignore
+    return this.$root.invisibleDialogs
+  }
+
+  updateFromOutside (data) {
+    // filter only those fields with real changes
+    let keys = Object.keys(data)
+    let toUpdate = {}
+    keys.forEach(key => {
+      if (data[key] !== this.field[key]) {
+        toUpdate[key] = data[key]
+
+        // TODO Remove the next line and enhance the reactive edition
+        this.field[key] = toUpdate[key]
+      }
+    })
+
+    toUpdate.id = this.field.id
+    this.notifyUpdate(toUpdate);
+    this.hide()
+  }
+
   onBeforeOpen () {
-    this.$root.$emit('send_message', { message: 'opening_dialog' })
+    if (this.invisible) {
+      this.$root.$on('complete_dialog_action', this.updateFromOutside.bind(this))
+      this.$root.$on('cancel_dialog_action', this.hide.bind(this))
+      this.$root.$emit('send_message',
+        {
+          message: 'opening_dialog',
+          data: {
+            type: 'FieldConfigDialog',
+            field: this.field
+          }
+        })
+    }
   }
 
   onBeforeClose () {
-    /***/
-  }
-
-  get config_properties () {
-    let result: any[] = [];
-
-    // Description
-    result.push({
-      value: "menu_description",
-      component: "nq-input",
-      props: {
-        label: "Descripción para menú",
-        clearable: true,
-        "stack-label": true
-      }
-    });
-
-    return result;
+    if (this.invisible) {
+      this.$root.$off('complete_dialog_action')
+      this.$root.$off('cancel_dialog_action')
+    }
   }
 
   get description () {
@@ -182,31 +172,6 @@ export default class FieldConfigDialog extends Vue {
   set readonly (value) {
     this.field.readonly = value;
     this.notifyUpdate({ id: this.field.id, readonly: value });
-  }
-
-  get required () {
-    return this.field.required;
-  }
-
-  set required (value) {
-    this.field.required = value;
-    this.notifyUpdate({ id: this.field.id, required: value });
-  }
-
-  get replication (): boolean {
-    return this.allowReplication;
-  }
-
-  set replication (value: boolean) {
-    if (!this.field.replication) {
-      this.field.replication = new FDataReplication();
-    }
-    this.field.replication.allow = value;
-    this.allowReplication = value;
-    this.notifyUpdate({
-      id: this.field.id,
-      replication: this.field.replication
-    });
   }
 
   get show_in_capture () {
