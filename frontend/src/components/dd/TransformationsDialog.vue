@@ -78,7 +78,6 @@ export default class TransformationsDialog extends Vue {
     }
 
     onBeforeClose () {
-      /**/
       if (this.invisible) {
         this.$root.$off('complete_dialog_action')
         this.$root.$off('cancel_dialog_action')

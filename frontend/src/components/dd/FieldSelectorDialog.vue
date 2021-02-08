@@ -1,29 +1,25 @@
 <template>
-  <q-dialog ref="dialog" @before-show="onBeforeOpen" @before-hide="onBeforeClose">
-    <q-card class="q-dialog-plugin">
-      <q-card-section>
+  <q-dialog ref="dialog" full-height @before-show="onBeforeOpen" @before-hide="onBeforeClose">
+    <q-card v-if="!invisible" class="q-dialog-plugin">
+      <q-card-section class="col-auto">
         <span class="text-h6">{{ title }}</span>
       </q-card-section>
-      <q-card-section>
-        <q-scroll-area class="dialog-scroll-list">
-          <q-list bordered>
+      <q-card-section class="col">
+        <q-scroll-area class="full-height full-width">
+          <q-list>
             <template v-for="(item, index) in items">
               <q-separator spaced v-if="index > 0 && item.group" :key="`space_${index}`" />
-
-              <q-item-label v-if="item.group" header :key="index">{{ item.name }}</q-item-label>
-              <q-item v-else tag="label" v-ripple :key="index">
-                <q-item-section side>
-                  <q-checkbox v-model="item.selected" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ item.name }}</q-item-label>
-                </q-item-section>
-              </q-item>
+              <span :key="item.key">
+                <q-item-label v-if="item.group" header>{{ item.name }}</q-item-label>
+                <q-item v-else tag="label" v-ripple>
+                  <q-checkbox v-model="item.selected" :label="item.name" />
+                </q-item>
+              </span>
             </template>
           </q-list>
         </q-scroll-area>
       </q-card-section>
-      <q-card-actions align="right">
+      <q-card-actions align="right" class="col-auto">
         <q-btn flat rounded color="secondary" label="Cancelar" @click="onClose" />
         <q-btn rounded color="primary" label="Aceptar" @click="onSelect" />
       </q-card-actions>
@@ -42,6 +38,7 @@ interface IFieldItem{
     field?:DDField;
     fields?:IFieldItem[];
     selected?:boolean;
+    key:string;
 }
 @Component({})
 export default class FieldSelectorDialog extends Vue {
@@ -55,28 +52,28 @@ export default class FieldSelectorDialog extends Vue {
     }
 
     sortFieldsInGroups () {
-      let general:IFieldItem = { name: 'Generales', fields: [], group: true }
+      let general:IFieldItem = { name: 'Generales', fields: [], group: true, key: 'general_group' }
       let groups:{[key:string] : IFieldItem;} = {}
       let sortedGroups:IFieldItem[] = []
       this.items = []
 
       this.fields.forEach(f => {
         if (DDField.isGroup(f)) {
+          // the group could exists before this field since it is referenced by other fields
           if (!groups[f.id]) {
             groups[f.id] = { name: '', fields: [], group: true }
           }
-
-          groups[f.id].name = f.name;
+          groups[f.id].name = f.name
           sortedGroups.push(groups[f.id])
         } else if (!f.group_by || f.group_by === '') {
-                general.fields!.push({ name: f.name, field: f, group: false, selected: false })
+          general.fields!.push({ name: f.name, field: f, group: false, selected: false, key: f.id })
         } else {
           let g = f.group_by
 
           if (!groups[g]) {
             groups[g] = { name: '', fields: [], group: true }
           }
-                groups[g].fields!.push({ name: f.name, field: f, group: false, selected: false })
+          groups[g].fields!.push({ name: f.name, field: f, group: false, selected: false, key: f.id })
         }
       })
 
@@ -103,8 +100,8 @@ export default class FieldSelectorDialog extends Vue {
       (this.$refs.dialog as QDialog).hide()
     }
 
-    onSelect () {
-      let selected = this.items.filter(i => i.selected).map(f => f.field)
+    onSelect (selected) {
+      selected = selected || this.items.filter(i => i.selected).map(f => f.field)
       this.$emit('ok', selected)
       this.hide()
     }
@@ -113,12 +110,33 @@ export default class FieldSelectorDialog extends Vue {
       this.hide()
     }
 
+    get invisible () {
+    // @ts-ignore
+      return this.$root.invisibleDialogs
+    }
+
     onBeforeOpen () {
-      this.$root.$emit('send_message', { message: 'opening_dialog' })
+      if (this.invisible) {
+        this.sortFieldsInGroups()
+        this.$root.$on('complete_dialog_action', this.onSelect.bind(this))
+        this.$root.$on('cancel_dialog_action', this.onClose.bind(this))
+        this.$root.$emit('send_message',
+          {
+            message: 'opening_dialog',
+            data: {
+              type: 'FieldEmbedDialog',
+              title: this.title,
+              items: this.items
+            }
+          })
+      }
     }
 
     onBeforeClose () {
-      /** */
+      if (this.invisible) {
+        this.$root.$off('complete_dialog_action')
+        this.$root.$off('cancel_dialog_action')
+      }
     }
 }
 </script>
