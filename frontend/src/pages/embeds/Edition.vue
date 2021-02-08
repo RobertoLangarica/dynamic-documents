@@ -18,17 +18,14 @@ export default class Creation extends mixins(EmbedMixin) {
     async onMessage (message, data) {
       switch (message) {
         case 'get_fields':
+          // Sending back the fields list
           let fields = this.$refs.doc_creation.getFields()
           this.sendMessage('set_fields', fields)
           break;
         case 'create':
           /* Saving */
-          // eslint-disable-next-line no-case-declarations
           let document = await this.$refs.doc_creation.saveAsNew()
           this.sendMessage('created', document)
-          break;
-        case 'complete_dialog_action':
-          this.$root.$emit('complete_dialog_action', data)
           break;
         default:
           console.log(`Unrecognized event->${message}`)

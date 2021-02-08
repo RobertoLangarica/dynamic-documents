@@ -133,11 +133,11 @@ export default class FieldConfigDialog extends Vue {
   }
 
   onBeforeOpen () {
-    this.$root.$emit('opening_dialog')
+    this.$root.$emit('send_message', { message: 'opening_dialog' })
   }
 
   onBeforeClose () {
-    this.$root.$emit('closing_dialog')
+    /***/
   }
 
   get config_properties () {

@@ -114,11 +114,11 @@ export default class FieldSelectorDialog extends Vue {
     }
 
     onBeforeOpen () {
-      this.$root.$emit('opening_dialog')
+      this.$root.$emit('send_message', { message: 'opening_dialog' })
     }
 
     onBeforeClose () {
-      this.$root.$emit('closing_dialog')
+      /** */
     }
 }
 </script>
