@@ -1,5 +1,6 @@
 import { IsOptional, IsString, IsUUID, IsArray, IsBoolean } from "class-validator"
 import { Expose, Type } from "class-transformer"
+import { v4 as uuidv4 } from 'uuid'
 
 export class DocumentChange {
     @IsOptional() @IsUUID() @Expose()
@@ -16,6 +17,8 @@ export class DocumentChange {
 }
 
 export class DocumentVersion {
+    id:string = uuidv4()
+    
     @IsOptional() @IsString() @Expose()
     readonly created_at: string = new Date(Date.now()).toISOString()
 
