@@ -13,7 +13,7 @@
       />
     </div>
 
-    <template v-if="docReady && changesAllowed">
+    <template v-if="docReady">
       <div class="fixed-top-right q-pa-sm q-mr-md">
         <q-radio
           v-for="view in views"
@@ -39,7 +39,7 @@ export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
   @Prop({ type: Boolean, required: false, default: false }) readonly isFilter!: boolean;
-  @Prop({ type: Boolean, required: false, default: false }) readonly forceViewOnly:boolean;
+  @Prop({ type: Boolean, required: false, default: true }) readonly allowDownload:boolean;
   @Prop({ type: Array, required: false, default:()=>[
     { label: "Editar", value: IDDView.EDIT },
     { label: "Capturar", value: IDDView.CAPTURE },
@@ -52,7 +52,6 @@ export default class Document extends Vue {
   fields: DDField[] = [];
   docReady = false;
   initialName: string = "";
-  changesAllowed:boolean = !this.forceViewOnly
 
   @Watch('views', {immediate: true})
   onAllowedViewschanged(value:any[],old:any[]){
@@ -63,23 +62,14 @@ export default class Document extends Vue {
   }
 
   get isInEditView () {
-    if (!this.changesAllowed) {
-      return false
-    }
     return this.currentView === IDDView.EDIT;
   }
 
   get isInCaptureView () {
-    if (!this.changesAllowed) {
-      return false
-    }
     return this.currentView === IDDView.CAPTURE;
   }
 
   get isInPrintView () {
-    if (!this.changesAllowed) {
-      return true
-    }
     return this.currentView === IDDView.PRINT;
   }
 
@@ -156,10 +146,6 @@ export default class Document extends Vue {
     this.manager.onExpiredCB = () => { this.$emit('expired') }
 
     this.docReady = true;
-
-    if (this.forceViewOnly) {
-      this.changesAllowed = false
-    }
 
     this.$nextTick(() => {
       this.$emit('mount_ready')
