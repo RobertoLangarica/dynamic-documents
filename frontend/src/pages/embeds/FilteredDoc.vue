@@ -6,13 +6,13 @@
             :isFilter="true"
             :id="id"
             :forceViewOnly="readonly"
-            @404="nonExistent"
             @expired="onExpired"
-            @mount_ready="onReady"
+            :views="available_views"
     />
-    <div v-else class="row justify-center items-center">
-      <h3>Este documento ya no está disponible</h3>
-    </div>
+    <q-card v-else class="row justify-center items-center">
+      <h3 v-if="!empty">Este documento ya no está disponible</h3>
+      <h3 v-else>Documento  vacio</h3>
+    </q-card>
   </div>
 </template>
 
@@ -20,15 +20,16 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import EmbedMixin from './EmbedMixin'
-import Document from 'src/pages/Document'
+import Document from 'src/components/dd/Document'
+import IDDView from 'src/dynamic-documents/src/core/IDDView'
 
 @Component({ components: { 'dd-doc': Document } })
 export default class Creation extends mixins(EmbedMixin) {
     @Prop({ type: String, required: false, default: '' }) readonly id!: string;
     @Prop({ type: Boolean, required: false, default: false }) readonly readonly!: boolean;
 
-    exists:boolean = true
     expired:boolean = false
+    empty:boolean = false
     ready:boolean = false
 
     get canShowDoc () {
@@ -36,13 +37,15 @@ export default class Creation extends mixins(EmbedMixin) {
         return true
       }
 
-      return !this.expired && this.exists
+      return !this.expired && this.exists && !this.empty
     }
 
-    async onMessage (message, data) {
+    async onMessage (message, data, handled = false) {
       switch (message) {
         default:
-          console.log(`Unrecognized event->${message}`)
+          if(!handled){
+            console.log(`Unrecognized event->${message}`)
+          }
       }
     }
 
@@ -50,16 +53,33 @@ export default class Creation extends mixins(EmbedMixin) {
       this.expired = true
     }
 
-    nonExistent () {
-      this.exists = false
-    }
+    setAvailableViews (document) {
+      this.available_views = this.available_views.filter(v => v.value !== IDDView.EDIT)
 
-    onReady () {
-      this.$nextTick(() => {
-        let el = this.$refs.doc_creation.$el
-        this.sendMessage('dd_resize', { width: Math.max(el.scrollWidth, el.offsetWidth), height: Math.max(el.scrollHeight, el.offsetHeight) })
-        this.ready = true
-      })
+      // Is there any field in capture or print
+      let allowed_print = false
+      let allowed_capture = false
+      for(let i = 0; i < document.fields.length; i++){
+        let f = document.fields[i]
+        allowed_capture = allowed_capture || f.show_in_capture
+        allowed_print = allowed_print || f.show_in_print
+
+        if(allowed_print && allowed_capture){
+          break;
+        }
+      }
+
+      // There is no fields in print view
+      if(!allowed_print){
+        this.available_views = this.available_views.filter(v => v.value !== IDDView.PRINT)
+      }
+
+      // There is no fields in capture view
+      if(!allowed_capture){
+        this.available_views = this.available_views.filter(v => v.value !== IDDView.CAPTURE)
+      }
+
+      this.empty = this.available_views.length === 0
     }
 }
 </script>

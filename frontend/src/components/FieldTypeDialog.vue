@@ -68,16 +68,17 @@ export default class FieldTypeDialog extends Vue {
   onBeforeOpen () {
     this.isOpen = true
     if (this.invisible) {
-      this.$root.$emit('opening_dialog', { type: 'FieldTypeDialog', categories: this.$store.getters.fieldTypesCategories, types: this.$store.getters.fieldTypes })
+      this.$root.$emit('send_message', { message: 'opening_dialog', data: { type: 'FieldTypeDialog', categories: this.$store.getters.fieldTypesCategories, types: this.$store.getters.fieldTypes } })
       this.$root.$on('complete_dialog_action', this.onTypeSelect.bind(this))
+      this.$root.$on('cancel_dialog_action', this.hide.bind(this))
     }
   }
 
   onBeforeClose () {
     if (this.invisible) {
       this.$root.$off('complete_dialog_action')
+      this.$root.$off('cancel_dialog_action', this.hide.bind(this))
     }
-    // this.$root.$emit('closing_dialog')
   }
 
   get invisible () {

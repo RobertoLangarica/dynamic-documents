@@ -19,7 +19,7 @@
       <q-item
         v-for="item in this.$store.state.dd.documents"
         :key="item.id"
-        :to="{ name: 'embed-document', params: { id: item.id} }"
+        :to="{ name: 'document_edition', params: { id: item.id} }"
         clickable
         v-ripple
       >

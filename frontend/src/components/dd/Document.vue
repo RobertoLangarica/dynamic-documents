@@ -62,57 +62,59 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
+import IDDView from "src/dynamic-documents/src/core/IDDView";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { throttle } from "underscore/modules/index";
-
-export enum IViews {
-  EDIT,
-  CAPTURE,
-  PRINT,
-}
 
 @Component({})
 export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
   @Prop({ type: Boolean, required: false, default: false }) readonly isFilter!: boolean;
-  @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
-  @Prop({ type: Boolean, required: false, default: false }) readonly forceViewOnly:boolean
+  @Prop({ type: Boolean, required: false, default: false }) readonly forceViewOnly:boolean;
+  @Prop({ type: Array, required: false, default:()=>[
+    { label: "Editar", value: IDDView.EDIT },
+    { label: "Capturar", value: IDDView.CAPTURE },
+    { label: "Ver", value: IDDView.PRINT }
+  ]}) readonly views!:any[];
 
-  currentView: IViews = IViews.EDIT;
+  debounce: number = 500
+  currentView: IDDView = IDDView.EDIT
   manager: DocumentEditionManager = {} as any;
   fields: DDField[] = [];
   docReady = false;
   initialName: string = "";
   changesAllowed:boolean = !this.forceViewOnly
 
-  views = [
-    { value: IViews.EDIT, slot: IViews.EDIT },
-    { value: IViews.CAPTURE, slot: IViews.CAPTURE },
-    { value: IViews.PRINT, slot: IViews.PRINT }
-  ];
+  @Watch('views', {immediate: true})
+  onAllowedViewschanged(value:any[],old:any[]){
+    if(!value.find(v=>v.value === this.currentView)){
+      // Selecting an allowed view
+      this.currentView = value.length ? value[0].value : IDDView.PRINT
+    }
+  }
 
   get isInEditView () {
     if (!this.changesAllowed) {
       return false
     }
-    return this.currentView === IViews.EDIT;
+    return this.currentView === IDDView.EDIT;
   }
 
   get isInCaptureView () {
     if (!this.changesAllowed) {
       return false
     }
-    return this.currentView === IViews.CAPTURE;
+    return this.currentView === IDDView.CAPTURE;
   }
 
   get isInPrintView () {
     if (!this.changesAllowed) {
       return true
     }
-    return this.currentView === IViews.PRINT;
+    return this.currentView === IDDView.PRINT;
   }
 
   get name () {
@@ -137,6 +139,29 @@ export default class Document extends Vue {
     void this.$store.dispatch("getTypes");
   }
 
+  async loadDocument(){
+    let document
+    if (!this.id) {
+      // empty doc
+      return null
+    }
+
+    let action = this.isTemplate ? 'getTemplate' : this.isFilter ? 'doc_filters/getFilteredDocument' : 'getDocument'
+    document = await this.$store.dispatch(action, this.id);
+
+    if (!document || document.success === false) {
+      // Load failed
+      if (this.isFilter && document?.filter_expired) {
+          this.$emit('expired')
+      } else {
+        // TODO do something
+      }
+      return null
+    }
+
+    return document
+  }
+
   async mounted () {
     this.$root.$on("f-add", this.onFieldAdded.bind(this));
     this.$root.$on("f-update", this.onFieldUpdated.bind(this));
@@ -144,30 +169,8 @@ export default class Document extends Vue {
     this.$root.$on("f-sort_field", this.onSortField.bind(this));
     this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
 
-    let document
-    if (this.id !== '') {
-      let action = this.isTemplate ? 'getTemplate' : this.isFilter ? 'doc_filters/getFilteredDocument' : 'getDocument'
-      document = await this.$store.dispatch(action, this.id);
-      if (!document || document.success === false) {
-        // Load failed
-        if (this.isFilter) {
-          // TODO maybe this screen could block any further edition
-          if (!document.filter_expired) {
-            this.$emit('404')
-          } else {
-            this.$emit('expired')
-          }
-        } else {
-          // TODO do something
-        }
-      } else {
-        if (document.status === 'closed' || document.status === 'prevent_changes') {
-          this.changesAllowed = false
-        }
-      }
-    } else {
-      // Empty doc
-    }
+    let document = await this.loadDocument()
+    this.$emit('loaded_document', document)
 
     this.manager = document ? DocumentEditionManager.createFromRemoteObject(document) : new DocumentEditionManager();
     if (!document) {
@@ -182,40 +185,19 @@ export default class Document extends Vue {
     this.manager.isFilter = this.isFilter;
     // The store is only present if the manager has a document to maintain in sync
     this.manager.store = document ? this.$store : null;
-    // To know when a filter is expired after an update try
+
+    // To know when a filter is expired after an any update attempt
     this.manager.onExpiredCB = () => { this.$emit('expired') }
-    this.setAvailableStatus(document)
 
     this.docReady = true;
 
     if (this.forceViewOnly) {
       this.changesAllowed = false
     }
+
     this.$nextTick(() => {
       this.$emit('mount_ready')
     })
-  }
-
-  setAvailableStatus (document) {
-    if (this.isFilter) {
-      this.views = [{ label: "Capturar", value: IViews.CAPTURE }]
-      this.views.push({ label: "Ver", value: IViews.PRINT })
-    } else if (document) {
-      this.views = [{ label: "Ver", value: IViews.PRINT }]
-      switch (document.status.name) {
-        case 'only_capture':
-          this.views.unshift({ label: "Capturar", value: IViews.CAPTURE })
-          break
-        case 'only_edition':
-          this.views.unshift({ label: "Editar", value: IViews.EDIT })
-          break;
-        case 'open':
-          this.views.unshift({ label: "Capturar", value: IViews.CAPTURE })
-          this.views.unshift({ label: "Editar", value: IViews.EDIT })
-          break;
-      }
-    }
-    this.currentView = this.views[0].value
   }
 
   onSortField ({ field, sort_index }) {
@@ -260,14 +242,9 @@ export default class Document extends Vue {
     return this.manager.getCleanCopy()
   }
 
+  // Used when an external window request the fields
   getFields () {
-    return this.fields.map(f => {
-      return {
-        id: f.id,
-        name: f.name,
-        readonly: f.readonly
-      }
-    })
+    return this.fields.concat()
   }
 }
 </script>

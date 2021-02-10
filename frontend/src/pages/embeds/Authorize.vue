@@ -8,7 +8,9 @@ import EmbedMixin from './EmbedMixin'
 
 @Component({})
 export default class Authorize extends mixins(EmbedMixin) {
-  onMessage (message, data) {
+  
+  handleMessages (message, data) {
+    // This override prevents any handling from the mixin
     switch (message) {
       case 'authorize':
         /*
@@ -17,9 +19,12 @@ export default class Authorize extends mixins(EmbedMixin) {
         */
         this.$api.setAuthorization(data.token, '');
         this.$router.replace({ name: data.location, params: data.params })
+        
+        // Preventing Authorize from reacting to send_message events
+        // TODO review is there is a way to provoke an Authorization unmount instead of this
+        this.$root.$off('send_message')
         break;
       default:
-        console.log(`Unrecognized event->${message}`)
     }
   }
 }
