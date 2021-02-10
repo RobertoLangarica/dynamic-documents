@@ -27,7 +27,7 @@ const routes: RouteConfig[] = [
         name: 'embed-document',
         props: true,
         path: 'document/:id',
-        component: () => import('pages/Document.vue'),
+        component: () => import('components/dd/Document.vue'),
         meta: { protected: true }
       }
     ]
