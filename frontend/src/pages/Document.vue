@@ -22,6 +22,40 @@
           :val="view.value"
           :label="view.label"
         />
+        <!--q-btn-toggle
+          v-model="currentView"
+          spread
+          no-caps
+          toggle-color="primary"
+          color="white"
+          text-color="black"
+          :options="views"
+        >
+          <template v-slot:edit>
+            <div class="row items-center no-wrap">
+              <div class="text-center">
+                Pick<br>boat
+              </div>
+              <q-icon right name="directions_boat" />
+            </div>
+          </template>
+          <template v-slot:capture>
+            <div class="row items-center no-wrap">
+              <div class="text-center">
+                Pick<br>boat
+              </div>
+              <q-icon right name="directions_boat" />
+            </div>
+          </template>
+          <template v-slot:print>
+            <div class="row items-center no-wrap">
+              <div class="text-center">
+                Pick<br>boat
+              </div>
+              <q-icon right name="directions_boat" />
+            </div>
+          </template>
+        </q-btn-toggle-->
       </div>
     </template>
   </article>
@@ -55,9 +89,9 @@ export default class Document extends Vue {
   changesAllowed:boolean = !this.forceViewOnly
 
   views = [
-    { label: "Editar", value: IViews.EDIT },
-    { label: "Capturar", value: IViews.CAPTURE },
-    { label: "Ver", value: IViews.PRINT }
+    { value: IViews.EDIT, slot: IViews.EDIT },
+    { value: IViews.CAPTURE, slot: IViews.CAPTURE },
+    { value: IViews.PRINT, slot: IViews.PRINT }
   ];
 
   get isInEditView () {
