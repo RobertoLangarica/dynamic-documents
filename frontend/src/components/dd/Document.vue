@@ -15,13 +15,18 @@
 
     <template v-if="docReady">
       <div class="fixed-top-right q-pa-sm q-mr-md">
-        <q-radio
-          v-for="view in views"
-          :key="view.value"
-          v-model="currentView"
-          :val="view.value"
-          :label="view.label"
-        />
+        <div class="row justify-end">
+          <q-radio
+            v-for="view in views"
+            :key="view.value"
+            v-model="currentView"
+            :val="view.value"
+            :label="view.label"
+          />
+          <div v-if="showDownload" class="col-12 row justify-end">
+            <q-btn label="Download" flat @click="onDownload" />
+          </div>
+        </div>
       </div>
     </template>
   </article>
@@ -39,23 +44,28 @@ export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
   @Prop({ type: Boolean, required: false, default: false }) readonly isFilter!: boolean;
-  @Prop({ type: Boolean, required: false, default: true }) readonly allowDownload:boolean;
-  @Prop({ type: Array, required: false, default:()=>[
-    { label: "Editar", value: IDDView.EDIT },
-    { label: "Capturar", value: IDDView.CAPTURE },
-    { label: "Ver", value: IDDView.PRINT }
-  ]}) readonly views!:any[];
+  @Prop({ type: Boolean, required: false, default: true }) readonly allowDownload!:boolean;
+  @Prop({
+    type: Array,
+    required: false,
+    default: () => [
+      { label: "Editar", value: IDDView.EDIT },
+      { label: "Capturar", value: IDDView.CAPTURE },
+      { label: "Ver", value: IDDView.PRINT }
+    ]
+  }) readonly views!:any[];
 
   debounce: number = 500
   currentView: IDDView = IDDView.EDIT
   manager: DocumentEditionManager = {} as any;
   fields: DDField[] = [];
   docReady = false;
+  creatingNewDocument:boolean = false
   initialName: string = "";
 
-  @Watch('views', {immediate: true})
-  onAllowedViewschanged(value:any[],old:any[]){
-    if(!value.find(v=>v.value === this.currentView)){
+  @Watch('views', { immediate: true })
+  onAllowedViewschanged (value:any[], old:any[]) {
+    if (!value.find(v => v.value === this.currentView)) {
       // Selecting an allowed view
       this.currentView = value.length ? value[0].value : IDDView.PRINT
     }
@@ -71,6 +81,10 @@ export default class Document extends Vue {
 
   get isInPrintView () {
     return this.currentView === IDDView.PRINT;
+  }
+
+  get showDownload () {
+    return this.allowDownload && this.isInPrintView && this.docReady && !this.creatingNewDocument
   }
 
   get name () {
@@ -95,7 +109,7 @@ export default class Document extends Vue {
     void this.$store.dispatch("getTypes");
   }
 
-  async loadDocument(){
+  async loadDocument () {
     let document
     if (!this.id) {
       // empty doc
@@ -108,12 +122,12 @@ export default class Document extends Vue {
     if (!document || document.success === false) {
       // Load failed
       if (this.isFilter && document?.filter_expired) {
-          this.$emit('expired')
+        this.$emit('expired')
       } else {
         // TODO do something
       }
       return null
-    } 
+    }
 
     return document
   }
@@ -132,6 +146,7 @@ export default class Document extends Vue {
     if (!document) {
       // Placeholder name
       this.manager.name = (this.isTemplate ? 'Plantilla' : 'Documento') + ' sin nombre'
+      this.creatingNewDocument = true
     }
     this.initialName = this.manager.name;
 
@@ -141,7 +156,7 @@ export default class Document extends Vue {
     this.manager.isFilter = this.isFilter;
     // The store is only present if the manager has a document to maintain in sync
     this.manager.store = document ? this.$store : null;
-    
+
     // To know when a filter is expired after an any update attempt
     this.manager.onExpiredCB = () => { this.$emit('expired') }
 
@@ -197,6 +212,10 @@ export default class Document extends Vue {
   // Used when an external window request the fields
   getFields () {
     return this.fields.concat()
+  }
+
+  onDownload () {
+    void this.$store.dispatch('download', this.manager.id)
   }
 }
 </script>

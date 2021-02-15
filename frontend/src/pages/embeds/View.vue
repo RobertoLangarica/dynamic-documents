@@ -22,14 +22,14 @@ export default class Creation extends mixins(EmbedMixin) {
     async onMessage (message, data, handled = false) {
       switch (message) {
         default:
-          if(!handled){
+          if (!handled) {
             console.log(`Unrecognized event->${message}`)
           }
       }
     }
 
-  setAvailableViews (document) {
-    this.available_views = []
-  }
+    setAvailableViews (document) {
+      this.available_views = []
+    }
 }
 </script>

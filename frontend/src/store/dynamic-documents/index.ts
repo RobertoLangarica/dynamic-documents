@@ -201,6 +201,15 @@ const actions: ActionTree<IDDState, StateInterface> = {
     if (result.success) {
       commit('addTemplate', result.data)
     }
+  },
+  async download({}, id){
+    let path = `/files/${id}`
+    console.log('GET', path)
+    let result = await api.get(path)
+    // if (result.success) {
+    //   commit('addTemplate', result.data)
+    // }
+    console.log(result)
   }
 }
 

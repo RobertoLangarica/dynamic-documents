@@ -56,7 +56,7 @@ const routes: RouteConfig[] = [
       },
       {
         name: 'document_view',
-        path: 'document/edition/:id/view',
+        path: 'document/view/:id',
         component: () => import('pages/embeds/View.vue'),
         props: route => ({ isTemplate: false, id: route.params.id })
       },
