@@ -304,7 +304,7 @@ export class DocumentService {
 
     async updateDocument(id: string, data: DocumentDto, user: User): Promise<Document> {
 
-        // Completing the new version before using preload (that rewrites it)
+        // Adding missing data to the newly created version
         if (data.versions && data.versions.length > 0) {
             data.versions[0].source_filter = null;
             data.versions[0].source_user = user.id;
