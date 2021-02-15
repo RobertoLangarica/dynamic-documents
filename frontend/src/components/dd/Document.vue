@@ -13,49 +13,20 @@
       />
     </div>
 
-    <template v-if="docReady && changesAllowed">
+    <template v-if="docReady">
       <div class="fixed-top-right q-pa-sm q-mr-md">
-        <q-radio
-          v-for="view in views"
-          :key="view.value"
-          v-model="currentView"
-          :val="view.value"
-          :label="view.label"
-        />
-        <!--q-btn-toggle
-          v-model="currentView"
-          spread
-          no-caps
-          toggle-color="primary"
-          color="white"
-          text-color="black"
-          :options="views"
-        >
-          <template v-slot:edit>
-            <div class="row items-center no-wrap">
-              <div class="text-center">
-                Pick<br>boat
-              </div>
-              <q-icon right name="directions_boat" />
-            </div>
-          </template>
-          <template v-slot:capture>
-            <div class="row items-center no-wrap">
-              <div class="text-center">
-                Pick<br>boat
-              </div>
-              <q-icon right name="directions_boat" />
-            </div>
-          </template>
-          <template v-slot:print>
-            <div class="row items-center no-wrap">
-              <div class="text-center">
-                Pick<br>boat
-              </div>
-              <q-icon right name="directions_boat" />
-            </div>
-          </template>
-        </q-btn-toggle-->
+        <div class="row justify-end">
+          <q-radio
+            v-for="view in views"
+            :key="view.value"
+            v-model="currentView"
+            :val="view.value"
+            :label="view.label"
+          />
+          <div v-if="showDownload" class="col-12 row justify-end">
+            <q-btn label="Download" flat @click="onDownload" />
+          </div>
+        </div>
       </div>
     </template>
   </article>
@@ -73,48 +44,47 @@ export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
   @Prop({ type: Boolean, required: false, default: false }) readonly isFilter!: boolean;
-  @Prop({ type: Boolean, required: false, default: false }) readonly forceViewOnly:boolean;
-  @Prop({ type: Array, required: false, default:()=>[
-    { label: "Editar", value: IDDView.EDIT },
-    { label: "Capturar", value: IDDView.CAPTURE },
-    { label: "Ver", value: IDDView.PRINT }
-  ]}) readonly views!:any[];
+  @Prop({ type: Boolean, required: false, default: true }) readonly allowDownload!:boolean;
+  @Prop({
+    type: Array,
+    required: false,
+    default: () => [
+      { label: "Editar", value: IDDView.EDIT },
+      { label: "Capturar", value: IDDView.CAPTURE },
+      { label: "Ver", value: IDDView.PRINT }
+    ]
+  }) readonly views!:any[];
 
   debounce: number = 500
   currentView: IDDView = IDDView.EDIT
   manager: DocumentEditionManager = {} as any;
   fields: DDField[] = [];
   docReady = false;
+  creatingNewDocument:boolean = false
   initialName: string = "";
-  changesAllowed:boolean = !this.forceViewOnly
 
-  @Watch('views', {immediate: true})
-  onAllowedViewschanged(value:any[],old:any[]){
-    if(!value.find(v=>v.value === this.currentView)){
+  @Watch('views', { immediate: true })
+  onAllowedViewschanged (value:any[], old:any[]) {
+    if (!value.find(v => v.value === this.currentView)) {
       // Selecting an allowed view
       this.currentView = value.length ? value[0].value : IDDView.PRINT
     }
   }
 
   get isInEditView () {
-    if (!this.changesAllowed) {
-      return false
-    }
     return this.currentView === IDDView.EDIT;
   }
 
   get isInCaptureView () {
-    if (!this.changesAllowed) {
-      return false
-    }
     return this.currentView === IDDView.CAPTURE;
   }
 
   get isInPrintView () {
-    if (!this.changesAllowed) {
-      return true
-    }
     return this.currentView === IDDView.PRINT;
+  }
+
+  get showDownload () {
+    return this.allowDownload && this.isInPrintView && this.docReady && !this.creatingNewDocument
   }
 
   get name () {
@@ -139,7 +109,7 @@ export default class Document extends Vue {
     void this.$store.dispatch("getTypes");
   }
 
-  async loadDocument(){
+  async loadDocument () {
     let document
     if (!this.id) {
       // empty doc
@@ -152,7 +122,7 @@ export default class Document extends Vue {
     if (!document || document.success === false) {
       // Load failed
       if (this.isFilter && document?.filter_expired) {
-          this.$emit('expired')
+        this.$emit('expired')
       } else {
         // TODO do something
       }
@@ -176,6 +146,7 @@ export default class Document extends Vue {
     if (!document) {
       // Placeholder name
       this.manager.name = (this.isTemplate ? 'Plantilla' : 'Documento') + ' sin nombre'
+      this.creatingNewDocument = true
     }
     this.initialName = this.manager.name;
 
@@ -190,10 +161,6 @@ export default class Document extends Vue {
     this.manager.onExpiredCB = () => { this.$emit('expired') }
 
     this.docReady = true;
-
-    if (this.forceViewOnly) {
-      this.changesAllowed = false
-    }
 
     this.$nextTick(() => {
       this.$emit('mount_ready')
@@ -245,6 +212,10 @@ export default class Document extends Vue {
   // Used when an external window request the fields
   getFields () {
     return this.fields.concat()
+  }
+
+  onDownload () {
+    void this.$store.dispatch('download', this.manager.id)
   }
 }
 </script>

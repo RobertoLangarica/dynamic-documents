@@ -29,7 +29,7 @@ export class DocumentFilter extends EntityWithTimeStampt {
     document: string
 
     @Column({ type: 'timestamptz', nullable: true, default: null })
-    @Transform(value => new Date(value).toISOString(), { toClassOnly: true })
+    @Transform(params => new Date(Date.parse(params.value)).toISOString(), { toClassOnly: true })
     expiration_date: string
 
     @Column({ default: '' }) @IsString()
