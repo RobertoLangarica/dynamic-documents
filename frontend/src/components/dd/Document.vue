@@ -29,6 +29,7 @@
         </div>
       </div>
     </template>
+    <q-inner-loading :showing="downloading" />
   </article>
 </template>
 
@@ -45,6 +46,7 @@ export default class Document extends Vue {
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
   @Prop({ type: Boolean, required: false, default: false }) readonly isFilter!: boolean;
   @Prop({ type: Boolean, required: false, default: true }) readonly allowDownload!:boolean;
+  @Prop({ type: String, required: false, default: '' }) readonly downloadAuth!:boolean;
   @Prop({
     type: Array,
     required: false,
@@ -62,6 +64,7 @@ export default class Document extends Vue {
   docReady = false;
   creatingNewDocument:boolean = false
   initialName: string = "";
+  downloading:boolean = false
 
   @Watch('views', { immediate: true })
   onAllowedViewschanged (value:any[], old:any[]) {
@@ -84,7 +87,7 @@ export default class Document extends Vue {
   }
 
   get showDownload () {
-    return this.allowDownload && this.isInPrintView && this.docReady && !this.creatingNewDocument
+    return this.allowDownload && this.isInPrintView && this.docReady && !this.creatingNewDocument && !this.isTemplate && !this.isFilter
   }
 
   get name () {
@@ -214,8 +217,10 @@ export default class Document extends Vue {
     return this.fields.concat()
   }
 
-  onDownload () {
-    void this.$store.dispatch('download', this.manager.id)
+  async onDownload () {
+    this.downloading = true
+    await this.$store.dispatch('download', { id: this.manager.id, name: this.manager.name, auth: this.downloadAuth })
+    this.downloading = false
   }
 }
 </script>

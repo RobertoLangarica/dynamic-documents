@@ -1,11 +1,12 @@
 <template>
   <div>
-    <dd-doc 
-      ref="doc_creation" 
-      :isTemplate="isTemplate" 
+    <dd-doc
+      ref="doc_creation"
+      :isTemplate="isTemplate"
       :id="id"
       :views="available_views"
-      />
+      :downloadAuth="auth"
+    />
   </div>
 </template>
 
@@ -19,7 +20,7 @@ import Document from 'src/components/dd/Document'
 export default class Creation extends mixins(EmbedMixin) {
     @Prop({ type: String, required: false, default: '' }) readonly id!: string;
     @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
-    
+
     async onMessage (message, data, handled = false) {
       switch (message) {
         case 'create':
@@ -28,7 +29,7 @@ export default class Creation extends mixins(EmbedMixin) {
           this.sendMessage('created', document)
           break;
         default:
-          if(!handled){
+          if (!handled) {
             console.log(`Unrecognized event->${message}`)
           }
       }

@@ -20,6 +20,7 @@
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "core-js": "^3.6.5",
+    "js-file-download": "^0.4.12",
     "prosemirror-utils": "^0.9.6",
     "quasar": "^1.15.1",
     "reflect-metadata": "^0.1.13",

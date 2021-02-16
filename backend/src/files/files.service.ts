@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { DocumentService } from "src/document/document.service";
+import { Stream } from "stream";
 import { PDFService } from "./pdf.service";
 import { StorageService } from "./storage.service";
+// const { Readable } = require('stream')
 
 @Injectable()
 export class FilesService {
@@ -11,7 +13,7 @@ export class FilesService {
         private readonly pdf_service: PDFService
     ) { }
     
-    async getFile(id:string, format:string = 'pdf'):Promise<Buffer>{
+    async getFile(id:string, auth:string = ''){
         let document = await this.doc_service.findById(id,true)
         let expectedVersion = document.versions.length > 0 ? document.versions[document.versions.length-1].id : document.id
 
@@ -22,7 +24,7 @@ export class FilesService {
         if(!(await this.storage_service.exists(document.id, expectedVersion))){
             console.log('Unexisting file')
             // We have to create the file
-            file = await this.pdf_service.createFromDocument(document)
+            file = await this.pdf_service.createFromDocument(document, auth)
             // Save to the remote service
             await this.storage_service.saveFile(document.id, expectedVersion, file)
         } else {
@@ -34,7 +36,7 @@ export class FilesService {
         if(!file){
             throw new NotFoundException('Unable to find the expected PDF')
         }
-
-        return file
+        
+        return {stream:Stream.Readable.from(file), name:`${document.name}.pdf`}
     }
 }
