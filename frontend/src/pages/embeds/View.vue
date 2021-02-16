@@ -4,6 +4,7 @@
     :isTemplate="isTemplate"
     :id="id"
     :views="available_views"
+    :downloadAuth="false"
   />
 </template>
 

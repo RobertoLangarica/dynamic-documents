@@ -6,7 +6,8 @@ import { DDTemplate } from 'src/dynamic-documents/src/core/DDTemplate'
 import { DDFieldType } from 'src/dynamic-documents/src/core/DDFieldType'
 import { StateInterface } from '..'
 import { plainToClass } from 'class-transformer'
-import { i18n } from 'src/boot/i18n'
+import axios from 'axios'
+const FileDownload = require('js-file-download');
 
 api.baseURL = process.env.API_URL!
 
@@ -202,14 +203,22 @@ const actions: ActionTree<IDDState, StateInterface> = {
       commit('addTemplate', result.data)
     }
   },
-  async download({}, id){
+  async download({rootState}, {id, name, auth}){
     let path = `/files/${id}`
     console.log('GET', path)
-    let result = await api.get(path)
-    // if (result.success) {
-    //   commit('addTemplate', result.data)
-    // }
-    console.log(result)
+    auth = auth || `Bearer ${rootState.session.token}`
+    
+    return new Promise((resolve)=>{
+      // api.setAuthorization
+      axios.get(`${api.baseURL}${path}`,{responseType: 'blob', headers: {'Authorization':auth}})
+      .then((response) => {
+        FileDownload(response.data, `${name}.pdf`);
+        resolve(response)
+      }).catch((e)=>{
+        console.log('Error',e)
+        resolve(e)
+      })
+    })
   }
 }
 

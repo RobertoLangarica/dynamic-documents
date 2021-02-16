@@ -40,25 +40,25 @@ const routes: RouteConfig[] = [
         name: 'template_creation',
         path: 'template/creation',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: true })
+        props: route => ({ isTemplate: true, auth: route.query.auth || '' })
       },
       {
         name: 'template_edition',
         path: 'template/edition/:id',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: true, id: route.params.id })
+        props: route => ({ isTemplate: true, id: route.params.id, auth: route.query.auth || '' })
       },
       {
         name: 'document_edition',
         path: 'document/edition/:id',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: false, id: route.params.id })
+        props: route => ({ isTemplate: false, id: route.params.id, auth: route.query.auth || '' })
       },
       {
         name: 'document_view',
         path: 'document/view/:id',
         component: () => import('pages/embeds/View.vue'),
-        props: route => ({ isTemplate: false, id: route.params.id })
+        props: route => ({ isTemplate: false, id: route.params.id, auth: route.query.auth || '' })
       },
       {
         name: 'filtered_document',

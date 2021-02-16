@@ -8,6 +8,7 @@
             :forceViewOnly="readonly"
             @expired="onExpired"
             :views="available_views"
+            :downloadAuth="false"
     />
     <q-card v-else class="row justify-center items-center">
       <h3 v-if="!empty">Este documento ya no está disponible</h3>
@@ -43,7 +44,7 @@ export default class Creation extends mixins(EmbedMixin) {
     async onMessage (message, data, handled = false) {
       switch (message) {
         default:
-          if(!handled){
+          if (!handled) {
             console.log(`Unrecognized event->${message}`)
           }
       }
@@ -59,23 +60,23 @@ export default class Creation extends mixins(EmbedMixin) {
       // Is there any field in capture or print
       let allowed_print = false
       let allowed_capture = false
-      for(let i = 0; i < document.fields.length; i++){
+      for (let i = 0; i < document.fields.length; i++) {
         let f = document.fields[i]
         allowed_capture = allowed_capture || f.show_in_capture
         allowed_print = allowed_print || f.show_in_print
 
-        if(allowed_print && allowed_capture){
+        if (allowed_print && allowed_capture) {
           break;
         }
       }
 
       // There is no fields in print view
-      if(!allowed_print){
+      if (!allowed_print) {
         this.available_views = this.available_views.filter(v => v.value !== IDDView.PRINT)
       }
 
       // There is no fields in capture view
-      if(!allowed_capture){
+      if (!allowed_capture) {
         this.available_views = this.available_views.filter(v => v.value !== IDDView.CAPTURE)
       }
 

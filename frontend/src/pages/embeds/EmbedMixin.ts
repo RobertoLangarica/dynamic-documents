@@ -2,20 +2,27 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import Transforms from 'src/transformations'
 import IDDView from 'src/dynamic-documents/src/core/IDDView'
+import { Prop } from 'vue-property-decorator'
 
 @Component
 export default class EmbedMixin extends Vue {
-  doc_ref_identifier:string = 'doc_creation'
-  available_views = [
-    { label: "Editar", value: IDDView.EDIT },
-    { label: "Capturar", value: IDDView.CAPTURE },
-    { label: "Impresión", value: IDDView.PRINT }]
+@Prop({ required: false, type: String, default: '' }) readonly auth!:string
 
+    doc_ref_identifier:string = 'doc_creation'
+    available_views = [
+      { label: "Editar", value: IDDView.EDIT },
+      { label: "Capturar", value: IDDView.CAPTURE },
+      { label: "Impresión", value: IDDView.PRINT }]
+
+    authorized:boolean = false
     exists:boolean = true
     ready:boolean = false
 
     mounted () {
-    // This hook is called before the component hook
+      // This hook is called before the component hook
+      if (this.auth) {
+        this.$api.setAuthorization(this.auth, '')
+      }
 
       // @ts-ignore
       this.$root.invisibleDialogs = true
