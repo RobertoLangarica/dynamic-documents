@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ auth }}
     <dd-doc
       ref="doc_creation"
       :isTemplate="isTemplate"

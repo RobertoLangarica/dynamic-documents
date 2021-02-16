@@ -43,6 +43,11 @@ export class DocumentEditionManager {
   onExpiredCB = () => {}
 
   async update (changes:{[key:string]:any}) {
+    if (!this.store) {
+      // no store to sync data
+      return
+    }
+
     let action
     if (this.isDocument) {
       action = 'setDocument'

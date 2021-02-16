@@ -108,6 +108,11 @@ export default class EmbedMixin extends Vue {
     }
 
     setAvailableViews (document) {
+      if (!document.status) {
+        // It is a template and templates has no status
+        return
+      }
+
       let status = document.status.name
       if (status === 'closed' || status === 'prevent_changes') {
         this.available_views = this.available_views.filter(v => v.value === IDDView.PRINT)

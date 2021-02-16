@@ -8,7 +8,6 @@
             :forceViewOnly="readonly"
             @expired="onExpired"
             :views="available_views"
-            :downloadAuth="false"
     />
     <q-card v-else class="row justify-center items-center">
       <h3 v-if="!empty">Este documento ya no está disponible</h3>

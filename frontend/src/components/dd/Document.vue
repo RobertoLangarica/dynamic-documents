@@ -87,7 +87,7 @@ export default class Document extends Vue {
   }
 
   get showDownload () {
-    return this.allowDownload && this.isInPrintView && this.docReady && !this.creatingNewDocument
+    return this.allowDownload && this.isInPrintView && this.docReady && !this.creatingNewDocument && !this.isTemplate && !this.isFilter
   }
 
   get name () {
