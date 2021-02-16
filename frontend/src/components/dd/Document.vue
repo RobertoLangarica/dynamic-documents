@@ -12,21 +12,26 @@
         :print_view="isInPrintView"
       />
     </div>
-
     <template v-if="docReady">
-      <div class="fixed-top-right q-pa-sm q-mr-md">
-        <div class="row justify-end">
-          <q-radio
-            v-for="view in views"
-            :key="view.value"
-            v-model="currentView"
-            :val="view.value"
-            :label="view.label"
-          />
-          <div v-if="showDownload" class="col-12 row justify-end">
-            <q-btn label="Download" flat @click="onDownload" />
-          </div>
-        </div>
+      <div class="fixed-top-right q-py-sm q-px-none bg-white column justify-end shadow-1 q-mt-md view-buttons-container">
+        <q-btn
+          flat align="left"
+          :color="view.value === currentView ? 'info' : 'grey-7'"
+          v-for="view in views"
+          :key="`view_${view.value}`"
+          @click.native="currentView = view.value"
+          :icon="view.value === 0 ? 'edit' : view.value === 1 ? 'keyboard' : view.value === 2 ? 'preview' : ''"
+          :label="view.label"
+        />
+        <hr v-if="showDownload">
+        <q-btn v-if="showDownload"
+               flat align="left"
+               color="grey-7"
+               label="Imprimir" icon="print" flat @click="onPrint" />
+        <q-btn v-if="showDownload"
+               flat align="left"
+               color="grey-7"
+               label="Descargar" icon="download" flat @click="onDownload" />
       </div>
     </template>
     <q-inner-loading :showing="downloading" />
@@ -222,9 +227,13 @@ export default class Document extends Vue {
     await this.$store.dispatch('download', { id: this.manager.id, name: this.manager.name, auth: this.downloadAuth })
     this.downloading = false
   }
+
+  onPrint () {
+    window.print()
+  }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .document-container {
   background-color: #eeeeee;
   height: 100vh;
@@ -242,6 +251,36 @@ export default class Document extends Vue {
     padding: 1.5cm;
     border-radius: 1px;
     box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1);
+  }
+  .view-buttons-container {
+    width: 12rem;
+    right: -9rem;
+    transition: right 0.5s;
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+  }
+  .view-buttons-container:hover {
+    right: 0;
+  }
+  hr {
+    width: 100%;
+    color: #cccccc;
+    border: none;
+    border-top: 1px solid #cccccc;
+    height: 0px;
+  }
+  @media print {
+    .view-buttons-container {
+      display: none;
+    }
+    .page {
+      background-color: white;
+      max-width: none;
+      margin: 0 auto;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
   }
 }
 </style>

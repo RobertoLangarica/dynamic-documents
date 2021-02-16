@@ -12,7 +12,7 @@ export default class EmbedMixin extends Vue {
     available_views = [
       { label: "Editar", value: IDDView.EDIT },
       { label: "Capturar", value: IDDView.CAPTURE },
-      { label: "Impresión", value: IDDView.PRINT }]
+      { label: "Previsualizar", value: IDDView.PRINT }]
 
     authorized:boolean = false
     exists:boolean = true
