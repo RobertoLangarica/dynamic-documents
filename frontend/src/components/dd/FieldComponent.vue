@@ -80,7 +80,7 @@ import FieldConfigDialog from "components/dd/FieldConfigDialog.vue";
 import { throttle } from "underscore/modules/index";
 
 @Component({ components: { FieldConfigDialog } })
-export default class ClassComponent extends Vue {
+export default class FieldComponent extends Vue {
   @Prop({ required: true }) readonly field!: DDField;
   @Prop({ type: Array, required: true }) readonly fields!: DDField[];
   @Prop({ type: Boolean, required: true }) readonly isInEditView!: boolean;
@@ -209,6 +209,25 @@ export default class ClassComponent extends Vue {
       }
       &:hover, &:active {
         .dd-field-name {
+        }
+      }
+      .dd-input-paragraph {
+        cursor: text;
+        ::selection {
+          background-color: $info;
+        }
+        h1, h2, h3 {
+          margin: 1rem auto 0.5rem auto;
+          line-height: 1.1;
+        }
+        h1 {
+          font-size: 2rem;
+        }
+        h2 {
+          font-size: 1.5rem;
+        }
+        h3 {
+          font-size: 1.25rem;
         }
       }
     }

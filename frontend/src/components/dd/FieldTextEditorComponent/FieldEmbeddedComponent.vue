@@ -2,9 +2,9 @@
   <div class="embeded_container row items-center">
     <!-- EDIT MODE -->
     <template v-if="!readonly">
-      <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
-      <q-badge>{{ name }}</q-badge>
-      <q-btn icon="settings" flat round size="md" dense class="cursor-drag" color="grey" @click="onSettings" />
+      <q-btn icon="drag_indicator" flat round size="sm" dense class="cursor-drag hide-selection" color="grey" />
+      <span class="cursor-drag inline-block component-name">&nbsp;{{ name }}&nbsp;</span>
+      <q-btn icon="settings" flat round size="sm" dense class="cursor-pointer hide-selection" color="grey" @click="onSettings" />
     </template>
     <template v-else>
       <span v-if="!isParagraph">{{ transformedValue }}</span>
@@ -129,8 +129,35 @@ export default class FieldEmbeddedComponent extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 .embeded_container {
   display: inline-block;
+  background-color: #dddddd;
+  border-radius: 4px;
+  margin: 0 4px;
+  padding: 0;
+  border: 1px solid #cccccc;
+  .component-name {
+    background-color: #eeeeee;
+    padding: 4px 8px 2px 8px;
+    margin: 4px 0 0 0;
+    line-height: 0.9;
+    border-radius: 4px;
+  }
+  .hide-selection {
+    ::selection {
+      background-color: transparent !important;
+    }
+  }
+  .q-badge {
+    line-height: 1;
+  }
+  > * {
+    user-select: none;
+  }
+
+  &:hover {
+    border: 1px solid #999999;
+  }
 }
 </style>
