@@ -15,7 +15,7 @@ export default class FieldEmbedded extends Node {
       inline: true,
       group: "inline",
       draggable: true,
-      selectable: false,
+      selectable: true,
       parseDOM: [{
         tag: 'field_embedded',
         getAttrs: dom => ({

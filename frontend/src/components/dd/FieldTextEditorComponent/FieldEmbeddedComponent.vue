@@ -87,11 +87,11 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 
   get readonly () {
-    return this.$parent.$attrs.readonly;
+    return this.$parent?.$attrs.readonly;
   }
 
   get fields () {
-    return this.$parent.$attrs.fields;
+    return this.$parent?.$attrs.fields;
   }
 
   get field (): DDField {
