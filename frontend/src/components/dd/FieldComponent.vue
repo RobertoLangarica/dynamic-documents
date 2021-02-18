@@ -277,5 +277,13 @@ export default class FieldComponent extends Vue {
       display: none;
     }
   }
+  .embeded_container {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    line-height: unset;
+    border-radius: unset;
+    border: unset;
+  }
 }
 </style>

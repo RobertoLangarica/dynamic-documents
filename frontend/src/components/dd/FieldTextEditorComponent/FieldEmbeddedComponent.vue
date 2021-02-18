@@ -146,7 +146,7 @@ export default class FieldEmbeddedComponent extends Vue {
   }
   .hide-selection {
     ::selection {
-      background-color: transparent !important;
+
     }
   }
   .q-badge {
@@ -160,4 +160,5 @@ export default class FieldEmbeddedComponent extends Vue {
     border: 1px solid #999999;
   }
 }
+
 </style>
