@@ -71,13 +71,11 @@
 import { Vue, Component, Prop } from "vue-property-decorator";
 import {
   DDFieldType,
-  FieldComponentUI,
-  EFieldComponentID
+  FieldComponentUI
 } from "src/dynamic-documents/src/core/DDFieldType";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import FieldTypeDialog from "components/FieldTypeDialog.vue";
 import FieldConfigDialog from "components/dd/FieldConfigDialog.vue";
-import { throttle } from "underscore/modules/index";
 
 @Component({ components: { FieldConfigDialog } })
 export default class FieldComponent extends Vue {
@@ -131,15 +129,9 @@ export default class FieldComponent extends Vue {
     this.$root.$emit("f-delete", this.field);
   }
 
-  // Avoiding overflow of update calls
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  notifyUpdate: (field: DDField) => void = throttle(
-    (field) => {
-      this.$root.$emit("f-update", field);
-    },
-    this.debounce,
-    { leading: false }
-  );
+  notifyUpdate (field: DDField) {
+    this.$root.$emit("f-update", field);
+  }
 
   showAddFieldDialog () {
     this.$q

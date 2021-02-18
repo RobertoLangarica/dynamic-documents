@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Store } from 'vuex'
 import { DDField } from './core/DDField'
 import { DDTemplateType } from './core/DDTemplateType';
-import { Type, classToClass } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
 import { DDFieldType } from './core/DDFieldType';
@@ -35,19 +35,15 @@ export class DocumentEditionManager {
 
   document_source: string = ''
 
-  toUpdate: DDField[] = []
-
+  // Properties for syncing the data
+  changedFields: DDField[] = []
+  documentChanges:any[] = []
   store: Store<StateInterface> | null = null; // Vuex instance
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onExpiredCB = () => {}
 
-  async update (changes:{[key:string]:any}) {
-    if (!this.store) {
-      // no store to sync data
-      return
-    }
-
+  get storeAction ():string {
     let action
     if (this.isDocument) {
       action = 'setDocument'
@@ -56,8 +52,23 @@ export class DocumentEditionManager {
     } else {
       action = 'doc_filters/setFilteredDocument'
     }
-    let payload = Object.assign({}, changes, { id: this.id })
-    let result = await this.store?.dispatch(action, payload)
+    return action
+  }
+
+  get isDirty ():boolean {
+    return this.changedFields.length > 0 || this.documentChanges.length > 0
+  }
+
+  async saveChanges () {
+    if (!this.store || !this.isDirty) {
+      /* no store to sync data */
+      return
+    }
+    let documentChanges = this.mergeDocumentChanges()
+    let fieldChanges = this.mergeFieldChanges()
+    let changes = Object.assign(documentChanges, { id: this.id, fields: fieldChanges })
+
+    let result = await this.store?.dispatch(this.storeAction, changes)
     if (!result.success) {
       if (this.isFilter && result.filter_expired) {
       // Expired filter
@@ -65,83 +76,57 @@ export class DocumentEditionManager {
       } else {
       // TODO do something with the error
       }
+    } else {
+      this.changedFields = []
+      this.documentChanges = []
     }
   }
 
-  async updateFields (fields:DDField[]) {
-    return this.update({ fields })
+  mergeDocumentChanges () {
+    let merged = {}
+    this.documentChanges.forEach(change => Object.assign(merged, change))
+    return merged
   }
 
-  async updateField (field: DDField) {
-    return this.updateFields([field])
-  }
+  mergeFieldChanges () {
+    let merged = {}
 
-  async deleteField (field: DDField) {
-    let toDelete = field
-
-    // mark deletion
-    this.toUpdate = []
-    this.markForDelete(toDelete)
-
-    // Remove locally and remotely
-    let deleted: DDField[] = []
-    for (let i = 0; i < this.fields.length; i++) {
-      if (this.fields[i].deleted) {
-        deleted.push(this.fields.splice(i--, 1)[0])
+    this.changedFields.forEach((change) => {
+      if (!merged[change.id]) {
+        merged[change.id] = {}
       }
-    }
-
-    // Avoid any local field remaining for update
-    let forUpdate = this.toUpdate.filter(item => !item.deleted)
-    forUpdate = forUpdate.filter((f, index) => index === forUpdate.findIndex(i => i.id === f.id))
-    this.toUpdate = []
-
-    await this.updateFields(deleted.concat(forUpdate))
-  }
-
-  markForDelete (toDelete: DDField) {
-    toDelete.deleted = true
-
-    this.fields.forEach(field => {
-      // Eliminamos cualquier dependencia
-      if (field.dependent?.on === toDelete.id) {
-        field.dependent = null
-        this.toUpdate.push(field)
-      }
-
-      // Eliminamos cualquier referencia embebida
-      if (field.use_embedded && field.embedded_fields?.includes(toDelete.id)) {
-        field.embedded_fields = field.embedded_fields.filter(item => item !== toDelete.id)
-        field.use_embedded = field.embedded_fields.length > 0
-        this.toUpdate.push(field)
-      }
-
-      // Eliminamos cualquier link para replicar
-      if (field.replicate_with === toDelete.id) {
-        field.replicate_with = ''
-        this.toUpdate.push(field)
-      }
-
-      // Hay que eliminar todos los miembros del grupo
-      if (DDField.isGroup(toDelete)) {
-        if (field.group_by === toDelete.id) {
-          this.markForDelete(field)
-        }
-      }
+      Object.assign(merged[change.id], change)
     })
+
+    // The deleted fields can ignore all other changes
+    let changes = Object.keys(merged).map(key => merged[key])
+    changes = changes.map(change => {
+      if (change.deleted) {
+        return { id: change.id, deleted: true }
+      }
+
+      return change
+    })
+
+    return changes
   }
 
-  async addField (field: DDField) {
+  updateDocument (change) {
+    this.documentChanges.push(change)
+  }
+
+  addField (field: DDField) {
     field.sort_index = this.fields.length
-    // Adding a copy so the is_new flag get deleted immediatley
-    let copy = classToClass(field)
-    this.fields.push(copy)
-    field.is_new = true
-
-    await this.updateFields([field])
+    this.fields.push(field)
+    this.addAddedField(field)
   }
 
-  async addFieldAtSortIndex (field: DDField, sort_index: number) {
+  addFieldFromType (type: DDFieldType) {
+    let field = DDField.createFromType(type)
+    this.addField(field)
+  }
+
+  addFieldAtSortIndex (field: DDField, sort_index: number) {
     let indexToInsert = this.fields.findIndex(item => item.sort_index === sort_index)
     let currentIndex = this.fields.findIndex(item => item.id === field.id)
     let forUpdate: any[] = []
@@ -152,22 +137,23 @@ export class DocumentEditionManager {
       let b = currentIndex > indexToInsert ? currentIndex : indexToInsert
 
       for (let i = a; i <= b; i++) {
+        let sortIndex = 0
         if (indexToInsert < currentIndex) {
           // The fields go down
           if (i === b) {
-            this.fields[i].sort_index = this.fields[indexToInsert].sort_index - 1
+            sortIndex = this.fields[indexToInsert].sort_index - 1
           } else {
-            this.fields[i].sort_index += 1;
+            sortIndex = this.fields[i].sort_index + 1
           }
         } else {
           // The fields go up
           if (i === a) {
-            this.fields[i].sort_index = this.fields[b].sort_index
+            sortIndex = this.fields[b].sort_index
           } else {
-            this.fields[i].sort_index -= 1;
+            sortIndex = this.fields[i].sort_index - 1
           }
         }
-        forUpdate.push({ id: this.fields[i].id, sort_index: this.fields[i].sort_index })
+        this.updateField({ id: this.fields[i].id, sort_index: sortIndex })
       }
 
       // Add the field to its correct position
@@ -191,25 +177,86 @@ export class DocumentEditionManager {
           forUpdate.push({ id: this.fields[i].id, sort_index: this.fields[i].sort_index })
         }
       }
+
       // Add the field to its correct position
       this.fields.splice(indexToInsert + 1, 0, field)
-
-      // Preparing to save the new added field
-      let copy = classToClass(field)
-      copy.is_new = true
-      forUpdate.push(copy)
+      this.addAddedField(field)
     }
-
-    await this.updateFields(forUpdate)
   }
 
-  getCleanCopy ():DocumentEditionManager {
+  deleteField (deleted: DDField) {
+    let deleteIndex = this.fields.findIndex(f => f.id === deleted.id)
+    this.fields.splice(deleteIndex, 1)
+
+    // Remove any reference to the deleted field
+    this.fields.forEach(field => {
+      // Deleting any dependency
+      if (field.dependent?.on === deleted.id) {
+        this.updateField({ id: field.id, dependent: null }, field)
+      }
+
+      // Deleting any embed
+      if (field.use_embedded && field.embedded_fields?.includes(deleted.id)) {
+        // TODO delete the embed also from value
+        this.updateField({
+          id: field.id,
+          embedded_fields: field.embedded_fields.filter(item => item !== deleted.id),
+          use_embedded: field.embedded_fields.length > 0
+        }, field)
+      }
+
+      // Delete any "replicate with" reference
+      if (field.replicate_with === deleted.id) {
+        this.updateField({ id: field.id, replicate_with: '' }, field)
+      }
+
+      // If it is a group all the group members are deleted
+      if (DDField.isGroup(deleted)) {
+        if (field.group_by === deleted.id) {
+          this.deleteField(field)
+        }
+      }
+    })
+
+    this.addDeletedField(deleted)
+  }
+
+  addDeletedField (field: DDField) {
+    this.updateField({ id: field.id, deleted: true }, field)
+  }
+
+  addAddedField (field:DDField) {
+    this.updateField(Object.assign({}, field, { is_new: true }))
+  }
+
+  /**
+   *
+   * @param change Change represent the properties that are changing, so we notify only the changes and not all the field.
+   * @param fieldRef If provided all the changes will be reflected in this reference
+   */
+  updateField (change:DDField | any, fieldRef:DDField | null = null) {
+    if (!change.id) {
+      throw new Error('An id should be provided for any field change')
+    }
+
+    if (fieldRef) {
+      // local changes
+      Object.assign(fieldRef, change)
+    }
+
+    // list for remote changes
+    this.changedFields.push(change)
+  }
+
+  getCleanCopy () {
     // Remove any unnecessary data to be send
-    let withoutExtraData: DocumentEditionManager = {} as any
+    let withoutExtraData:{[key:string]:any} = {}
     Object.assign(withoutExtraData, this)
+
     delete withoutExtraData.isTemplate
     delete withoutExtraData.isDocument
-    delete withoutExtraData.toUpdate
+    delete withoutExtraData.changedFields
+    delete withoutExtraData.documentChanges
     delete withoutExtraData.store
 
     return withoutExtraData
@@ -233,19 +280,17 @@ export class DocumentEditionManager {
     let manager = new DocumentEditionManager()
     Object.assign(manager, remote)
 
-    // any array gets copied instead of using the reference that Object.assign gives us
+    // We use this deep copy to avoid any array reference
     Object.keys(manager).forEach(k => {
       if (Array.isArray(manager[k])) {
         manager[k] = manager[k].map(item => Object.assign({}, item))
       }
     })
 
-    manager.toUpdate = []
-    return manager
-  }
+    // Empty changes for the new manager
+    manager.changedFields = []
+    manager.documentChanges = []
 
-  public addFieldFromType (type: DDFieldType) {
-    let field = DDField.createFromType(type)
-    void this.addField(field)
+    return manager
   }
 }

@@ -348,6 +348,9 @@ export class DocumentService {
                 return item
             })
 
+            // Adding the new ones 
+            document.fields = document.fields.concat(toAdd)
+
             // Deleting fields
             toDelete.forEach(item => {
                 let i = document.fields.findIndex(f => f.id === item.id)
@@ -367,9 +370,8 @@ export class DocumentService {
                 document.fields[i] = Object.assign(document.fields[i], item)
             })
 
-            // Saving sorted
+            // Sorting all 
             document.fields = document.fields
-                .concat(toAdd)
                 .sort((a, b) => a.sort_index - b.sort_index)
                 .map((value, index) => {
                     value.sort_index = index

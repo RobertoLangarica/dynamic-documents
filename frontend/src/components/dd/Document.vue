@@ -33,6 +33,15 @@
                color="grey-7"
                label="Descargar" icon="download" @click="onDownload" />
       </div>
+      <div v-if="!isInPrintView" class="fixed-bottom-right q-py-sm q-px-none bg-white column justify-end shadow-1 q-mb-md view-buttons-container">
+        <q-btn
+          flat
+          align="left"
+          label="Guardar"
+          @click="onSaveChanges"
+          icon="save"
+          :color="isDirty ? 'info' : 'grey-7'" />
+      </div>
     </template>
     <q-inner-loading :showing="downloading" />
   </article>
@@ -43,7 +52,6 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
 import IDDView from "src/dynamic-documents/src/core/IDDView";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
-import { throttle } from "underscore/modules/index";
 
 @Component({})
 export default class Document extends Vue {
@@ -69,7 +77,7 @@ export default class Document extends Vue {
   docReady = false;
   creatingNewDocument:boolean = false
   initialName: string = "";
-  downloading:boolean = false
+  downloading:boolean = false;
 
   @Watch('views', { immediate: true })
   onAllowedViewschanged (value:any[], old:any[]) {
@@ -77,6 +85,10 @@ export default class Document extends Vue {
       // Selecting an allowed view
       this.currentView = value.length ? value[0].value : IDDView.PRINT
     }
+  }
+
+  get isDirty () {
+    return this.manager.isDirty
   }
 
   get isInEditView () {
@@ -101,7 +113,7 @@ export default class Document extends Vue {
 
   set name (value) {
     this.manager.name = value;
-    this.updateDocument({ name: value }, this.manager)// Sending only the data that changed
+    this.updateDocument({ name: value })// Sending only the data that changed
   }
 
   beforeDestroy () {
@@ -195,20 +207,18 @@ export default class Document extends Vue {
     void this.manager.addFieldAtSortIndex(params.field, params.index);
   }
 
-  // Avoiding overflow of update calls
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  updateDocument: (changes:{[key:string]:any}, manager) => void = throttle(
-    (changes, manager) => {
-      manager.update(changes)
-    },
-    this.debounce,
-    { leading: false }
-  );
+  updateDocument (changes:{[key:string]:any}) {
+    this.manager.updateDocument(changes)
+  }
+
+  onSaveChanges () {
+    void this.manager.saveChanges()
+  }
 
   /**
-   * @return The id assigned to the document
+   * @return A copy of the created document
    */
-  async saveAsNew ():string {
+  async saveAsNew () {
     // Letting the manager to know the store so it can save and update anything
     this.manager.store = this.$store;
     await this.manager.saveAsNew()

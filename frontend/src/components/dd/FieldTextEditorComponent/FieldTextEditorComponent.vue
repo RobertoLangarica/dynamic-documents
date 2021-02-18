@@ -27,7 +27,6 @@ import {
 } from "tiptap";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { findChildren } from "prosemirror-utils";
-import { throttle } from "underscore/modules/index";
 import {
   BulletList,
   Heading,
@@ -141,15 +140,9 @@ export default class FieldTextEditorComponent extends Vue {
     this.notifyUpdate(changes);
   }
 
-  // Avoiding overflow of update calls
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  notifyUpdate: (field: DDField) => void = throttle(
-    (field) => {
-      this.$root.$emit("f-update", field);
-    },
-    this.debounce,
-    { leading: false }
-  );
+  notifyUpdate (field: DDField) {
+    this.$root.$emit("f-update", field);
+  }
 
   addEmbeddedField (command) {
     this.$q

@@ -75,8 +75,7 @@ import Component from "vue-class-component";
 import { QDialog } from "quasar";
 import { Prop } from "vue-property-decorator";
 import {
-  DDField,
-  FDataReplication
+  DDField
 } from "src/dynamic-documents/src/core/DDField";
 @Component({})
 export default class FieldConfigDialog extends Vue {
@@ -114,8 +113,6 @@ export default class FieldConfigDialog extends Vue {
     keys.forEach(key => {
       if (data[key] !== this.field[key]) {
         toUpdate[key] = data[key]
-
-        // TODO Remove the next line and enhance the reactive edition
         this.field[key] = toUpdate[key]
       }
     })
