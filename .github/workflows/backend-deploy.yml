@@ -180,7 +180,14 @@ jobs:
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
-          "cd "$REMOTE_DIR"/backend && npm install --production"
+          "cd "$REMOTE_DIR"/backend && npm install --only=prod --no-optional"
+      
+      - name: Installing optional production dependencies on remote server
+        run: |
+          eval `ssh-agent`
+          ssh-add - <<< "${{secrets.DO_KEY}}"
+          ssh "$SERVER" \
+          "cd "$REMOTE_DIR"/backend && npm install --only=prod"
 
       - name: Installing development dependencies on remote server
         run: |
