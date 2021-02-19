@@ -47,25 +47,40 @@ jobs:
   build:
     needs: migration
     runs-on: ubuntu-latest
+
+    # Service containers to run with `container-job`
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
+
     env:
       SERVER: fid@68.183.171.182
+
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "12.x"
+
       # Setting the stage based on the branch
       - name: Set stage
         run: |
           BRANCH=$(echo $GITHUB_REF | rev | cut -d "/" -f 1 | rev) \
-          && echo "::set-env name=BRANCH::$BRANCH"
+          && echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+
       # RELEASE values
       - name: Release values
         run: |
-          echo "::set-env name=REMOTE_DIR::~/dd/production" \
-          && echo "::set-env name=PROCESS_NAME::DD_production"
+          echo "REMOTE_DIR=~/dd/production" >> $GITHUB_ENV \
+          && echo "PROCESS_NAME=DD_production" >> $GITHUB_ENV
         if: env.BRANCH == 'release_back'
       # STAGING values
       - name: Staging values
         run: |
-          echo "::set-env name=REMOTE_DIR::~/dd/staging" \
-          && echo "::set-env name=PROCESS_NAME::DD_staging"
+          echo "REMOTE_DIR=~/dd/staging" >> $GITHUB_ENV \
+          && echo "PROCESS_NAME=DD_staging" >> $GITHUB_ENV
         if: env.BRANCH == 'staging_back'
 
       - name: Adding SSH basics
@@ -87,11 +102,15 @@ jobs:
       - name: Checkout last project version
         uses: actions/checkout@v2
 
-      # Performs a clean installation of all dependencies in the `package.json` file
-      # For more information, see https://docs.npmjs.com/cli/ci.html
-      - name: Install dependencies
+      - name: Recover npm cache
+        uses: actions/cache@v1
+        with:
+          path: ./backend/node_modules
+          key: ${{ hashFiles('package.json') }}
+
+      - name: Install npm dependencies
         working-directory: ./backend
-        run: npm ci
+        run: npm install
 
       - name: Build latest version
         working-directory: ./backend
@@ -121,18 +140,19 @@ jobs:
       - name: Set stage
         run: |
           BRANCH=$(echo $GITHUB_REF | rev | cut -d "/" -f 1 | rev) \
-          && echo "::set-env name=BRANCH::$BRANCH"
+          && echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+
       # RELEASE values
       - name: Release values
         run: |
-          echo "::set-env name=REMOTE_DIR::~/dd/production" \
-          && echo "::set-env name=PROCESS_NAME::DD_production"
+          echo "REMOTE_DIR=~/dd/production" >> $GITHUB_ENV \
+          && echo "PROCESS_NAME=DD_production" >> $GITHUB_ENV
         if: env.BRANCH == 'release_back'
       # STAGING values
       - name: Staging values
         run: |
-          echo "::set-env name=REMOTE_DIR::~/dd/staging" \
-          && echo "::set-env name=PROCESS_NAME::DD_staging"
+          echo "REMOTE_DIR=~/dd/staging" >> $GITHUB_ENV \
+          && echo "PROCESS_NAME=DD_staging" >> $GITHUB_ENV
         if: env.BRANCH == 'staging_back'
 
       - name: Checkout last project version
@@ -169,7 +189,7 @@ jobs:
           ssh "$SERVER" \
           "cd "$REMOTE_DIR"/backend && npm install --only=dev"
 
-      - name: Run DB migrations
+      - name: Run DB migrations on remote server
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
