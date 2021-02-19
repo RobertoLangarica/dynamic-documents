@@ -53,20 +53,21 @@ jobs:
           key: ${{ hashFiles('frontend/package.json') }}
 
       - name: Installing npm dependencies
-        run: |
-          cd frontend
-          npm install
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Avoiding eslint
+        working-directory: ./frontend
+        run: echo /src >> .eslintignore
 
       - name: Build release
-        run: |
-          cd frontend
-          npm run build-production
+        working-directory: ./frontend
+        run: npm run build-production
         if: env.BRANCH == 'release_front'
 
       - name: Build staging
-        run: |
-          cd frontend
-          npm run build-staging
+        working-directory: ./frontend
+        run: npm run build-staging
         if: env.BRANCH == 'staging_front'
       
       - name: Sending build via ssh + scp
