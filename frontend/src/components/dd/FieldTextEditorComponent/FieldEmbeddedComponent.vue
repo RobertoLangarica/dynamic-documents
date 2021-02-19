@@ -1,5 +1,5 @@
 <template>
-  <div class="embeded_container row items-center">
+  <div class="embeded_container row items-center" :class="{'selected':selected}">
     <!-- EDIT MODE -->
     <template v-if="!readonly">
       <q-btn icon="drag_indicator" flat round size="sm" dense class="cursor-drag hide-selection" color="grey" />
@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { EFieldComponentID } from "src/dynamic-documents/src/core/DDFieldType";
 import { Editor, EditorContent, Node } from "tiptap";
@@ -48,6 +48,46 @@ export default class FieldEmbeddedComponent extends Vue {
 
   showTransforms = false
   editor: Editor = {};
+  selected:boolean = false
+
+  @Watch('view.state.selection')
+  onSelectionChange (value, old) {
+    if (!value.empty) {
+      this.selected = this.isSelected(value.content())
+    } else {
+      this.selected = false
+    }
+  }
+
+  isSelected = (slice) => {
+    const containsMe = (node) => {
+      if (!node.type) {
+        // Not a Node
+        return false
+      }
+
+      if (node.type.name === 'field_embedded') {
+        if (node.attrs.field_id === this.field_id) {
+          return true
+        }
+      }
+      // continue searching on the Fragment
+      for (let i = 0; i < node.content.content.length; i++) {
+        if (containsMe(node.content.content[i])) {
+          return true
+        }
+      }
+      return false
+    }
+
+    for (let i = 0; i < slice.content.content.length; i++) {
+      if (containsMe(slice.content.content[i])) {
+        return true
+      }
+    }
+
+    return false
+  }
 
   get field_id (): string {
     return this.node.attrs.field_id;
@@ -149,9 +189,6 @@ export default class FieldEmbeddedComponent extends Vue {
 
     }
   }
-  .q-badge {
-    line-height: 1;
-  }
   > * {
     user-select: none;
   }
@@ -161,4 +198,11 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 }
 
+.selected {
+  background-color: #31CCEC;
+  .component-name {
+    background-color: #299cb3;
+    color: white;
+  }
+}
 </style>
