@@ -28,6 +28,10 @@ export default class Creation extends mixins(EmbedMixin) {
           let document = await this.$refs.doc_creation.saveAsNew()
           this.sendMessage('created', document)
           break;
+        case 'save':
+          /* Saving */
+          await this.$refs.doc_creation.onSaveChanges()
+          break;
         default:
           if (!handled) {
             console.log(`Unrecognized event->${message}`)
