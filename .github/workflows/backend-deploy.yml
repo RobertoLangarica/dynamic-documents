@@ -180,21 +180,14 @@ jobs:
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
-          "cd "$REMOTE_DIR"/backend && NODE_OPTIONS=--max_old_space_size=1000; npm install --only=prod --no-optional && NODE_OPTIONS= "
+          "cd "$REMOTE_DIR"/backend && npm install --only=prod"
       
-      - name: Installing optional production dependencies on remote server
-        run: |
-          eval `ssh-agent`
-          ssh-add - <<< "${{secrets.DO_KEY}}"
-          ssh "$SERVER" \
-          "cd "$REMOTE_DIR"/backend && NODE_OPTIONS=--max_old_space_size=1000; npm install --only=prod && NODE_OPTIONS= "
-
       - name: Installing development dependencies on remote server
         run: |
           eval `ssh-agent`
           ssh-add - <<< "${{secrets.DO_KEY}}"
           ssh "$SERVER" \
-          "cd "$REMOTE_DIR"/backend && NODE_OPTIONS=--max_old_space_size=1000; npm install --only=dev NODE_OPTIONS= "
+          "cd "$REMOTE_DIR"/backend && npm install --only=dev"
 
       - name: Run DB migrations on remote server
         run: |
