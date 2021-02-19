@@ -137,6 +137,10 @@ export default class FieldTextEditorComponent extends Vue {
       value: event.getHTML()
     } as DDField;
     Object.assign(changes, embedChanges);
+
+    // Apply local changes
+    Object.assign(this.field, changes)
+
     this.notifyUpdate(changes);
   }
 
