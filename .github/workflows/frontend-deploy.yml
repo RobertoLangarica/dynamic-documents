@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ./frontend/node_modules
-          key: ${{ hashFiles('package.json') }}
+          key: ${{ hashFiles('frontend/package.json') }}
 
       - name: Installing npm dependencies
         run: |

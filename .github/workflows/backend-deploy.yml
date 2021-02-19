@@ -106,7 +106,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ./backend/node_modules
-          key: ${{ hashFiles('package.json') }}
+          key: ${{ hashFiles('backend/package.json') }}
 
       - name: Install npm dependencies
         working-directory: ./backend
