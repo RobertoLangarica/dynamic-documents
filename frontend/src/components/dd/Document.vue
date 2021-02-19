@@ -13,7 +13,7 @@
       />
     </div>
     <template v-if="docReady">
-      <div v-if="views.length > 0" class="fixed-top-right q-py-sm q-px-none bg-white column justify-end shadow-1 q-mt-md view-buttons-container">
+      <div class="fixed-top-right q-py-sm q-px-none bg-white column justify-end shadow-1 q-mt-md view-buttons-container">
         <q-btn
           flat align="left"
           :color="view.value === currentView ? 'info' : 'grey-7'"
@@ -32,15 +32,13 @@
                flat align="left"
                color="grey-7"
                label="Descargar" icon="download" @click="onDownload" />
-      </div>
-      <div v-if="!isInPrintView" class="fixed-bottom-right q-py-sm q-px-none bg-white column justify-end shadow-1 q-mb-md view-buttons-container">
-        <q-btn
-          flat
-          align="left"
-          label="Guardar"
-          @click="onSaveChanges"
-          icon="save"
-          :color="isDirty ? 'info' : 'grey-7'" />
+        <q-btn v-if="!isInPrintView && !creatingNewDocument"
+               flat
+               align="left"
+               label="Guardar"
+               @click="onSaveChanges"
+               icon="save"
+               :color="isDirty ? 'info' : 'grey-7'" />
       </div>
     </template>
     <q-inner-loading :showing="downloading" />
@@ -78,6 +76,7 @@ export default class Document extends Vue {
   creatingNewDocument:boolean = false
   initialName: string = "";
   downloading:boolean = false;
+  saving:boolean = false;
 
   @Watch('views', { immediate: true })
   onAllowedViewschanged (value:any[], old:any[]) {
@@ -211,8 +210,12 @@ export default class Document extends Vue {
     this.manager.updateDocument(changes)
   }
 
-  onSaveChanges () {
-    void this.manager.saveChanges()
+  async onSaveChanges () {
+    this.$root.$emit('send_message', { message: 'saving' })
+    this.saving = true
+    await this.manager.saveChanges()
+    this.saving = false
+    this.$root.$emit('send_message', { message: 'saved' })
   }
 
   /**
