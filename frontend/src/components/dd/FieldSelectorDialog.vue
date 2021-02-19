@@ -56,22 +56,26 @@ export default class FieldSelectorDialog extends Vue {
       let groups:{[key:string] : IFieldItem;} = {}
       let sortedGroups:IFieldItem[] = []
       this.items = []
+      let defaultGroup:IFieldItem = { name: '', fields: [], group: true, key: 'pending' }
 
       this.fields.forEach(f => {
         if (DDField.isGroup(f)) {
           // the group could exists before this field since it is referenced by other fields
           if (!groups[f.id]) {
-            groups[f.id] = { name: '', fields: [], group: true }
+            groups[f.id] = Object.assign({}, defaultGroup) as any
           }
+
           groups[f.id].name = f.name
+          groups[f.id].key = f.id
+
           sortedGroups.push(groups[f.id])
-        } else if (!f.group_by || f.group_by === '') {
+        } else if (!f.group_by) {
           general.fields!.push({ name: f.name, field: f, group: false, selected: false, key: f.id })
         } else {
           let g = f.group_by
 
           if (!groups[g]) {
-            groups[g] = { name: '', fields: [], group: true }
+            groups[f.id] = Object.assign({}, defaultGroup) as any
           }
           groups[g].fields!.push({ name: f.name, field: f, group: false, selected: false, key: f.id })
         }

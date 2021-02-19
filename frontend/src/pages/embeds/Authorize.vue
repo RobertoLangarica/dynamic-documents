@@ -1,14 +1,16 @@
-<template />
+<template>
+  <span />
+</template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 
 import EmbedMixin from './EmbedMixin'
 
 @Component({})
 export default class Authorize extends mixins(EmbedMixin) {
-  handleMessages (message, data) {
+  handleMessages (message, data:{[key:string]:any}) {
     // This override prevents any handling from the mixin
     switch (message) {
       case 'authorize':

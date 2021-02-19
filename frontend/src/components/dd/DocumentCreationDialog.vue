@@ -16,7 +16,6 @@
   </q-dialog>
 </template>
 
-
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -26,30 +25,30 @@ import { QDialog } from "quasar";
 export default class DocumentCreationDialog extends Vue {
   doc_name: string = "";
 
-  show() {
+  show () {
     (this.$refs.dialog as QDialog).show();
   }
 
-  hide() {
+  hide () {
     (this.$refs.dialog as QDialog).hide();
   }
 
-  onDialogHide() {
+  onDialogHide () {
     // required to be emitted
     // when QDialog emits "hide" event
     this.$emit("hide");
   }
 
-  async onAdd() {
+  async onAdd () {
     await this.$store.dispatch("addDocument", {
       name: this.doc_name,
-      description: this.doc_name,
+      description: this.doc_name
     });
     this.$emit("ok");
     this.hide();
   }
 
-  onCancel() {
+  onCancel () {
     this.hide();
   }
 }

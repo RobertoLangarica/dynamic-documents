@@ -135,8 +135,9 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 
   get field (): DDField {
-    return this.$parent.$attrs.fields.find(
-      (f) => f.id === this.field_id
+    // @ts-ignore
+    return (this.fields as any[]).find(
+      (f:{[key:string]:any}) => f.id === this.field_id
     ) as DDField;
   }
 

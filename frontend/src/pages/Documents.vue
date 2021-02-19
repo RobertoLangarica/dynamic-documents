@@ -39,11 +39,11 @@ import DocumentCreationDialog from "components/dd/DocumentCreationDialog.vue";
 
 @Component({ components: { DocumentCreationDialog } })
 export default class Documents extends Vue {
-  mounted() {
+  mounted () {
     void this.$store.dispatch("getDocuments");
   }
 
-  onAddDocument() {
+  onAddDocument () {
     this.$q.dialog({ component: DocumentCreationDialog, parent: this });
   }
 }

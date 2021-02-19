@@ -18,6 +18,10 @@ export default class EmbedMixin extends Vue {
     exists:boolean = true
     ready:boolean = false
 
+    get docRef (): Vue {
+      return this.$refs[this.doc_ref_identifier] as Vue
+    }
+
     mounted () {
       // This hook is called before the component hook
       if (this.auth) {
@@ -28,9 +32,9 @@ export default class EmbedMixin extends Vue {
       this.$root.invisibleDialogs = true
       this.$root.$on('send_message', this.onSendMessage.bind(this))
       window.addEventListener("message", this.onEventMessageReceived.bind(this), false);
-      if (this.$refs[this.doc_ref_identifier]) {
-        this.$refs[this.doc_ref_identifier].$on('mount_ready', this.onDocReady.bind(this))
-        this.$refs[this.doc_ref_identifier].$on('loaded_document', this.onDocLoaded.bind(this))
+      if (this.docRef) {
+        this.docRef.$on('mount_ready', this.onDocReady.bind(this))
+        this.docRef.$on('loaded_document', this.onDocLoaded.bind(this))
       }
     }
 
@@ -39,9 +43,9 @@ export default class EmbedMixin extends Vue {
       this.$root.$off('send_message')
       window.removeEventListener('message', this.onEventMessageReceived.bind(this))
 
-      if (this.$refs[this.doc_ref_identifier]) {
-        this.$refs[this.doc_ref_identifier].$off('mount_ready')
-        this.$refs[this.doc_ref_identifier].$off('loaded_document')
+      if (this.docRef) {
+        this.docRef.$off('mount_ready')
+        this.docRef.$off('loaded_document')
       }
     }
 
@@ -82,8 +86,8 @@ export default class EmbedMixin extends Vue {
           break;
         case 'get_fields':
           handled = true
-          if (this.$refs[this.doc_ref_identifier]) {
-            let fields = this.$refs[this.doc_ref_identifier].getFields()
+          if (this.docRef) {
+            let fields = (this.docRef as any).getFields()
             this.sendMessage('set_fields', fields)
           }
           break;
@@ -121,8 +125,8 @@ export default class EmbedMixin extends Vue {
 
     onDocReady () {
       this.$nextTick(() => {
-        let el = this.$refs[this.doc_ref_identifier].$el
-        this.sendMessage('dd_resize', { width: Math.max(el.scrollWidth, el.offsetWidth), height: Math.max(el.scrollHeight, el.offsetHeight) })
+        let el = this.docRef.$el
+        this.sendMessage('dd_resize', { width: Math.max(el.scrollWidth, (el as any).offsetWidth), height: Math.max(el.scrollHeight, (el as any).offsetHeight) })
         this.ready = true
       })
     }

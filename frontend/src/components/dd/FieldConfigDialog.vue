@@ -109,7 +109,7 @@ export default class FieldConfigDialog extends Vue {
   updateFromOutside (data) {
     // filter only those fields with real changes
     let keys = Object.keys(data)
-    let toUpdate = {}
+    let toUpdate:{[key:string]:any} = {}
     keys.forEach(key => {
       if (data[key] !== this.field[key]) {
         toUpdate[key] = data[key]
