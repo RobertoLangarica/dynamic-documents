@@ -1,17 +1,34 @@
-name: Frontend-STAGING deployment
+name: Frontend-DEPLOY
 
 # Trigger on push filter by branch
 on:
   push:
     branches:
+      - release_front
       - staging_front
 jobs:
   front_build:
     runs-on: ubuntu-latest
     env:
       SERVER: fid@68.183.171.182
-      REMOTE_DIR: ~/dd/staging
     steps:
+      # Setting the stage based on the branch
+      - name: Set stage
+        run: |
+          BRANCH=$(echo $GITHUB_REF | rev | cut -d "/" -f 1 | rev) \
+          && echo "::set-env name=BRANCH::$BRANCH"
+      # RELEASE values
+      - name: Release values
+        run: |
+          echo "::set-env name=REMOTE_DIR::~/dd/production"
+        if: env.BRANCH == 'release_front'
+      
+      # STAGING values
+      - name: Staging values
+        run: |
+          echo "::set-env name=REMOTE_DIR::~/dd/staging"
+        if: env.BRANCH == 'staging_front'
+
       - uses: actions/checkout@v2
       - name: Getting latest version
         run: git checkout
@@ -19,10 +36,19 @@ jobs:
         run: |
           cd frontend
           npm install
-      - name: Build
+
+      - name: Build release
+        run: |
+          cd frontend
+          npm run build-production
+        if: env.BRANCH == 'release_front'
+
+      - name: Build staging
         run: |
           cd frontend
           npm run build-staging
+        if: env.BRANCH == 'staging_front'
+      
       - name: Sending build via ssh + scp
         run: |
           eval `ssh-agent`
