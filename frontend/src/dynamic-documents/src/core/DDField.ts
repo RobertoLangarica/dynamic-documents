@@ -53,9 +53,6 @@ export class DDField {
   // Used when this field is result of a copy from a template/document
   source_field?: string
 
-  // Used when this field is result of a copy from a template/document
-  source_document?: string
-
   // Id del grupo al que pertenece
   group_by?: string
 
@@ -78,10 +75,6 @@ export class DDField {
   show_in_capture: boolean = true
 
   show_in_print: boolean = true
-
-  capture_styles: string[] = []
-
-  print_styles: string[] = []
 
   sort_index: number = 0
 

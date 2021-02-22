@@ -6,7 +6,7 @@ import { DDCategory } from "./DDCategory"
 
 export class DDDocument extends DDTemplateBaseEntity {
     // Null if this document wasn't created as a copy of a document
-    document_source: string | null = null
+    source_id: string | null = null
 
     @Type(() => DDStatus)
     status: DDStatus = new DDStatus()

@@ -39,12 +39,12 @@ export class DocumentDto {
     @IsEmpty() @ApiHideProperty()
     @Type(() => Status)
     status: Status
-    
+
     @IsEmpty() @ApiHideProperty()
     is_template: boolean
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
-    document_source: string
+    source_id: string
 }
 
 export class CreateDocumentDto {
@@ -84,5 +84,5 @@ export class CreateDocumentDto {
     is_template: boolean
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
-    document_source: string
+    source_id: string
 }

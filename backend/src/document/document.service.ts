@@ -71,13 +71,6 @@ export class DocumentService {
         return c > 0
     }
 
-    async getIDFromName(name: string) {
-        return await this.doc_repo.createQueryBuilder('d')
-            .select('d.id')
-            .where('d.name = :name', { name: name })
-            .getOne()
-    }
-
     async deleteDocument(id: string) {
         let toDelete = await this.doc_repo.findOne(id)
 
@@ -117,7 +110,7 @@ export class DocumentService {
         let document = await this.doc_repo.create(data)
 
         // Read the template
-        let template = await this.findById(document.document_source, false)
+        let template = await this.findById(document.source_id, false)
         
         // TODO any field passed will be ignored, maybe we could do a merge
         document.fields = []
@@ -130,7 +123,8 @@ export class DocumentService {
         // The sorting order of the copied fields is probably not the original one
         let sorted: Field[] = []
         template.fields.forEach(src => {
-            sorted.push(document.fields.find(f => f.source_field === src.id)!)
+            let field = document.fields.find(f => f.source_field === src.id)!
+            field.sort_index = sorted.push(field)-1
         })
 
         document.fields = sorted
@@ -170,7 +164,6 @@ export class DocumentService {
         // Any relation is set to blank
         field.use_embedded = false
         delete field.dependent
-        delete field.source_document
         delete field.group_by
         delete field.embedded_fields
         delete field.replicate_with
@@ -186,9 +179,8 @@ export class DocumentService {
    *
    * @param {*} idToCopy UUID
    * @param {*} source Document
-   * @param {*} includeGroupChildren true: The copy include the children, false: No children is copied with this action
    */
-    async copyField(document: Document, idToCopy: string, source: Document, includeGroupChildren = false) {
+    async copyField(document: Document, idToCopy: string, source: Document) {
         let sourceField: Field | undefined
         let field: Field
 
@@ -208,11 +200,7 @@ export class DocumentService {
         // Copy the field
         field = this.simpleFieldCopy(sourceField)
 
-
-        field.source_document = source.id
-
         // Adding the copy before any deep copy (to avoid circular references)
-        field.sort_index = document.fields.length
         document.fields.push(field)
 
         // Dependent
@@ -229,7 +217,7 @@ export class DocumentService {
 
         // Group
         if (isNotEmpty(sourceField.group_by)) {
-            // the group should be copied
+            // the group this field belongs to should be copied
             let ref = this.getReferencedField(document, sourceField.group_by!)
             if (!ref) {
                 await this.copyField(document, sourceField.group_by!, source)
@@ -251,7 +239,7 @@ export class DocumentService {
 
                 field.embedded_fields.push(ref!.id)
 
-                // TODO validate if this works for every embedded case
+                // Replacing the ids in the embedded value, for the new copied ids
                 let regexp = new RegExp(item, 'gi')
                 field.value = String(field.value).replace(regexp, ref!.id)
             }
@@ -269,8 +257,8 @@ export class DocumentService {
             field.replicate_with = ref!.id
         }
 
-        // Include group members in the copy
-        if (includeGroupChildren && this.isGroup(field)) {
+        // If the field is a group then include group members in the copy
+        if (this.isGroup(field)) {
             let inGroup = source.fields.filter(item => item.group_by === sourceField!.id)
 
             for (let i = 0; i < inGroup.length; i++) {
@@ -281,9 +269,7 @@ export class DocumentService {
                     ref = this.getReferencedField(document, item.id)
                 }
 
-                if (ref!.group_by !== field.id) {
-                    ref!.group_by = field.id
-                }
+                ref!.group_by = field.id
             }
         }
     }

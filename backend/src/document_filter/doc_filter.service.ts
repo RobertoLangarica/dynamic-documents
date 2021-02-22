@@ -23,7 +23,7 @@ export class DocumentFilterService {
         let query = this.filter_repo.createQueryBuilder('f')
 
         if (document_query) {
-            query.andWhere("(f.document = :d)", { d: document_query })
+            query.andWhere("(f.document_id = :d)", { d: document_query })
         }
 
         if (expired !== undefined) {
@@ -44,7 +44,7 @@ export class DocumentFilterService {
     }
 
     async addFilter(data: CreateDocFilterDto, owner: User): Promise<DocumentFilter> {
-        data.owner = owner.id
+        data.owner_id = owner.id
         let filter = await this.filter_repo.create(data)
 
         try {
@@ -95,7 +95,7 @@ export class DocumentFilterService {
     }
 
     async expireFromDoc(doc_id: string) {
-        let filters = await this.filter_repo.find({ document: doc_id, expired: false })
+        let filters = await this.filter_repo.find({ document_id: doc_id, expired: false })
         filters.forEach(f => f.expired = true)
 
         await this.filter_repo.save(filters)
@@ -103,7 +103,7 @@ export class DocumentFilterService {
 
     async getFilteredDocument(id: string) {
         let filter = await this.filter_repo.findOneOrFail(id)
-        let document = await this.doc_service.findById(filter.document)
+        let document = await this.doc_service.findById(filter.document_id)
 
         filter.fields = plainToClass(FilterField, filter.fields, { excludeExtraneousValues: true })
 
@@ -147,7 +147,7 @@ export class DocumentFilterService {
 
     async saveFilteredDocument(id: string, data: CaptureDto) {
         let filter = await this.filter_repo.findOneOrFail(id)
-        let document = await this.doc_service.findById(filter.document, true)
+        let document = await this.doc_service.findById(filter.document_id, true)
 
         filter.fields = plainToClass(FilterField, filter.fields, { excludeExtraneousValues: true })
         data.fields = data.fields.map(f=>{

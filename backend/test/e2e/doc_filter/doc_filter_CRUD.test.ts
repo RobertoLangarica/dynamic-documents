@@ -10,11 +10,11 @@ import { DocumentFilter } from 'src/document_filter/doc_filter.entity'
 const main_route = 'filters'
 const main_table = 'document_filters'
 
-const getRandomFilter = async (suite: Suite) => {
+const getRandomFilter = async (suite: Suite):Promise<{name:string, document_id:string, owner_id:string, id?:string}> => {
     return {
         name: `s_${Math.round(Math.random() * 999999999)}`,
-        document: await getRandomDocumentID(suite),
-        owner: await getUserID(suite)
+        document_id: await getRandomDocumentID(suite),
+        owner_id: await getUserID(suite)
     }
 }
 
@@ -175,7 +175,7 @@ export let DocF_UpdateDuplicatedName = async (suite: Suite) => {
 
 export let DocF_Update = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
-    let item: any = await getRandomFilter(suite)
+    let item = await getRandomFilter(suite)
 
     // Insert
     item = await suite.runner.manager.save(suite.runner.manager.create(DocumentFilter, item))
@@ -183,7 +183,7 @@ export let DocF_Update = async (suite: Suite) => {
     // Update with new info
     let change = await getRandomFilter(suite)
     //Owner shouldn't be sent
-    delete change.owner
+    delete change.owner_id
     await request(suite.app.getHttpServer())
         .patch(`/api/${main_route}/${item.id}`)
         .set({ 'Authorization': `Bearer ${token}` })
@@ -191,7 +191,7 @@ export let DocF_Update = async (suite: Suite) => {
         .expect(HttpStatus.OK)
         .expect(res => {
             // Owner should be retrieved
-            change.owner = item.owner
+            change.owner_id = item.owner_id
             expect(res.body).toMatchObject(change)
         })
 }
@@ -210,7 +210,7 @@ export let DocF_CreateIncomplete = async (suite: Suite) => {
 
     // Without document
     item = await getRandomFilter(suite)
-    delete item.document
+    delete item.document_id
     await request(suite.app.getHttpServer())
         .post(`/api/${main_route}/`)
         .set({ 'Authorization': `Bearer ${token}` })
@@ -220,11 +220,11 @@ export let DocF_CreateIncomplete = async (suite: Suite) => {
 
 export let DocF_Create = async (suite: Suite) => {
     let token = await getValiduserToken(suite)
-    let item: any = await getRandomFilter(suite)
+    let item = await getRandomFilter(suite)
 
     //Owner shouldn't be sent
-    let owner = item.owner
-    delete item.owner
+    let owner = item.owner_id
+    delete item.owner_id
     await request(suite.app.getHttpServer())
         .post(`/api/${main_route}/`)
         .set({ 'Authorization': `Bearer ${token}` })
@@ -232,7 +232,7 @@ export let DocF_Create = async (suite: Suite) => {
         .expect(HttpStatus.CREATED)
         .expect(res => {
             // Owner should be retrieved
-            item.owner = owner
+            item.owner_id = owner
             expect(res.body).toMatchObject(item)
         })
 }
@@ -245,7 +245,7 @@ export let DocF_CreateDuplicated = async (suite: Suite) => {
     await suite.runner.manager.save(suite.runner.manager.create(DocumentFilter, item))
 
     //Owner shouldn't be sent
-    delete item.owner
+    delete item.owner_id
     await request(suite.app.getHttpServer())
         .post(`/api/${main_route}/`)
         .set({ 'Authorization': `Bearer ${token}` })

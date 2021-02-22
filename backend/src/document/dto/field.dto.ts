@@ -81,10 +81,6 @@ export class Field {
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
     @Expose()
-    source_document: string // Used when this field is result of a copy from other
-
-    @IsOptional() @IsUUID() @ApiPropertyOptional()
-    @Expose()
     group_by: string //Id del grupo al que pertenece
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
@@ -116,14 +112,6 @@ export class Field {
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
     @Expose()
     show_in_print: boolean
-
-    @IsOptional() @IsArray() @ApiPropertyOptional()
-    @Expose()
-    capture_styles: string[]
-
-    @IsOptional() @IsArray() @ApiPropertyOptional()
-    @Expose()
-    print_styles: string[]
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
     @Expose()

@@ -26,7 +26,7 @@ export class DocumentFilter extends EntityWithTimeStampt {
     name: string
 
     @Column({ type: 'uuid' }) @IsUUID()
-    document: string
+    document_id: string
 
     @Column({ type: 'timestamptz', nullable: true, default: null })
     @Transform(params => new Date(Date.parse(params.value)).toISOString(), { toClassOnly: true })
@@ -36,7 +36,7 @@ export class DocumentFilter extends EntityWithTimeStampt {
     description: string
 
     @Column({ type: 'uuid' }) @IsUUID()
-    owner: string
+    owner_id: string
 
     @Column({ type: 'jsonb', default: [] })
     @Type(() => FilterField) @IsArray()

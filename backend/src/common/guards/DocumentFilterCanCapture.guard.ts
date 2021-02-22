@@ -23,7 +23,7 @@ export class DocumentFilterCanCaptureGuard implements CanActivate {
         let doc_repo = this.doc_service.doc_repo;
 
         let filter = await filter_repo.createQueryBuilder('f')
-            .select(['f.id', 'f.document'])
+            .select(['f.id', 'f.document_id'])
             .where("f.id = :id", { id: id })
             .getOne()
 
@@ -34,7 +34,7 @@ export class DocumentFilterCanCaptureGuard implements CanActivate {
         let document = await doc_repo.createQueryBuilder('d')
             .select('d.id')
             .leftJoinAndSelect('d.status', 's')
-            .where("d.id = :id", { id: filter.document })
+            .where("d.id = :id", { id: filter.document_id })
             .getOne()
 
         if (!document) {

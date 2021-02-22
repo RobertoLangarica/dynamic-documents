@@ -9,7 +9,7 @@ export class DocFilterDto {
     name: string
 
     @IsOptional() @IsString() @ApiPropertyOptional({ description: "Name or UUID accepted" })
-    document: string
+    document_id: string
 
     @IsOptional() @IsDateString() @ApiPropertyOptional({ description: 'UTC ISO string' })
     expiration_date: string
@@ -18,7 +18,7 @@ export class DocFilterDto {
     description: string
 
     @IsEmpty() @ApiHideProperty()
-    owner: string
+    owner_id: string
 
     @IsOptional() @IsArray() @ApiPropertyOptional()
     @Type(() => FilterField)
@@ -33,7 +33,7 @@ export class CreateDocFilterDto {
     name: string
 
     @IsNotEmpty() @IsString() @ApiProperty({ description: "Name or UUID accepted" })
-    document: string
+    document_id: string
 
     @IsOptional() @IsDateString() @ApiPropertyOptional({ description: 'UTC ISO string' })
     expiration_date: string
@@ -42,7 +42,7 @@ export class CreateDocFilterDto {
     description: string
 
     @IsEmpty() @ApiHideProperty()
-    owner: string
+    owner_id: string
 
     @IsOptional() @IsArray() @ApiPropertyOptional()
     @Type(() => FilterField)

@@ -4,6 +4,7 @@ import { IsUUID, IsString } from "class-validator";
 @Entity('template_types')
 @Unique(['name'])
 export class TemplateType {
+
     @PrimaryGeneratedColumn('uuid') @IsUUID()
     id: string;
 

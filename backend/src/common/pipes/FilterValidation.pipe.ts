@@ -1,6 +1,4 @@
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from "@nestjs/common";
-import { plainToClass } from "class-transformer";
-import { FilterField } from "src/document_filter/doc_filter.entity";
 import { DocumentService } from "src/document/document.service";
 import { isUUID } from "class-validator";
 
@@ -14,20 +12,14 @@ export class FilterValidationPipe implements PipeTransform {
             return value
         }
 
-        // Avoiding unexisting documents
-        if (value.document) {
-            if (isUUID(value.document)) {
-                if (!await this.doc_service.exists(value.document)) {
-                    throw new BadRequestException(`There is no matching document with the UUID: ${value.document}`)
+        if (value.document_id) {
+            if (isUUID(value.document_id)) {
+                // Avoiding unexisting documents
+                if (!await this.doc_service.exists(value.document_id)) {
+                    throw new BadRequestException(`There is no matching document with the UUID: ${value.document_id}`)
                 }
             } else {
-                // Getting the id
-                let id = await this.doc_service.getIDFromName(value.document)
-
-                if (!id) {
-                    throw new BadRequestException(`There is no matching document with the name: ${value.document}`)
-                }
-                value.document = id["id"]
+                throw new BadRequestException(`The filter.document_id proeprty should be a valid UUID: ${value.document_id}`)
             }
         }
         return value

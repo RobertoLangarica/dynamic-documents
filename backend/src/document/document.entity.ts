@@ -13,7 +13,7 @@ export class Document extends EntityWithTimeStampt {
     @Column() @IsString()
     name: string
 
-    @ManyToOne(type => TemplateType, { eager: true, onDelete: "SET NULL" })
+    @ManyToOne(() => TemplateType, { eager: true, onDelete: "SET NULL" })
     @Type(() => TemplateType)
     type: TemplateType
 
@@ -30,7 +30,7 @@ export class Document extends EntityWithTimeStampt {
     fields: Field[]
 
     @Column({ type: 'uuid', nullable: true }) @IsUUID()
-    document_source: string // Null if this document wasn't created as a copy of a document
+    source_id: string // Null if this document wasn't created as a copy of a document
 
     @ManyToOne(type => Status, { eager: true, onDelete: "SET NULL" })
     @Type(() => Status)

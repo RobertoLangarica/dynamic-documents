@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { AdvancedConsoleLogger, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { Document } from "src/document/document.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { isUUID } from "class-validator";

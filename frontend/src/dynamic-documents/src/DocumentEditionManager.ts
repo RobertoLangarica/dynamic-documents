@@ -15,7 +15,7 @@ export class DocumentEditionManager {
   description: string = '';
   categories: DDCategory[] = [];
   fields: DDField[] = [];
-  document_source: string = ''
+  source_id: string = ''
   is_template: boolean = false
   is_filter: boolean = false
 
@@ -262,7 +262,7 @@ export class DocumentEditionManager {
   async saveAsNew () {
     // Remove any unnecessary data to be send
     let withoutExtraData = this.getCleanCopy()
-    delete withoutExtraData.document_source
+    delete withoutExtraData.source_id
 
     if (this.isDocument) {
       return await this.store?.dispatch('addDocument', withoutExtraData)

@@ -81,14 +81,6 @@ const getters: GetterTree<IDDState, StateInterface> = {
     return state.documents.find(t => t.id === id)
   },
 
-  owner: (state: IDDState) => (id: string): DDTemplate | DDDocument | undefined => {
-    let owner = state.templates.find(t => t.id === id)
-    if (!owner) {
-      owner = state.documents.find(t => t.id === id)
-    }
-    return owner
-  },
-
   fieldTypes: (state: IDDState): DDFieldType[] => {
     return state.types
   },
