@@ -50,11 +50,12 @@ const actions = {
 
     if (result.success) {
       commit('replace', result.data)
-      return getters.byID(payload.id)
+    } else {
+      let expired = result.data ? result.data.statusCode === 403 : false
+      result.filter_expired = expired
     }
 
-    let expired = result.data ? result.data.statusCode === 403 : false
-    return { success: false, filter_expired: expired }
+    return result
   }
 }
 

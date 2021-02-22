@@ -25,8 +25,12 @@ export default class Creation extends mixins(EmbedMixin) {
       switch (message) {
         case 'create':
           /* Saving */
-          let document = await (this.$refs.doc_creation as any).saveAsNew()
-          this.sendMessage('created', document)
+          try {
+            let document = await (this.$refs.doc_creation as any).saveAsNew()
+            this.sendMessage('created', document)
+          } catch (e) {
+            this.sendMessage('creation_error')
+          }
           break;
         case 'save':
           /* Saving */

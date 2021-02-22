@@ -213,9 +213,15 @@ export default class Document extends Vue {
   async onSaveChanges () {
     this.$root.$emit('send_message', { message: 'saving' })
     this.saving = true
-    await this.manager.saveChanges()
+    let successfull = await this.manager.saveChanges()
     this.saving = false
-    this.$root.$emit('send_message', { message: 'saved' })
+
+    if (successfull) {
+      this.$root.$emit('send_message', { message: 'saved' })
+    } else {
+      this.$root.$emit('send_message', { message: 'saved_error' })
+      this.$q.notify({ message: 'Error al guardar', color: 'negative' })
+    }
   }
 
   /**
@@ -224,10 +230,13 @@ export default class Document extends Vue {
   async saveAsNew () {
     // Letting the manager to know the store so it can save and update anything
     this.manager.store = this.$store;
-    await this.manager.saveAsNew()
+    let result:{[key:string]:any} = await this.manager.saveAsNew()
 
-    // Returning a copy
-    return this.manager.getCleanCopy()
+    if (result.success) {
+      return result.data
+    } else {
+      throw new Error('Unable to save the document as a new document')
+    }
   }
 
   // Used when an external window request the fields

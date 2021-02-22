@@ -71,15 +71,18 @@ export class DocumentEditionManager {
     let result = await this.store?.dispatch(this.storeAction, changes)
     if (!result.success) {
       if (this.isFilter && result.filter_expired) {
-      // Expired filter
+        // Expired filter
         this.onExpiredCB()
       } else {
-      // TODO do something with the error
+        // TODO do something with the error
+        return false
       }
     } else {
       this.changedFields = []
       this.documentChanges = []
     }
+
+    return true
   }
 
   mergeDocumentChanges () {
