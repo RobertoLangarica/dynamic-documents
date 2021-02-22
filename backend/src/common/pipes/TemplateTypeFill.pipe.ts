@@ -20,7 +20,7 @@ export class TemplateTypeFillPipe implements PipeTransform {
         }
 
         if (isUUID(value.type)) {
-            // UUID is a valida type
+            // UUID is a valid type
             return value
         }
 

@@ -41,7 +41,6 @@ export class CategoriesFillPipe implements PipeTransform {
         }
 
         value.categories = ids
-
         return value
     }
 }
