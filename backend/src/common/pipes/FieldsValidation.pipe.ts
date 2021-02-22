@@ -1,7 +1,5 @@
 import { Injectable, PipeTransform, ArgumentMetadata, BadRequestException } from "@nestjs/common";
-import { Field } from "src/templates/dto/field.dto";
-import { plainToClass, classToClass, plainToClassFromExist } from "class-transformer";
-import { isArray } from "util";
+import { Field } from "src/document/dto/field.dto";
 
 @Injectable()
 export class FieldsValidationPipe implements PipeTransform {
@@ -17,7 +15,7 @@ export class FieldsValidationPipe implements PipeTransform {
             return value;
         }
 
-        if (!isArray(value.fields)) {
+        if (!Array.isArray(value.fields)) {
             throw new BadRequestException('The property fields should be of type Array.')
         }
 
