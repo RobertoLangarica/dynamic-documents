@@ -13,7 +13,7 @@
       />
     </div>
     <template v-if="docReady">
-      <div class="fixed-top-right q-py-sm q-px-none bg-white column justify-end shadow-1 q-mt-md view-buttons-container">
+      <div v-if="views.length > 0 || showDownload || (!isInPrintView && !creatingNewDocument)" class="fixed-top-right q-py-sm q-px-none bg-white column justify-end shadow-1 q-mt-md view-buttons-container">
         <q-btn
           flat align="left"
           :color="view.value === currentView ? 'info' : 'grey-7'"
