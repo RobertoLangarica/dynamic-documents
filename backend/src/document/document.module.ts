@@ -7,12 +7,11 @@ import { CategoryModule } from "src/categories/category.module";
 import { TemplateTypeModule } from "src/template_types/template_type.module";
 import { StatusModule } from "src/status/status.module";
 import { DocumentFilterModule } from "src/document_filter/doc_filter.module";
-import { TemplateModule } from "src/templates/template.module";
 
 @Module({
     controllers: [DocumentController],
     providers: [DocumentService],
-    imports: [TypeOrmModule.forFeature([Document]), CategoryModule, TemplateTypeModule, StatusModule, forwardRef(() => DocumentFilterModule), TemplateModule],
+    imports: [TypeOrmModule.forFeature([Document]), CategoryModule, TemplateTypeModule, StatusModule, forwardRef(() => DocumentFilterModule)],
     exports: [DocumentService]
 })
 export class DocumentModule { }

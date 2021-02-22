@@ -28,7 +28,7 @@ export class DocumentController {
 
     @Get()
     find(@Query('categories', SplitNamesFromIDsPipe) categories: string, @Query('status', SplitNamesFromIDsPipe) status: string) {
-        return this.service.findAll(categories, status)
+        return this.service.findAll(categories, status, false, true)
     }
 
     @Post()

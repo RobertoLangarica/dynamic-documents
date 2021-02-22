@@ -1,11 +1,36 @@
-import { TemplateDto, CreateTemplateDto } from "src/templates/dto/template.dto"
-import { IsEmpty, IsOptional, IsUUID } from "class-validator"
-import { ApiHideProperty, ApiPropertyOptional } from "@nestjs/swagger"
+import { IsArray, IsEmpty, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator"
+import { ApiHideProperty, ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { Status } from "src/status/status.entity"
 import { Type } from "class-transformer"
 import { DocumentVersion } from "./doc_version.dto"
+import { TemplateType } from "src/template_types/template_type.entity"
+import { Field } from "src/document/dto/field.dto"
+import { Category } from "src/categories/category.entity"
 
-export class DocumentDto extends TemplateDto {
+export class DocumentDto {
+    @IsOptional() @IsUUID() @ApiPropertyOptional()
+    id: string
+
+    @IsOptional() @IsString() @ApiPropertyOptional()
+    name: string
+
+    @IsOptional() @ApiPropertyOptional({ description: 'Should be a type name or UUID' })
+    @Type(() => TemplateType)
+    type: TemplateType
+
+    @IsOptional() @IsString() @ApiPropertyOptional()
+    description: string
+
+    @IsOptional() @IsArray() @ApiPropertyOptional({ description: 'Array of JSON strings' })
+    @Type(() => Field)
+    fields: Field[]
+
+    @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
+    @Type(() => Category)
+    categories: Category[]
+
+    @IsEmpty() @ApiHideProperty()
+    warnings: string[]
 
     @IsEmpty() @ApiHideProperty()
     @Type(() => DocumentVersion)
@@ -14,15 +39,39 @@ export class DocumentDto extends TemplateDto {
     @IsEmpty() @ApiHideProperty()
     @Type(() => Status)
     status: Status
-
-    @IsOptional() @IsUUID() @ApiPropertyOptional()
-    template_source: string
+    
+    @IsEmpty() @ApiHideProperty()
+    is_template: boolean
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
     document_source: string
 }
 
-export class CreateDocumentDto extends CreateTemplateDto {
+export class CreateDocumentDto {
+    @IsOptional() @IsUUID() @ApiPropertyOptional()
+    id: string
+
+    @IsNotEmpty() @IsString() @ApiProperty()
+    name: string
+
+    @IsOptional() @ApiPropertyOptional({ description: 'Should be a type name or UUID' })
+    @Type(() => TemplateType)
+    type: TemplateType
+
+    @IsOptional() @IsString() @ApiPropertyOptional()
+    description: string
+
+    @IsOptional() @IsArray() @ApiPropertyOptional({ description: 'Array of JSON strings' })
+    @Type(() => Field)
+    fields: Field[]
+
+    @IsOptional() @IsArray() @ApiPropertyOptional({ description: "Should be an array of names or ID's" })
+    @Type(() => Category)
+    categories: Category[]
+
+    @IsEmpty() @ApiHideProperty()
+    warnings: string[]
+
     @IsEmpty() @ApiHideProperty()
     @Type(() => DocumentVersion)
     versions: DocumentVersion[]
@@ -31,8 +80,8 @@ export class CreateDocumentDto extends CreateTemplateDto {
     @Type(() => Status)
     status: Status
 
-    @IsOptional() @IsUUID() @ApiPropertyOptional()
-    template_source: string
+    @IsEmpty() @ApiHideProperty()
+    is_template: boolean
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
     document_source: string

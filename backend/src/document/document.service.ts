@@ -7,9 +7,7 @@ import { User } from "src/user/user.entity"
 import { StatusService } from "src/status/status.service"
 import { DocumentConfig } from "./document.config"
 import { DocumentFilterService } from "src/document_filter/doc_filter.service"
-import { TemplateService } from "src/templates/template.service"
-import { Template } from "src/templates/template.entity"
-import { FDataDependent, Field } from "src/templates/dto/field.dto"
+import { FDataDependent, Field } from "src/document/dto/field.dto"
 import { v4 as uuidv4 } from 'uuid'
 import { isNotEmpty } from "class-validator"
 
@@ -20,10 +18,9 @@ export class DocumentService {
         public readonly doc_repo: Repository<Document>,
         private readonly status_service: StatusService,
         private readonly filter_service: DocumentFilterService,
-        private readonly template_service: TemplateService
     ) { }
 
-    async findAll(categories_query: any, status_query: any): Promise<Object> {
+    async findAll(categories_query: any, status_query: any, includeTemplates:boolean = false, includeDocuments:boolean = true): Promise<Object> {
         let query = this.doc_repo.createQueryBuilder('doc')
             .select(['doc.id', 'doc.name'])
             .leftJoinAndSelect('doc.type', 't')
@@ -36,6 +33,14 @@ export class DocumentService {
 
         if (categories_query) {
             query.andWhere("(c.name = ANY(:cnames) OR c.id = ANY(:cids))", { cnames: categories_query.names, cids: categories_query.ids })
+        }
+        
+        if (!includeTemplates) {
+            query.andWhere(`doc.is_template = FALSE`)
+        }
+
+        if (!includeDocuments) {
+            query.andWhere("doc.is_template = TRUE")
         }
 
         return { items: await query.getMany() }
@@ -60,7 +65,7 @@ export class DocumentService {
 
     async exists(id_or_name: string): Promise<boolean> {
         let c = await this.doc_repo.createQueryBuilder("d")
-            .where("d.id = :id", { id: id_or_name })
+            .where("d.id = :id OR d.name = :id", { id: id_or_name })
             .getCount()
 
         return c > 0
@@ -83,9 +88,10 @@ export class DocumentService {
         await this.doc_repo.delete({ id: id })
     }
 
-    async addDocument(data: DocumentDto): Promise<Document> {
+    async addDocument(data: DocumentDto, isTemplate:boolean = false): Promise<Document> {
         //Initial status
         data.status = await this.status_service.findByName(DocumentConfig.initialState)
+        data.is_template = isTemplate
 
         let document = await this.doc_repo.create(data)
 
@@ -111,8 +117,10 @@ export class DocumentService {
         let document = await this.doc_repo.create(data)
 
         // Read the template
-        let template = await this.template_service.findById(document.template_source)
-        document.fields = [] // TODO any field passed will be ignored, maybe a merge
+        let template = await this.findById(document.document_source, false)
+        
+        // TODO any field passed will be ignored, maybe we could do a merge
+        document.fields = []
 
         for (let i = 0; i < template.fields.length; i++) {
             let src = template.fields[i]
@@ -162,7 +170,6 @@ export class DocumentService {
         // Any relation is set to blank
         field.use_embedded = false
         delete field.dependent
-        delete field.source_template
         delete field.source_document
         delete field.group_by
         delete field.embedded_fields
@@ -178,10 +185,10 @@ export class DocumentService {
     /**
    *
    * @param {*} idToCopy UUID
-   * @param {*} source Template
+   * @param {*} source Document
    * @param {*} includeGroupChildren true: The copy include the children, false: No children is copied with this action
    */
-    async copyField(document: Document, idToCopy: string, source: Template, includeGroupChildren = false) {
+    async copyField(document: Document, idToCopy: string, source: Document, includeGroupChildren = false) {
         let sourceField: Field | undefined
         let field: Field
 
@@ -202,7 +209,7 @@ export class DocumentService {
         field = this.simpleFieldCopy(sourceField)
 
 
-        field.source_template = source.id
+        field.source_document = source.id
 
         // Adding the copy before any deep copy (to avoid circular references)
         field.sort_index = document.fields.length
@@ -393,37 +400,5 @@ export class DocumentService {
         document.warnings = data.warnings;
 
         return document
-    }
-
-    async clone(id_from: string) {
-        let clone
-
-        // from a document
-        clone = await this.doc_repo.findOne(id_from)
-
-        if (!clone) {
-            // from a template
-            clone = await this.template_service.findById(id_from)
-            clone.template_source = id_from;
-            clone.document_source = null;
-        } else {
-            clone.document_source = id_from
-        }
-
-        // Properties that should be autogenerated
-        delete clone.id;
-        delete clone.created_at
-        delete clone.updated_at
-
-        // Cloned name
-        clone.name = `Copy from (${clone.name}) ` + (new Date(Date.now()).toISOString())
-        //Initial status
-        clone.status = await this.status_service.findByName(DocumentConfig.initialState)
-
-        //Empty versions
-        clone.versions = []
-
-        clone = await this.doc_repo.create(clone)
-        return await this.doc_repo.save(clone)
     }
 }

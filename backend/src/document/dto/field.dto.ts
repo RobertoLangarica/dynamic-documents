@@ -81,11 +81,7 @@ export class Field {
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
     @Expose()
-    source_template: string // Used when this field is result of a copy from a template/document
-
-    @IsOptional() @IsUUID() @ApiPropertyOptional()
-    @Expose()
-    source_document: string // Used when this field is result of a copy from a template/document
+    source_document: string // Used when this field is result of a copy from other
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
     @Expose()
