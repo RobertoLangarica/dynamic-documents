@@ -54,9 +54,6 @@ export class DDField {
   source_field?: string
 
   // Used when this field is result of a copy from a template/document
-  source_template?: string
-
-  // Used when this field is result of a copy from a template/document
   source_document?: string
 
   // Id del grupo al que pertenece

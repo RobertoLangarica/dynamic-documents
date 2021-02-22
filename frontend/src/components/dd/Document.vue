@@ -170,9 +170,6 @@ export default class Document extends Vue {
     this.initialName = this.manager.name;
 
     this.fields = this.manager.fields;
-    this.manager.isTemplate = this.isTemplate;
-    this.manager.isDocument = !this.isTemplate && !this.isFilter;
-    this.manager.isFilter = this.isFilter;
     // The store is only present if the manager has a document to maintain in sync
     this.manager.store = document ? this.$store : null;
 

@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { Store } from 'vuex'
 import { DDField } from './core/DDField'
 import { DDTemplateType } from './core/DDTemplateType';
-import { Type } from 'class-transformer';
 import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
 import { DDFieldType } from './core/DDFieldType';
@@ -11,29 +10,14 @@ import { DDDocument } from './core/DDDocument';
 
 export class DocumentEditionManager {
   id: string = uuidv4()
-
   name: string = '';
-
-  @Type(() => DDTemplateType)
   type: DDTemplateType = new DDTemplateType();
-
   description: string = '';
-
-  @Type(() => DDCategory)
   categories: DDCategory[] = [];
-
-  @Type(() => DDField)
   fields: DDField[] = [];
-
-  isTemplate: boolean = false
-
-  isDocument: boolean = false
-
-  isFilter: boolean = false
-
-  template_source: string = ''
-
   document_source: string = ''
+  is_template: boolean = false
+  is_filter: boolean = false
 
   // Properties for syncing the data
   changedFields: DDField[] = []
@@ -42,6 +26,18 @@ export class DocumentEditionManager {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onExpiredCB = () => {}
+
+  get isDocument ():boolean {
+    return !this.is_template && !this.is_filter
+  }
+
+  get isTemplate ():boolean {
+    return this.is_template
+  }
+
+  get isFilter ():boolean {
+    return this.is_filter
+  }
 
   get storeAction ():string {
     let action
@@ -256,8 +252,6 @@ export class DocumentEditionManager {
     let withoutExtraData:{[key:string]:any} = {}
     Object.assign(withoutExtraData, this)
 
-    delete withoutExtraData.isTemplate
-    delete withoutExtraData.isDocument
     delete withoutExtraData.changedFields
     delete withoutExtraData.documentChanges
     delete withoutExtraData.store
@@ -266,16 +260,14 @@ export class DocumentEditionManager {
   }
 
   async saveAsNew () {
-    this.document_source = ''
-    this.template_source = ''
-
     // Remove any unnecessary data to be send
     let withoutExtraData = this.getCleanCopy()
+    delete withoutExtraData.document_source
 
     if (this.isDocument) {
-      await this.store?.dispatch('addDocument', withoutExtraData)
+      return await this.store?.dispatch('addDocument', withoutExtraData)
     } else {
-      await this.store?.dispatch('addTemplate', withoutExtraData)
+      return await this.store?.dispatch('addTemplate', withoutExtraData)
     }
   }
 
