@@ -110,7 +110,8 @@ export class DocumentFilterService {
         let result = {
             name:document.name,
             id: id,
-            fields: []
+            fields: [],
+            is_filter:true
         };
         let embedded:string[] = []
         filter.fields.forEach(filter_field => {
@@ -198,7 +199,9 @@ export class DocumentFilterService {
         // Returning the updated value
         let result = {
             id: id,
-            fields: []
+            name:document.name,
+            fields: [],
+            is_filter:true
         };
 
         filter.fields.forEach(filter_field => {
