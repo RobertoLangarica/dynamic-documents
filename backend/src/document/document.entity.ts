@@ -1,16 +1,34 @@
-import { Entity, Column, ManyToOne, ManyToMany, JoinTable, Unique } from "typeorm";
+import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm";
 import { Type } from "class-transformer";
 import { IsUUID, IsArray, IsString } from "class-validator";
 import { Status } from "src/status/status.entity";
 import { DocumentVersion } from "./dto/doc_version.dto";
 import { Category } from "src/categories/category.entity";
-import { TemplateBaseEntity } from "src/templates/template_base.entity";
+import { EntityWithTimeStampt } from "src/common/entities/entity_with_timestampt.entity";
+import { TemplateType } from "src/template_types/template_type.entity";
+import { Field } from "src/document/dto/field.dto";
 
 @Entity('documents')
-export class Document extends TemplateBaseEntity {
+export class Document extends EntityWithTimeStampt {
+    @Column() @IsString()
+    name: string
 
-    @Column({ type: 'uuid', nullable: true }) @IsUUID()
-    template_source: string // Null if this document wasn't created using a template
+    @ManyToOne(type => TemplateType, { eager: true, onDelete: "SET NULL" })
+    @Type(() => TemplateType)
+    type: TemplateType
+
+    get typeName() { return this.type.name }
+    
+    @Column({type:'boolean', default:false})
+    is_template: boolean
+
+    @Column({ default: '' }) @IsString()
+    description: string
+
+    @Column({ type: 'jsonb', default: [] })
+    @Type(() => Field) @IsArray()
+    fields: Field[]
+
     @Column({ type: 'uuid', nullable: true }) @IsUUID()
     document_source: string // Null if this document wasn't created as a copy of a document
 
@@ -22,11 +40,6 @@ export class Document extends TemplateBaseEntity {
     @Type(() => DocumentVersion) @IsArray()
     versions: DocumentVersion[]
 
-    @Column({ nullable: true }) @IsString()
-    computed_capture: string //HTML precalculado para visualizar cuando solo se va consultar el documento
-    @Column({ nullable: true }) @IsString()
-    computed_print: string //HTML precalculado para visualizar como impresión
-
     @ManyToMany(type => Category, { eager: true, onDelete: 'CASCADE' })
     @JoinTable({
         name: 'documents_categories',
@@ -35,4 +48,7 @@ export class Document extends TemplateBaseEntity {
     })
     @Type(() => Category) @IsArray()
     categories: Category[]
+
+    @IsArray()
+    warnings: string[] // Not saved in the DB
 }
