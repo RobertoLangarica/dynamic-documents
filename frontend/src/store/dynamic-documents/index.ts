@@ -141,8 +141,6 @@ const actions: ActionTree<IDDState, StateInterface> = {
     let result = await api.get(`/documents/${id}`)
 
     if (result.success) {
-      // fields sorted
-      // result.data.fields = result.data.fields.sort((a, b) => a.sort_index - b.sort_index)
       commit('updateDocument', result.data)
       return result.data
     }
@@ -151,8 +149,6 @@ const actions: ActionTree<IDDState, StateInterface> = {
     console.log('GET', `/templates/${id}`)
     let result = await api.get(`/templates/${id}`)
     if (result.success) {
-      // fields sorted
-      // result.data.fields = result.data.fields.sort((a, b) => a.sort_index - b.sort_index)
       commit('updateTemplate', result.data)
       return result.data
     }
@@ -174,6 +170,9 @@ const actions: ActionTree<IDDState, StateInterface> = {
     }
   },
   async setDocument({ commit }, data) {
+    // is_template should be empty
+    delete data.is_template
+
     console.log('PATCH', `/documents/${data.id}`)
     let result = await api.patch(`/documents/${data.id}`, data)
     if (result.success) {
@@ -182,6 +181,9 @@ const actions: ActionTree<IDDState, StateInterface> = {
     return result
   },
   async setTemplate({ commit }, data) {
+    // is_template should be empty
+    delete data.is_template
+
     console.log('PATCH', `/templates/${data.id}`)
     let result = await api.patch(`/templates/${data.id}`, data)
     if (result.success) {
@@ -190,18 +192,26 @@ const actions: ActionTree<IDDState, StateInterface> = {
     return result
   },
   async addDocument({ commit }, data) {
+    // is_template should be empty
+    delete data.is_template
+
     console.log('POST', `/documents/`)
     let result = await api.post(`/documents/`, data)
     if (result.success) {
       commit('addDocument', result.data)
     }
+    return result
   },
   async addTemplate({ commit }, data) {
+    // is_template should be empty
+    delete data.is_template
+    
     console.log('POST', `/templates/`)
     let result = await api.post(`/templates/`, data)
     if (result.success) {
       commit('addTemplate', result.data)
     }
+    return result
   },
   async download({rootState}, {id, name, auth}){
     let path = `/files/${id}`
