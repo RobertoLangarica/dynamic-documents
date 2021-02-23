@@ -16,6 +16,7 @@ import { StatusModule } from './status/status.module'
 import { DocumentModule } from './document/document.module'
 import { DocumentFilterModule } from './document_filter/doc_filter.module'
 import { FilesModule } from './files/files.module';
+import { FillmapModule } from './fillmaps/fillmap.module'
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { FilesModule } from './files/files.module';
     StatusModule,
     DocumentModule,
     DocumentFilterModule,
-    FilesModule
+    FilesModule,
+    FillmapModule
   ],
 })
 export class AppModule {
