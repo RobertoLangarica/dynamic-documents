@@ -11,6 +11,7 @@ import { TemplateType } from 'src/template_types/template_type.entity'
 import { Status } from 'src/status/status.entity'
 import { Document } from 'src/document/document.entity'
 import { DocumentFilter } from 'src/document_filter/doc_filter.entity'
+import { Fillmap } from 'src/fillmaps/fillmap.entity'
 
 const config = (): ConnectionOptions => {
   let config: ConnectionOptions = {
@@ -33,7 +34,9 @@ const config = (): ConnectionOptions => {
       TemplateType,
       Status, 
       Document, 
-      DocumentFilter],
+      DocumentFilter,
+      Fillmap
+    ],
     synchronize: false,
     migrations: process.env.NODE_ENV === 'test' ? ['../database/migrations/*.ts'] : undefined
   }
