@@ -2,11 +2,12 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import Transforms from 'src/transformations'
 import IDDView from 'src/dynamic-documents/src/core/IDDView'
-import { Prop } from 'vue-property-decorator'
+import { Prop, Watch } from 'vue-property-decorator'
 
 @Component
 export default class EmbedMixin extends Vue {
-@Prop({ required: false, type: String, default: '' }) readonly auth!:string
+@Prop({ required: false, type: String, default: '' }) readonly download_auth!:string
+@Prop({ required: false, type: Boolean, default: false }) readonly need_auth!:boolean
 
     doc_ref_identifier:string = 'doc_creation'
     available_views = [
@@ -15,30 +16,50 @@ export default class EmbedMixin extends Vue {
       { label: "Previsualizar", value: IDDView.PRINT }]
 
     authorized:boolean = false
+    authorization:string = ''
     exists:boolean = true
     ready:boolean = false
+    docRef_initialized:boolean = false
 
     get docRef (): Vue {
       return this.$refs[this.doc_ref_identifier] as Vue
     }
 
-    mounted () {
+    created () {
       // This hook is called before the component hook
-      if (this.auth) {
-        this.$api.setAuthorization(this.auth, '')
+      if (!this.need_auth) {
+        // No need for authorization
+        this.authorized = true
       }
 
-      // @ts-ignore
-      this.$root.invisibleDialogs = true
-      this.$root.$on('send_message', this.onSendMessage.bind(this))
-      window.addEventListener("message", this.onEventMessageReceived.bind(this), false);
-      if (this.docRef) {
-        this.docRef.$on('mount_ready', this.onDocReady.bind(this))
-        this.docRef.$on('loaded_document', this.onDocLoaded.bind(this))
+      // If there is an incomming token for download purposes
+      if (this.download_auth) {
+        this.authorization = this.download_auth;
+        this.authorized = true
+        this.$api.setAuthorization(this.download_auth, '')
       }
     }
 
-    beforeUnmount () {
+    mounted () {
+      // This hook is called before the component hook
+      this.$root.$on('send_message', this.onSendMessage.bind(this))
+      window.addEventListener("message", this.onEventMessageReceived.bind(this), false);
+
+      this.sendMessage('embed_mounted')
+    }
+
+    addDocRefListeners () {
+      this.$nextTick(() => {
+        if (!this.docRef_initialized && !!this.docRef) {
+          this.docRef.$on('mount_ready', this.onDocReady.bind(this))
+          this.docRef.$on('loaded_document', this.onDocLoaded.bind(this))
+          // only once
+          this.docRef_initialized = true
+        }
+      })
+    }
+
+    beforeDestroy () {
     // This hook is called before the component hook
       this.$root.$off('send_message')
       window.removeEventListener('message', this.onEventMessageReceived.bind(this))
@@ -72,9 +93,20 @@ export default class EmbedMixin extends Vue {
       }
     }
 
-    handleMessages (message, data) {
+    handleMessages (message, data:{[key:string]:any}) {
       let handled:boolean = false
       switch (message) {
+        case 'invisible_dialogs':
+          handled = true
+          // @ts-ignore
+          this.$root.invisibleDialogs = !data.show
+          break;
+        case 'authorize':
+          handled = true
+          this.authorization = data.token
+          this.$api.setAuthorization(data.token, '');
+          this.authorized = true
+          break;
         case 'complete_dialog_action':
         case 'cancel_dialog_action':
           handled = true
