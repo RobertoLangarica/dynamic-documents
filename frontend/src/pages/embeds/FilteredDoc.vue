@@ -6,8 +6,10 @@
             :isFilter="true"
             :id="id"
             :forceViewOnly="readonly"
-            @expired="onExpired"
             :views="available_views"
+            @expired="onExpired"
+            :allowDownload="false"
+            @hook:created="addDocRefListeners"
     />
     <q-card v-else class="row justify-center items-center">
       <h3 v-if="!empty">Este documento ya no está disponible</h3>
@@ -30,7 +32,6 @@ export default class Creation extends mixins(EmbedMixin) {
 
     expired:boolean = false
     empty:boolean = false
-    ready:boolean = false
 
     get canShowDoc () {
       if (!this.ready) {

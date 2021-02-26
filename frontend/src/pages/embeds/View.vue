@@ -1,11 +1,13 @@
 <template>
-  <dd-doc
-    ref="doc_creation"
-    :isTemplate="isTemplate"
-    :id="id"
-    :views="available_views"
-    :allowDownload="false"
+  <dd-doc v-if="authorized"
+          ref="doc_creation"
+          :isTemplate="isTemplate"
+          :id="id"
+          :views="available_views"
+          :allowDownload="false"
+          @hook:created="addDocRefListeners"
   />
+  <span v-else />
 </template>
 
 <script lang="ts">
