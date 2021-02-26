@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm";
+import { Entity, Column, ManyToOne, ManyToMany, JoinTable, JoinColumn } from "typeorm";
 import { Type } from "class-transformer";
 import { IsUUID, IsArray, IsString } from "class-validator";
 import { Status } from "src/status/status.entity";
@@ -14,6 +14,7 @@ export class Document extends EntityWithTimeStampt {
     name: string
 
     @ManyToOne(() => TemplateType, { eager: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "type_id" })
     @Type(() => TemplateType)
     type: TemplateType
 
@@ -33,6 +34,7 @@ export class Document extends EntityWithTimeStampt {
     source_id: string // Null if this document wasn't created as a copy of a document
 
     @ManyToOne(type => Status, { eager: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "status_id" })
     @Type(() => Status)
     status: Status
 
