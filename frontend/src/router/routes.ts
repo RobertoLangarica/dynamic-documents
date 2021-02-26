@@ -40,25 +40,25 @@ const routes: RouteConfig[] = [
         name: 'template_creation',
         path: 'template/creation',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: true, auth: route.query.auth || '' })
+        props: route => ({ isTemplate: true, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '' })
       },
       {
         name: 'template_edition',
         path: 'template/edition/:id',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: true, id: route.params.id, auth: route.query.auth || '' })
+        props: route => ({ isTemplate: true, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '' })
       },
       {
         name: 'document_edition',
         path: 'document/edition/:id',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: false, id: route.params.id, auth: route.query.auth || '' })
+        props: route => ({ isTemplate: false, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '' })
       },
       {
         name: 'document_view',
         path: 'document/view/:id',
         component: () => import('pages/embeds/View.vue'),
-        props: route => ({ isTemplate: false, id: route.params.id, auth: route.query.auth || '' })
+        props: route => ({ isTemplate: false, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '' })
       },
       {
         name: 'filtered_document',
@@ -71,8 +71,7 @@ const routes: RouteConfig[] = [
         path: 'filter/capture/:id/view',
         component: () => import('pages/embeds/FilteredDoc.vue'),
         props: route => ({ id: route.params.id, readonly: true })
-      },
-      { name: 'authorize', path: 'auth', component: () => import('pages/embeds/Authorize.vue') }
+      }
     ]
   },
 
