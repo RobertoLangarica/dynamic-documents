@@ -3,7 +3,6 @@ import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { FillmapService } from "./fillmap.service";
 import { FillmapDto, FillmapCreationDto } from "./fillmap.dto";
 import { AuthGuard } from "src/common/guards/Auth.guard";
-import { ExistsPipe } from "src/common/pipes/Exists.pipe";
 import { ExistsTemplateTypePipe } from "src/common/pipes/ExistsTemplateType.pipe";
 import { ParseUUIDOrNullPipe } from "src/common/pipes/ParseUUIDOrNull.pipe";
 import { NoDuplicatedFillmapPipe } from "src/common/pipes/NoDuplicatedFillmap.pipe";
@@ -21,7 +20,7 @@ export class FillmapController {
     findOne(@Param('id', ParseUUIDPipe, ExistsFillmapPipe) id: string) {
         return this.service.findById(id)
     }
-
+        
     @Get()
     find() {
         return this.service.findAll()

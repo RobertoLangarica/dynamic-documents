@@ -57,7 +57,7 @@ export default class Document extends Vue {
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
   @Prop({ type: Boolean, required: false, default: false }) readonly isFilter!: boolean;
   @Prop({ type: Boolean, required: false, default: true }) readonly allowDownload!:boolean;
-  @Prop({ type: String, required: false, default: '' }) readonly downloadAuth!:boolean;
+  @Prop({ type: String, required: false, default: '' }) readonly downloadAuthorization!:string;
   @Prop({
     type: Array,
     required: false,
@@ -243,7 +243,7 @@ export default class Document extends Vue {
 
   async onDownload () {
     this.downloading = true
-    await this.$store.dispatch('download', { id: this.manager.id, name: this.manager.name, auth: this.downloadAuth })
+    await this.$store.dispatch('download', { id: this.manager.id, name: this.manager.name, auth: this.downloadAuthorization })
     this.downloading = false
   }
 
