@@ -1,7 +1,6 @@
 import { Get, Controller, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, UseGuards } from "@nestjs/common"
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger"
 import { FieldsValidationPipe } from "src/common/pipes/FieldsValidation.pipe"
-import { TemplateTypeFillPipe } from "src/common/pipes/TemplateTypeFill.pipe"
 import { CategoriesFillPipe } from "src/common/pipes/CategoriesFill.pipe"
 import { FieldsValueValidationPipe } from "src/common/pipes/FieldsValueValidation.pipe"
 import { SplitNamesFromIDsPipe } from "src/common/pipes/SplitNamesFromIDs.pipe"
@@ -32,14 +31,14 @@ export class TemplateController {
     }
 
     @Post()
-    add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
+    add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
         return this.service.addDocument(dto, true)
     }
 
     @Patch(':id')
     @UseGuards(DocumentStatusGuard)
     @AllowedStatus(DocumentStatus.OPEN, DocumentStatus.ONLY_EDITION)
-    modify(@Param('id', ParseUUIDPipe) id: string, @Body(FieldsValidationPipe, FieldsValueValidationPipe, DocumentVersionFillPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: DocumentDto, @Body('user') user: User) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body(FieldsValidationPipe, FieldsValueValidationPipe, DocumentVersionFillPipe, CategoriesFillPipe) dto: DocumentDto, @Body('user') user: User) {
         return this.service.updateDocument(id, dto, user)
     }
 

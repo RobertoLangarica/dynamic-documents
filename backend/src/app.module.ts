@@ -10,7 +10,6 @@ import { ValidationModule } from './validations/validation.module'
 import { FieldTypeModule } from './field_types/field_type.module'
 import { TransformationModule } from './transformations/transformation.module'
 import { CategoryModule } from './categories/category.module'
-import { TemplateTypeModule } from './template_types/template_type.module'
 import { TemplateModule } from './templates/template.module'
 import { StatusModule } from './status/status.module'
 import { DocumentModule } from './document/document.module'
@@ -29,7 +28,6 @@ import { FillmapModule } from './fillmaps/fillmap.module'
     FieldTypeModule,
     TransformationModule,
     CategoryModule,
-    TemplateTypeModule,
     TemplateModule,
     StatusModule,
     DocumentModule,

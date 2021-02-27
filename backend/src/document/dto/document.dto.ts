@@ -3,7 +3,6 @@ import { ApiHideProperty, ApiProperty, ApiPropertyOptional } from "@nestjs/swagg
 import { Status } from "src/status/status.entity"
 import { Type } from "class-transformer"
 import { DocumentVersion } from "./doc_version.dto"
-import { TemplateType } from "src/template_types/template_type.entity"
 import { Field } from "src/document/dto/field.dto"
 import { Category } from "src/categories/category.entity"
 
@@ -14,9 +13,8 @@ export class DocumentDto {
     @IsOptional() @IsString() @ApiPropertyOptional()
     name: string
 
-    @IsOptional() @ApiPropertyOptional({ description: 'Should be a type name or UUID' })
-    @Type(() => TemplateType)
-    type: TemplateType
+    @IsOptional() @ApiPropertyOptional({ description: 'Any string' })
+    type: string
 
     @IsOptional() @IsString() @ApiPropertyOptional()
     description: string
@@ -54,9 +52,8 @@ export class CreateDocumentDto {
     @IsNotEmpty() @IsString() @ApiProperty()
     name: string
 
-    @IsOptional() @ApiPropertyOptional({ description: 'Should be a type name or UUID' })
-    @Type(() => TemplateType)
-    type: TemplateType
+    @IsOptional() @ApiPropertyOptional({ description: 'Any string' })
+    type: string
 
     @IsOptional() @IsString() @ApiPropertyOptional()
     description: string

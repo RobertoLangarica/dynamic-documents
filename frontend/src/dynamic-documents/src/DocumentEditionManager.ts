@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { Store } from 'vuex'
 import { DDField } from './core/DDField'
-import { DDTemplateType } from './core/DDTemplateType';
 import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
 import { DDFieldType } from './core/DDFieldType';
@@ -11,7 +10,7 @@ import { DDDocument } from './core/DDDocument';
 export class DocumentEditionManager {
   id: string = uuidv4()
   name: string = '';
-  type: DDTemplateType = new DDTemplateType();
+  type: string = '';
   description: string = '';
   categories: DDCategory[] = [];
   fields: DDField[] = [];

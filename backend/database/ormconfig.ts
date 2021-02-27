@@ -7,7 +7,6 @@ import { Validation } from 'src/validations/validation.entity'
 import { FieldType } from 'src/field_types/field_type.entity'
 import { Transformation } from 'src/transformations/transformation.entity'
 import { Category } from 'src/categories/category.entity'
-import { TemplateType } from 'src/template_types/template_type.entity'
 import { Status } from 'src/status/status.entity'
 import { Document } from 'src/document/document.entity'
 import { DocumentFilter } from 'src/document_filter/doc_filter.entity'
@@ -31,7 +30,6 @@ const config = (): ConnectionOptions => {
       FieldType, 
       Transformation, 
       Category, 
-      TemplateType,
       Status, 
       Document, 
       DocumentFilter,

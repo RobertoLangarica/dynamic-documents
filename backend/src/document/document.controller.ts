@@ -3,7 +3,6 @@ import { Controller, Get, Param, ParseUUIDPipe, Query, Post, Body, Patch, Delete
 import { DocumentService } from "./document.service"
 import { FieldsValidationPipe } from "src/common/pipes/FieldsValidation.pipe"
 import { FieldsValueValidationPipe } from "src/common/pipes/FieldsValueValidation.pipe"
-import { TemplateTypeFillPipe } from "src/common/pipes/TemplateTypeFill.pipe"
 import { CategoriesFillPipe } from "src/common/pipes/CategoriesFill.pipe"
 import { DocumentDto, CreateDocumentDto } from "./dto/document.dto"
 import { DocumentVersionFillPipe } from "src/common/pipes/DocumentVersionFill.pipe"
@@ -32,19 +31,19 @@ export class DocumentController {
     }
 
     @Post()
-    add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
+    add(@Body(FieldsValidationPipe, FieldsValueValidationPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
         return this.service.addDocument(dto)
     }
 
     @Post('from-template')
-    addFromTemplate(@Body(FieldsValidationPipe, FieldsValueValidationPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
+    addFromTemplate(@Body(FieldsValidationPipe, FieldsValueValidationPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
         return this.service.addDocumentFromTemplate(dto)
     }
 
     @Patch(':id')
     @UseGuards(DocumentStatusGuard)
     @AllowedStatus(DocumentStatus.OPEN, DocumentStatus.ONLY_EDITION)
-    modify(@Param('id', ParseUUIDPipe) id: string, @Body(FieldsValidationPipe, FieldsValueValidationPipe, DocumentVersionFillPipe, TemplateTypeFillPipe, CategoriesFillPipe) dto: DocumentDto, @Body('user') user: User) {
+    modify(@Param('id', ParseUUIDPipe) id: string, @Body(FieldsValidationPipe, FieldsValueValidationPipe, DocumentVersionFillPipe, CategoriesFillPipe) dto: DocumentDto, @Body('user') user: User) {
         return this.service.updateDocument(id, dto, user)
     }
 

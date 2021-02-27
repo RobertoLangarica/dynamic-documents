@@ -5,7 +5,6 @@ import { Status } from "src/status/status.entity";
 import { DocumentVersion } from "./dto/doc_version.dto";
 import { Category } from "src/categories/category.entity";
 import { EntityWithTimeStampt } from "src/common/entities/entity_with_timestampt.entity";
-import { TemplateType } from "src/template_types/template_type.entity";
 import { Field } from "src/document/dto/field.dto";
 
 @Entity('documents')
@@ -13,13 +12,9 @@ export class Document extends EntityWithTimeStampt {
     @Column() @IsString()
     name: string
 
-    @ManyToOne(() => TemplateType, { eager: true, onDelete: "SET NULL" })
-    @JoinColumn({ name: "type_id" })
-    @Type(() => TemplateType)
-    type: TemplateType
+    @Column({default:'uuid_generate_v4()'})
+    type: string
 
-    get typeName() { return this.type.name }
-    
     @Column({type:'boolean', default:false})
     is_template: boolean
 
