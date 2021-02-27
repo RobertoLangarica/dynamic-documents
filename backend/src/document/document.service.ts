@@ -109,9 +109,12 @@ export class DocumentService {
 
         let document = await this.doc_repo.create(data)
 
-        // Read the template
+        // Read template
         let template = await this.findById(document.source_id, false)
         
+        // type from the template
+        document.type = template.type
+
         // TODO any field passed will be ignored, maybe we could do a merge
         document.fields = []
 
