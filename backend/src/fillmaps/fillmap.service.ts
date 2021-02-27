@@ -19,7 +19,7 @@ export class FillmapService {
     }
 
     async findBy(source:string, destination:string): Promise<{items:Fillmap[]}> {
-        let where:any = Object.assign({},source ? {source_type:source}:{}, destination ? {destination_type_id:destination}:{})
+        let where:any = Object.assign({},source ? {source_type:source}:{}, destination ? {destination_type:destination}:{})
 
         return { items: await this.fillmap_repo.find({where}) }
     }
@@ -42,13 +42,13 @@ export class FillmapService {
         // Avoiding duplicates
         let duplicated_key = await this.fillmap_repo.findOne({where: {
                             source_type:fillmap.source_type, 
-                            destination_type_id:fillmap.destination_type_id,
+                            destination_type:fillmap.destination_type,
                             id: Not(id) 
                         },
                         select: ['id']
                         })
         if(duplicated_key){
-            throw new ConflictException(`Duplicated Fillmap. A Fillmap with source_type:${fillmap.source_type} and destination_type_id:${fillmap.destination_type_id} already exists.`)
+            throw new ConflictException(`Duplicated Fillmap. A Fillmap with source_type:${fillmap.source_type} and destination_type:${fillmap.destination_type} already exists.`)
         }
 
         fillmap = await this.fillmap_repo.save(fillmap)

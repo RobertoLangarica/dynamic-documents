@@ -11,13 +11,13 @@ export class FillmapField {
 }
 
 @Entity('fillmaps')
-@Index(['source_type','destination_type_id'],{ unique: true })
+@Index(['source_type','destination_type'],{ unique: true })
 export class Fillmap extends  EntityWithTimeStampt{
     @Column()
     source_type:string
 
     @Column({ type: 'uuid' })
-    destination_type_id:string
+    destination_type:string
 
     @Column({ type: 'jsonb', default: [] })
     @Type(() => FillmapField)
