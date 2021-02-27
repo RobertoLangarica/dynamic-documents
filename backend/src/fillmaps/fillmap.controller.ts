@@ -3,7 +3,6 @@ import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { FillmapService } from "./fillmap.service";
 import { FillmapDto, FillmapCreationDto } from "./fillmap.dto";
 import { AuthGuard } from "src/common/guards/Auth.guard";
-import { ExistsTemplateTypePipe } from "src/common/pipes/ExistsTemplateType.pipe";
 import { ParseUUIDOrNullPipe } from "src/common/pipes/ParseUUIDOrNull.pipe";
 import { NoDuplicatedFillmapPipe } from "src/common/pipes/NoDuplicatedFillmap.pipe";
 import { FillmapFieldsValidationPipe } from "src/common/pipes/FillmapFieldsValidation.pipe";
@@ -36,7 +35,7 @@ export class FillmapController {
     }
 
     @Post()
-    add(@Body(NoDuplicatedFillmapPipe, FillmapFieldsValidationPipe) dto: FillmapCreationDto, @Body('destination_type_id', ExistsTemplateTypePipe) dest_validation:string) {
+    add(@Body(NoDuplicatedFillmapPipe, FillmapFieldsValidationPipe) dto: FillmapCreationDto) {
         return this.service.addFillmap(dto)
     }
 
