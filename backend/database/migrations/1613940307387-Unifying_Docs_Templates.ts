@@ -19,12 +19,11 @@ export class UnifyingDocsTemplates1613940307387 implements MigrationInterface {
 
         // INSERT templates into documents
         if(templates.length > 0 ){
-            console.log(status)
-            console.log(templates)
             await runInsert('documents',templates,queryRunner)
         }
 
         
+        await queryRunner.query(`UPDATE "documents" SET document_source = template_source WHERE is_template=FALSE`);
         await queryRunner.query(`ALTER TABLE documents DROP COLUMN template_source`)
         await queryRunner.query(`ALTER TABLE documents DROP COLUMN computed_capture`)
         await queryRunner.query(`ALTER TABLE documents DROP COLUMN computed_print`)
@@ -64,6 +63,8 @@ export class UnifyingDocsTemplates1613940307387 implements MigrationInterface {
                             .execute()
 
         await queryRunner.query(`ALTER TABLE documents ADD COLUMN template_source uuid`)
+        await queryRunner.query(`UPDATE "documents" SET template_source = document_source WHERE is_template=FALSE`);
+
         await queryRunner.query(`ALTER TABLE documents ADD COLUMN computed_capture character varying`)
         await queryRunner.query(`ALTER TABLE documents ADD COLUMN computed_print character varying`)
         await queryRunner.query(`ALTER TABLE documents DROP COLUMN is_template`)
