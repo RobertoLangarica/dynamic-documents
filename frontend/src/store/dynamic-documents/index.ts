@@ -164,6 +164,10 @@ const actions: ActionTree<IDDState, StateInterface> = {
   async setDocument({ commit }, data) {
     // is_template should be empty
     delete data.is_template
+    if(!data.type){
+      // no empty type
+      delete data.type
+    }
 
     console.log('PATCH', `/documents/${data.id}`)
     let result = await api.patch(`/documents/${data.id}`, data)
@@ -175,6 +179,10 @@ const actions: ActionTree<IDDState, StateInterface> = {
   async setTemplate({ commit }, data) {
     // is_template should be empty
     delete data.is_template
+    if(!data.type){
+      // no empty type
+      delete data.type
+    }
 
     console.log('PATCH', `/templates/${data.id}`)
     let result = await api.patch(`/templates/${data.id}`, data)
@@ -186,6 +194,10 @@ const actions: ActionTree<IDDState, StateInterface> = {
   async addDocument({ commit }, data) {
     // is_template should be empty
     delete data.is_template
+    if(!data.type){
+      // no empty type
+      delete data.type
+    }
 
     console.log('POST', `/documents/`)
     let result = await api.post(`/documents/`, data)
@@ -197,6 +209,10 @@ const actions: ActionTree<IDDState, StateInterface> = {
   async addTemplate({ commit }, data) {
     // is_template should be empty
     delete data.is_template
+    if(!data.type){
+      // no empty type
+      delete data.type
+    }
     
     console.log('POST', `/templates/`)
     let result = await api.post(`/templates/`, data)
