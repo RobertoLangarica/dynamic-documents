@@ -6,11 +6,11 @@ export abstract class EntityWithTimeStampt {
     @PrimaryGeneratedColumn('uuid') @IsUUID()
     id: string
 
-    @Column({ type: 'timestamptz', default: () => 'NOW()' })
+    @Column({ type: 'timestamptz', default: () => 'NOW()', select: false })
     @Transform((params) => new Date(Date.parse(params.value)).toISOString(), { toClassOnly: true })
     created_at: string
 
-    @Column({ type: 'timestamptz', default: () => 'NOW()' })
+    @Column({ type: 'timestamptz', default: () => 'NOW()', select: false })
     @Transform((params) => new Date(Date.parse(params.value)).toISOString(), { toClassOnly: true })
     updated_at: string
 
