@@ -29,7 +29,6 @@ export class StorageService{
                     }
                     return
                 }
-                console.log(data)
                 resolve(true)
             })
         })
@@ -47,7 +46,6 @@ export class StorageService{
                     reject(err)
                     return
                 }
-                // console.log(data)
                 resolve(data.Body as any)
             })
         })

@@ -11,7 +11,6 @@ export class PDFService {
     async createFromDocument(document:Document,auth:string = ''):Promise<Buffer>{
         await this.startBrowser()
         let path = `${process.env.PUBLIC_PDF_URL}/${document.id}${auth ? `?download_auth=${auth}`:''}`
-        console.log(path)
         await this.page.goto(path, { waitUntil: 'networkidle2' })
         let res = await this.page.pdf({ format: 'Letter' });
         await this.browser.close()

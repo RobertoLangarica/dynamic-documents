@@ -22,13 +22,11 @@ export class FilesService {
 
         let file:Buffer
         if(!(await this.storage_service.exists(document.id, expectedVersion))){
-            console.log('Unexisting file')
             // We have to create the file
             file = await this.pdf_service.createFromDocument(document, auth)
             // Save to the remote service
             await this.storage_service.saveFile(document.id, expectedVersion, file)
         } else {
-            console.log('Existing file')
             // We get the file
             file = await this.storage_service.getFile(document.id, expectedVersion)
         }
