@@ -16,7 +16,7 @@ export class Fillmap extends  EntityWithTimeStampt{
     @Column()
     source_type:string
 
-    @Column({ type: 'uuid' })
+    @Column()
     destination_type:string
 
     @Column({ type: 'jsonb', default: [] })

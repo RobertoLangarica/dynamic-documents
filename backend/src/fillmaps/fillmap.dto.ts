@@ -16,7 +16,7 @@ export class FillmapCreationDto {
     @IsNotEmpty() @IsString() @ApiProperty()
     source_type:string
 
-    @IsNotEmpty() @IsUUID() @ApiProperty()
+    @IsNotEmpty() @IsString() @ApiProperty()
     destination_type:string
 
     @IsNotEmpty() @IsArray() @ApiProperty()
@@ -25,7 +25,7 @@ export class FillmapCreationDto {
 }
 
 export class FillmapDto {
-    @IsEmpty() @IsUUID() @ApiHideProperty()
+    @IsUUID() @ApiHideProperty()
     id: string
     @IsEmpty() @ApiHideProperty()
     created_at: string
@@ -35,7 +35,7 @@ export class FillmapDto {
     @IsOptional() @IsString() @ApiPropertyOptional()
     source_type:string
 
-    @IsOptional() @IsUUID() @ApiPropertyOptional()
+    @IsOptional() @IsString() @ApiPropertyOptional()
     destination_type:string
 
     @IsOptional() @IsArray() @ApiPropertyOptional()
