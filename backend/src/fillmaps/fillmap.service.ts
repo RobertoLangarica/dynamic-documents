@@ -45,7 +45,6 @@ export class FillmapService {
 
     async updateFillmap(id: string, data: FillmapDto) {
         data.id = id;
-        console.log(data)
         let fillmap = await this.fillmap_repo.preload(data)
 
         // Avoiding duplicates

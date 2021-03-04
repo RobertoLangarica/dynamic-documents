@@ -26,7 +26,6 @@ export class FillmapController {
 
     @Get('by-type')
     findBy(@Query('source') source: string, @Query('destination') destination: string) {
-        console.log('HERE')
         if(!source && !destination){
             return this.service.findAll()
         }

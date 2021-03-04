@@ -9,7 +9,7 @@
                 option-value="id"
                 option-label="name"
             />
-            <q-select
+            <q-select v-if="!invisibleDialogs"
                 class="col-4 q-pt-sm q-pr-sm"
                 v-model="selectedDest"
                 @input="(value)=>onDocumentDestinationSelected(value)"
