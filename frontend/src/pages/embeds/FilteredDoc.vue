@@ -11,7 +11,7 @@
             :allowDownload="false"
             @hook:created="addDocRefListeners"
     />
-    <q-card v-else class="row justify-center items-center">
+    <q-card v-else class="row justify-center items-center text-center">
       <h3 v-if="!empty">Este documento ya no está disponible</h3>
       <h3 v-else>Documento  vacio</h3>
     </q-card>
