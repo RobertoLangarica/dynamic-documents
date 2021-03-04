@@ -15,14 +15,14 @@ export interface IDDState {
   documents: DDDocument[],
   templates: DDTemplate[],
   types: DDFieldType[],
-  transformations:any[]
+  transformations:any[],
 }
 
 const state: IDDState = {
   documents: [],
   templates: [],
   types: [],
-  transformations: []
+  transformations: [],
 }
 
 const mutations: MutationTree<IDDState> = {
