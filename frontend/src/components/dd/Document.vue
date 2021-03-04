@@ -208,7 +208,7 @@ export default class Document extends Vue {
   }
 
   async onSaveChanges () {
-    this.$root.$emit('send_message', { message: 'saving' })
+    this.$root.$emit('send_message', { message: 'saving', data: { name: this.manager.name } })
     this.saving = true
     let successfull = await this.manager.saveChanges()
     this.saving = false
