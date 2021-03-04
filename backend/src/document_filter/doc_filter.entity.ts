@@ -9,12 +9,11 @@ export class FilterField {
     field: string
 
     @IsBoolean() @Expose()
-    @Transform(value => {
-        if (value === undefined) {
+    @Transform(params => {
+        if (params === undefined) {
             return false
         }
-
-        return value
+        return params.value
     }, { toClassOnly: true })
     readonly: boolean = false
 }
