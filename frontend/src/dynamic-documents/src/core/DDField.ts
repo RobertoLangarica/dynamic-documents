@@ -62,6 +62,11 @@ export class DDField {
   // Array of uuid's referencig the fields used in the embedded form
   embedded_fields?: string[]
 
+  // Used while using fillmaps
+  map_value?:any
+  // Used while using fillmaps
+  map_name?:string
+
   @Type(() => FDataReplication)
   replication?: FDataReplication
 
@@ -103,6 +108,10 @@ export class DDField {
   }
 
   static isGroup (field: DDField): boolean {
+    if (!field.type) {
+      return false
+    }
+
     return field.type.name === 'Grupo'
   }
 
