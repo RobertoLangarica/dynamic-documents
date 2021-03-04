@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-show="isInEditView || (isInCaptureView && field.show_in_capture) || (isInPrintView && field.show_in_print)"
-    class="dd-field-container"
-  >
+  <div v-show="show" class="dd-field-container" >
     <div class="dd-field-controls q-pt-md" v-if="isInEditView">
       <q-btn
         icon="add"
@@ -18,14 +15,17 @@
     </div>
     <div class="dd-field-content">
       <q-badge
-        class="dd-field-name"
         v-if="isInEditView"
+        class="dd-field-name"
         color="grey-8"
       >
-        <span contenteditable="true"
+        <template v-if="isInEditView">
+          <span contenteditable="true"
               @input="e=>name=e.target.innerText">{{ initialName }}</span>
-        <q-icon name="keyboard" class="q-ml-sm" v-if="field.show_in_capture" />
-        <q-icon name="print" class="q-ml-sm" v-if="field.show_in_print" />
+          <q-icon name="keyboard" class="q-ml-sm" v-if="field.show_in_capture" />
+          <q-icon name="print" class="q-ml-sm" v-if="field.show_in_print" />
+        </template>
+        <span v-else>{{ initialName }}</span>
       </q-badge>
       <component
         v-model="value"
@@ -76,8 +76,9 @@ import {
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import FieldTypeDialog from "components/FieldTypeDialog.vue";
 import FieldConfigDialog from "components/dd/FieldConfigDialog.vue";
+import draggable from 'vuedraggable'
 
-@Component({ components: { FieldConfigDialog } })
+@Component({ components: { FieldConfigDialog, draggable } })
 export default class FieldComponent extends Vue {
   @Prop({ required: true }) readonly field!: DDField;
   @Prop({ type: Array, required: true }) readonly fields!: DDField[];
@@ -91,6 +92,10 @@ export default class FieldComponent extends Vue {
 
   mounted () {
     this.initialName = this.field.name;
+  }
+
+  get show(){
+    return this.isInEditView || (this.isInCaptureView && this.field.show_in_capture) || (this.isInPrintView && this.field.show_in_print)
   }
 
   get isReadOnly () {
@@ -168,122 +173,18 @@ export default class FieldComponent extends Vue {
 </script>
 
 <style lang="scss">
-.dd-fields-container {
-  .dd-field-container {
-    display: flex;
-    margin: 0.5em 0;
-    position: relative;
-    .dd-field-controls {
-      display: flex;
-      width: 5em;
-      opacity: 0;
-      transition: opacity 0.25s;
-      justify-content: flex-end;
-      align-items: flex-start;
-      > button {
-        margin-right: -0.25rem;
-      }
-    }
-    .dd-field-config {
-      display: flex;
-      width: 2em;
-      opacity: 0;
-      transition: opacity 0.25s;
-      align-items: flex-start;
-    }
-    .dd-field-content {
-      flex: 1;
-      .dd-field-name {
-        position: absolute;
-        top: -1rem;
-        padding-bottom: 0.5rem;
-        border-bottom-left-radius: 0;
-      }
-      &:hover, &:active {
-        .dd-field-name {
-        }
-      }
-      .dd-input-paragraph {
-        cursor: text;
-        ::selection {
-          background-color: $info;
-        }
-        h1, h2, h3 {
-          margin: 1rem auto 0.5rem auto;
-          line-height: 1.1;
-        }
-        h1 {
-          font-size: 2rem;
-        }
-        h2 {
-          font-size: 1.5rem;
-        }
-        h3 {
-          font-size: 1.25rem;
-        }
-      }
-    }
-    &:hover,
-    &:active {
-      .dd-field-controls,
-      .dd-field-config {
-        opacity: 1;
-      }
-    }
-  }
+
+.drop-zone{
+    border-radius: 0.25rem;
+    background-color: #31CCEC;
 }
-.dd-fields-container.dd-edit-view {
-  .dd-field-container {
-    margin: 1em -1cm 1em -1.75cm;
-  }
-  .nq-select.q-field--outlined.dd-field .q-field__control,
-  .nq-input.q-field--outlined.dd-field .q-field__control,
-  .nq-field.q-field--outlined.dd-field .q-field__control {
-    background-color: rgba(250, 250, 250, 1);
-  }
-  .nq-field.q-field--outlined.dd-field.dd-input-paragraph .q-field__control {
-    background-color: white;
-  }
-}
-.dd-fields-container.dd-capture-view {
-  .nq-field.q-field--outlined.dd-field.dd-input-paragraph .q-field__control {
-    background-color: white;
-    padding: 0;
-    &::before {
-      border: none;
-    }
-    .menubar {
-      display: none;
-    }
-  }
-}
-.dd-fields-container.dd-print-view {
-  .dd-field.q-field--readonly .q-field__control {
-    background-color: white;
-    &::before {
-      border-style: solid;
-    }
-  }
-  .nq-field.q-field--outlined.dd-field .q-field__control {
-    background-color: white;
-  }
-  .nq-field.q-field--outlined.dd-field.dd-input-paragraph .q-field__control {
-    background-color: white;
-    padding: 0;
-    &::before {
-      border: none;
-    }
-    .menubar {
-      display: none;
-    }
-  }
-  .embeded_container {
+.drop-zone:empty{
     background-color: transparent;
-    padding: 0;
-    margin: 0;
-    line-height: unset;
-    border-radius: unset;
-    border: unset;
-  }
 }
+
+.drop-container{
+    border: 1px dotted grey;
+    border-radius: 0.25rem;
+}
+
 </style>
