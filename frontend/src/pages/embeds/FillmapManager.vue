@@ -136,7 +136,6 @@ export default class FillmapManager extends mixins(EmbedMixin) {
     }
 
     async onMessage (message, data, handled = false) {
-      console.log(message, data)
       switch (message) {
         case 'set_source_document':
           handled = true

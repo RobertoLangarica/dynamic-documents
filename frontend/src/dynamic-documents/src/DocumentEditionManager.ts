@@ -69,7 +69,6 @@ export class DocumentEditionManager {
     let changes = Object.assign(documentChanges, { id: this.id, fields: fieldChanges })
 
     let result = await this.store?.dispatch(this.storeAction, changes)
-    console.log(result)
     if (!result.success) {
       if (this.isFilter && result.filter_expired) {
         // Expired filter

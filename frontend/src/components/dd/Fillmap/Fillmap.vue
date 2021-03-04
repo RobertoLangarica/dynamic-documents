@@ -214,17 +214,13 @@ export default class Fillmap extends Vue {
     }
 
     addCapturedValue (id:string, value:any) {
-      console.log('adding change', id, value)
-
       let index = this.fieldCapturedValues.findIndex(i => i.id === id)
       if (index >= 0) {
         // delete/replace
         this.fieldCapturedValues.splice(index, 1)
         this.fieldCapturedValues.splice(index, 0, { id, value })
-        console.log('replace')
       } else {
         // new
-        console.log('new')
         this.fieldCapturedValues.push({ id, value })
       }
     }
@@ -239,7 +235,6 @@ export default class Fillmap extends Vue {
         captured_values: this.fieldCapturedValues.concat(),
         fillmap: Object.assign({}, this.fillmap, this.changes)
       }
-      console.log(toSend)
       this.$emit('save', toSend)
     }
 }
