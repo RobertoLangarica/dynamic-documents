@@ -55,23 +55,28 @@ export class DocumentEditionManager {
   }
 
   async saveChanges () {
-    if (!this.store || !this.isDirty) {
+    if (!this.store) {
       /* no store to sync data */
-      return
+      return false
+    }
+
+    if (!this.isDirty) {
+      // nothing to save
+      return true
     }
     let documentChanges = this.mergeDocumentChanges()
     let fieldChanges = this.mergeFieldChanges()
     let changes = Object.assign(documentChanges, { id: this.id, fields: fieldChanges })
 
     let result = await this.store?.dispatch(this.storeAction, changes)
+    console.log(result)
     if (!result.success) {
       if (this.isFilter && result.filter_expired) {
         // Expired filter
         this.onExpiredCB()
-      } else {
-        // TODO do something with the error
-        return false
       }
+      // TODO do something with the error
+      return false
     } else {
       this.changedFields = []
       this.documentChanges = []
