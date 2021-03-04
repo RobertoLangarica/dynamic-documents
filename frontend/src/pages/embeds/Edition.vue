@@ -24,6 +24,7 @@ export default class Creation extends mixins(EmbedMixin) {
     async onMessage (message, data, handled = false) {
       switch (message) {
         case 'create':
+          handled = true
           /* Saving */
           try {
             let document = await (this.$refs.doc_creation as any).saveAsNew()
@@ -33,6 +34,7 @@ export default class Creation extends mixins(EmbedMixin) {
           }
           break;
         case 'save':
+          handled = true
           /* Saving */
           await (this.$refs.doc_creation as any).onSaveChanges()
           break;
