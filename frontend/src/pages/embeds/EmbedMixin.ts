@@ -106,6 +106,7 @@ export default class EmbedMixin extends Vue {
           this.authorization = data.token
           this.$api.setAuthorization(data.token, '');
           this.authorized = true
+          this.sendMessage('authorized')
           break;
         case 'complete_dialog_action':
         case 'cancel_dialog_action':
@@ -156,6 +157,8 @@ export default class EmbedMixin extends Vue {
     }
 
     onDocReady () {
+      this.sendMessage('dd_ready')
+
       this.$nextTick(() => {
         let el = this.docRef.$el
         this.sendMessage('dd_resize', { width: Math.max(el.scrollWidth, (el as any).offsetWidth), height: Math.max(el.scrollHeight, (el as any).offsetHeight) })
