@@ -217,7 +217,10 @@ export default class Document extends Vue {
       this.$root.$emit('send_message', { message: 'saved' })
     } else {
       this.$root.$emit('send_message', { message: 'saved_error' })
-      this.$q.notify({ message: 'Error al guardar', color: 'negative' })
+      // @ts-ignore
+      if (!this.$root.invisibleDialogs) {
+        this.$q.notify({ message: 'Error al guardar', color: 'negative' })
+      }
     }
   }
 
