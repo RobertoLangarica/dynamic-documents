@@ -3,7 +3,6 @@ import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { FillmapService } from "./fillmap.service";
 import { FillmapDto, FillmapCreationDto } from "./fillmap.dto";
 import { AuthGuard } from "src/common/guards/Auth.guard";
-import { ParseUUIDOrNullPipe } from "src/common/pipes/ParseUUIDOrNull.pipe";
 import { NoDuplicatedFillmapPipe } from "src/common/pipes/NoDuplicatedFillmap.pipe";
 import { FillmapFieldsValidationPipe } from "src/common/pipes/FillmapFieldsValidation.pipe";
 import { ExistsFillmapPipe } from "src/common/pipes/ExistsFillmap.pipe copy";
@@ -15,7 +14,7 @@ import { ExistsFillmapPipe } from "src/common/pipes/ExistsFillmap.pipe copy";
 export class FillmapController {
     constructor(private readonly service: FillmapService) { }
 
-    @Get(':id')
+    @Get('by-id/:id')
     findOne(@Param('id', ParseUUIDPipe, ExistsFillmapPipe) id: string) {
         return this.service.findById(id)
     }
@@ -25,8 +24,9 @@ export class FillmapController {
         return this.service.findAll()
     }
 
-    @Get('by')
-    findBy(@Query('source') source: string, @Query('destination', ParseUUIDOrNullPipe) destination: string) {
+    @Get('by-type')
+    findBy(@Query('source') source: string, @Query('destination') destination: string) {
+        console.log('HERE')
         if(!source && !destination){
             return this.service.findAll()
         }
