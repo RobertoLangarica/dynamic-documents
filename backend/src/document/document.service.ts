@@ -23,7 +23,6 @@ export class DocumentService {
     async findAll(categories_query: any, status_query: any, includeTemplates:boolean = false, includeDocuments:boolean = true): Promise<Object> {
         let query = this.doc_repo.createQueryBuilder('doc')
             .select(['doc.id', 'doc.name'])
-            .leftJoinAndSelect('doc.type', 't')
             .leftJoinAndSelect('doc.status', 's')
             .leftJoinAndSelect('doc.categories', 'c')
 
