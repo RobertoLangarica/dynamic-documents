@@ -7,6 +7,11 @@
           Login
         </router-link>
       </li>
+      <li>
+        <router-link :to="{ name: 'fillmap' }">
+          Fillmap
+        </router-link>
+      </li>
       <li><a href="/documents"><strong>Testing de documento</strong></a></li>
       <li><a href="http://localhost:3000/docs" target="_blank">API</a></li>
     </ul>

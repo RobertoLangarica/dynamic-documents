@@ -71,6 +71,12 @@ const routes: RouteConfig[] = [
         path: 'filter/capture/:id/view',
         component: () => import('pages/embeds/FilteredDoc.vue'),
         props: route => ({ id: route.params.id, readonly: true })
+      },
+      {
+        name: 'fillmap',
+        path: 'capture/map',
+        component: () => import('pages/embeds/FillmapManager.vue'),
+        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false })
       }
     ]
   },
