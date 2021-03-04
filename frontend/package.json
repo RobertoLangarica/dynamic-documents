@@ -9,11 +9,11 @@
     "lint": "eslint --ext .js,.ts,.vue ./",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "API_URL=http://127.0.0.1:3000/api quasar dev",
-    "dev-staging": "API_URL=http://api.dd-staging.wizardforyou.com/api quasar dev",
+    "dev-staging": "API_URL=https://api.dd-staging.wizardforyou.com/api quasar dev",
     "dev-production": "API_URL=https://api.dd.wizardforyou.com/api quasar dev",
     "build": "quasar build",
     "build-production": "API_URL=https://api.dd.wizardforyou.com/api quasar build",
-    "build-staging": "API_URL=http://api.dd-staging.wizardforyou.com/api quasar build"
+    "build-staging": "API_URL=https://api.dd-staging.wizardforyou.com/api quasar build"
   },
   "dependencies": {
     "@quasar/extras": "^1.9.14",
