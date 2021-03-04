@@ -17,20 +17,20 @@
     <template v-else>
       <template v-if="fillmap_view_dest">
         <field-dest v-for="field in myFields"
-          :key="`dest-${field.id}`"
-          :field="field"
-          :fields="fields"
-          :map_value="field.map_value"
-          :map_name="field.map_name"
-          @remove_fill="(data)=>{$emit('remove_fill',data)}"
+                    :key="`dest-${field.id}`"
+                    :field="field"
+                    :fields="fields"
+                    :map_value="field.map_value"
+                    :map_name="field.map_name"
+                    @remove_fill="(data)=>{$emit('remove_fill',data)}"
         />
       </template>
       <template v-else>
         <field-src v-for="field in myFields"
-          :key="`src-${field.id}`"
-          :field="field"
-          :fields="fields"
-          @drag_fill="(data)=>{$emit('drag_fill',data)}"
+                   :key="`src-${field.id}`"
+                   :field="field"
+                   :fields="fields"
+                   @drag_fill="(data)=>{$emit('drag_fill',data)}"
         />
       </template>
     </template>
@@ -69,14 +69,14 @@ export default class FieldGroupComponent extends Vue {
 @Prop({ required: false, default: false }) readonly fillmap_view_src!:boolean ;
 @Prop({ required: false, default: false }) readonly fillmap_view_dest!:boolean ;
 
-get isFillmap(){
+get isFillmap () {
   return this.fillmap_view_dest || this.fillmap_view_src
 }
 
 get myFields () {
   if (this.group === '') {
     // Without group
-    return this.fields.filter(v => v.group_by === '' || !v.group_by)
+    return this.fields.filter(v => !v.group_by)
   }
 
   return this.fields.filter(v => v.group_by === this.group)
