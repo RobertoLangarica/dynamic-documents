@@ -115,7 +115,7 @@ onFieldTypeSelected (type:DDFieldType) {
 </script>
 <style lang="scss">
 .dd-edit-view {
-  .dd-field-group,.dd-field-group .dd-field-group {
+  .dd-field-group .dd-field-group {
     background-color: white;
     padding: 1rem 0.5em 0.5em 1.75em;
     border: 1px dotted grey;
