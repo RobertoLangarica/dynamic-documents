@@ -1,5 +1,5 @@
 <template>
-  <div v-show="show" class="dd-field-container" >
+  <div v-show="show" class="dd-field-container">
     <div class="dd-field-controls q-pt-md" v-if="isInEditView">
       <q-btn
         icon="add"
@@ -21,7 +21,7 @@
       >
         <template v-if="isInEditView">
           <span contenteditable="true"
-              @input="e=>name=e.target.innerText">{{ initialName }}</span>
+                @input="e=>name=e.target.innerText">{{ initialName }}</span>
           <q-icon name="keyboard" class="q-ml-sm" v-if="field.show_in_capture" />
           <q-icon name="print" class="q-ml-sm" v-if="field.show_in_print" />
         </template>
@@ -70,8 +70,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
 import {
-  DDFieldType,
-  FieldComponentUI
+  DDFieldType
 } from "src/dynamic-documents/src/core/DDFieldType";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import FieldTypeDialog from "components/FieldTypeDialog.vue";
@@ -94,12 +93,16 @@ export default class FieldComponent extends Vue {
     this.initialName = this.field.name;
   }
 
-  get show(){
+  get show () {
     return this.isInEditView || (this.isInCaptureView && this.field.show_in_capture) || (this.isInPrintView && this.field.show_in_print)
   }
 
   get isReadOnly () {
-    return this.isInPrintView || (this.isInCaptureView && this.field.readonly);
+    return this.isInPrintView || (this.isInCaptureView && (this.field.readonly || this.block_capture));
+  }
+
+  get block_capture () {
+    return this.field.type.parameters.block_capture || false
   }
 
   get name () {
