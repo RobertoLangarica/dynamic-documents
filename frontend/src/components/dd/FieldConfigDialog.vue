@@ -19,9 +19,9 @@
           />
 
           <!-- readonly -->
-          <q-item tag="label" v-ripple>
+          <q-item tag="label" v-ripple :disabled="block_capture">
             <q-item-section avatar top>
-              <q-checkbox v-model="readonly" />
+              <q-checkbox v-model="readonly" :disabled="block_capture" />
             </q-item-section>
             <q-item-section>
               <q-item-label>Campo de sólo lectura</q-item-label>
@@ -107,7 +107,7 @@ export default class FieldConfigDialog extends Vue {
   }
 
   updateFromOutside (data) {
-    // filter only those fields with real changes
+    // filter only those properties with real changes
     let keys = Object.keys(data)
     let toUpdate:{[key:string]:any} = {}
     keys.forEach(key => {
@@ -163,12 +163,20 @@ export default class FieldConfigDialog extends Vue {
   }
 
   get readonly () {
-    return this.field.readonly;
+    return this.field.readonly || this.block_capture;
   }
 
   set readonly (value) {
+    if (this.block_capture) {
+      // can't change
+      return
+    }
     this.field.readonly = value;
     this.notifyUpdate({ id: this.field.id, readonly: value });
+  }
+
+  get block_capture () {
+    return this.field.type.parameters.block_capture || false
   }
 
   get show_in_capture () {
