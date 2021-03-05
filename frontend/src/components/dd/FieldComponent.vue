@@ -124,13 +124,7 @@ export default class FieldComponent extends Vue {
   }
 
   getComponent (fieldType: DDFieldType) {
-    if (FieldComponentUI[fieldType.component]) {
-      let component =
-        FieldComponentUI[fieldType.component].component || "nq-input";
-      return component;
-    } else {
-      return "nq-input";
-    }
+    return DDFieldType.getUIComponentName(fieldType)
   }
 
   onDelete () {

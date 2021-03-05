@@ -13,7 +13,8 @@ export enum EFieldComponentID {
 
 export interface IFieldTypeParams {
   [key: string]: any
-  field_override?: { [k: string]: any }
+  field_override?: { [k: string]: any },
+  block_capture?:boolean
 }
 export class DDFieldType extends DDSimpleEntity {
   category: string = ''
@@ -26,13 +27,18 @@ export class DDFieldType extends DDSimpleEntity {
 
   @Type(() => DDValidation)
   validations: DDValidation[] = []
+
+  static getUIComponentName (type:DDFieldType):string {
+    return FieldComponentUI[type.component] || 'nq-input'
+  }
 }
 
-export const FieldComponentUI: Record<EFieldComponentID, { component: string, parameters: any }> = {
-  [EFieldComponentID.INPUT_TEXT]: { component: 'nq-input', parameters: {} },
-  [EFieldComponentID.INPUT_PARAGRAPH]: { component: 'field-text-editor-component', parameters: {} },
-  [EFieldComponentID.INPUT_NUMBER]: { component: 'nq-input-number', parameters: {} },
-  [EFieldComponentID.INPUT_CURRENCY]: { component: 'nq-input-currency', parameters: {} },
-  [EFieldComponentID.NOT_DEFINED]: { component: 'nq-input', parameters: {} },
-  [EFieldComponentID.GROUP]: { component: 'field-group-component', parameters: {} }
+/* Override for the components */
+export const FieldComponentUI: Record<EFieldComponentID, string> = {
+  [EFieldComponentID.INPUT_TEXT]: 'nq-input',
+  [EFieldComponentID.INPUT_PARAGRAPH]: 'field-text-editor-component',
+  [EFieldComponentID.INPUT_NUMBER]: 'nq-input-number',
+  [EFieldComponentID.INPUT_CURRENCY]: 'nq-input-currency',
+  [EFieldComponentID.NOT_DEFINED]: 'nq-input',
+  [EFieldComponentID.GROUP]: 'field-group-component'
 }

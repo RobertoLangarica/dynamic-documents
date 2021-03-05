@@ -99,9 +99,7 @@ export class DDField {
 
     // Default values from the type
     if (type.parameters.field_override) {
-      Object.keys(type.parameters.field_override).forEach(key => {
-        field[key] = type.parameters.field_override![key]
-      })
+      Object.assign(field, type.parameters.field_override)
     }
 
     return field
