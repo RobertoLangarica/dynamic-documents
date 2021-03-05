@@ -1,8 +1,16 @@
 <template>
   <div class="column">
+    <div class="col-auto row justify-between items-center">
+      <div class="col-5">
+        <strong v-if="source" class="q-ma-none">{{ source.title }}</strong>
+      </div>
+      <div class="col-5">
+        <strong v-if="destination" class="q-ma-none">{{ destination.title }}</strong>
+      </div>
+    </div>
     <div class="col row justify-between" :class="{'content':source && destination, 'content-no-overflow':!source || !destinationFields}" style="position:relative;">
       <!-- SOURCE -->
-      <div class="col-5">
+      <div class="col-5 dd-edit-view">
         <field-group-component v-if="source"
                                :fields="source.fields"
                                :fillmap_view_src="true"
@@ -11,7 +19,7 @@
         />
       </div>
       <!-- DESTINATION -->
-      <div class="col-5">
+      <div class="col-5 dd-edit-view">
         <field-group-component v-if="destination"
                                :fields="destinationFields"
                                :fillmap_view_dest="true"
@@ -37,6 +45,7 @@ import { IFillmap } from 'src/dynamic-documents/src/core/DDFillmap';
 import { DDField } from 'src/dynamic-documents/src/core/DDField';
 
 interface IObjectType{
+    title:string;
     type:string;
     fields:DDField[];
     isDocument:boolean;

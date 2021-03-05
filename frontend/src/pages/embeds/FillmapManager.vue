@@ -34,6 +34,7 @@ import Fillmap from 'src/components/dd/Fillmap/Fillmap.vue';
 import fillmaps from 'src/store/dynamic-documents/fillmaps';
 
 interface IObjectType{
+    title:string;
     type:string;
     fields:DDField[];
     isDocument:boolean;
@@ -85,6 +86,7 @@ export default class FillmapManager extends mixins(EmbedMixin) {
       let doc = await this.$store.dispatch('getDocument', id)
 
       let result:IObjectType = {
+        title: doc.name,
         type: doc.type,
         isDocument: true,
         documentID: id,

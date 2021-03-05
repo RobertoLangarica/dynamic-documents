@@ -56,7 +56,6 @@ const actions = {
     let path = `/fillmaps/by-type?source=${source}&destination=${destination}`
     console.log(`GET ${path}`)
     let result = await api.get(path)
-    console.log(result)
     if (result.success) {
       if (result.data.items.length) {
         commit('replace', result.data.items[0])
@@ -78,7 +77,6 @@ const actions = {
     let result = await api[method](path, payload)
 
     if (result.success) {
-      console.log('replacing', result.data)
       commit('replace', result.data)
     }
 
