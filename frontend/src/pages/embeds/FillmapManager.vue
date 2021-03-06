@@ -156,6 +156,7 @@ export default class FillmapManager extends mixins(EmbedMixin) {
           break;
         case 'save_changes':
           handled = true
+          // @ts-ignore
           this.$refs.fillmap.onSaveChanges()
           break;
         default:
