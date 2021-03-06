@@ -1,5 +1,5 @@
 /* eslint-disable */
-import api from 'api-client-wrapper'
+import api, { APIWrapperResponse } from 'api-client-wrapper'
 import { MutationTree, ActionTree, GetterTree } from 'vuex'
 import { DDDocument } from 'src/dynamic-documents/src/core/DDDocument'
 import { DDTemplate } from 'src/dynamic-documents/src/core/DDTemplate'
@@ -98,20 +98,22 @@ const getters: GetterTree<IDDState, StateInterface> = {
 }
 
 const actions: ActionTree<IDDState, StateInterface> = {
-  async getTemplates({ commit }): Promise<void> {
+  async getTemplates({ commit }): Promise<APIWrapperResponse> {
     console.log('GET templates')
     let result = await api.get('/templates')
 
     if (result.success) {
       commit('templates', plainToClass(DDTemplate, result.data.items as DDTemplate[]))
     }
+    return result
   },
-  async getDocuments({ commit }) {
+  async getDocuments({ commit }):Promise<APIWrapperResponse> {
     console.log('GET documents')
     let result = await api.get('/documents')
     if (result.success) {
       commit('documents', plainToClass(DDDocument, result.data.items as DDDocument[]))
     }
+    return result
   },
   async getDocument({ getters, dispatch }, id: string): Promise<DDDocument | undefined> {
     let result = getters.document(id)
@@ -119,7 +121,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
     // If the property fields is missing, then an update is needed
     if (result && result.fields) return result
 
-    return dispatch('updateDocument', id)
+    return (await dispatch('updateDocument', id)).data
   },
   async getTemplate({ getters, dispatch }, id: string): Promise<DDTemplate | undefined> {
     let result = getters.template(id)
@@ -128,14 +130,15 @@ const actions: ActionTree<IDDState, StateInterface> = {
 
     return dispatch('updateTemplate', id)
   },
-  async updateDocument({ commit }, id: string): Promise<DDDocument | undefined> {
+  async updateDocument({ commit }, id: string): Promise<APIWrapperResponse> {
     console.log('GET', `/documents/${id}`)
     let result = await api.get(`/documents/${id}`)
 
     if (result.success) {
       commit('updateDocument', result.data)
-      return result.data
     }
+
+    return result
   },
   async updateTemplate({ commit }, id: string): Promise<DDTemplate | undefined> {
     console.log('GET', `/templates/${id}`)
