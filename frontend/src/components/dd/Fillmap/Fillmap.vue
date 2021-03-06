@@ -12,7 +12,7 @@
       <!-- SOURCE -->
       <div class="col-5 dd-edit-view" style="position:relative;">
         <field-group-component v-if="source"
-                               :fields="source.fields"
+                               :fields="sourceFields"
                                :fillmap_view_src="true"
                                @drag_fill="onFill"
                                class="col-12"
@@ -107,7 +107,29 @@ export default class Fillmap extends Vue {
 
     get destinationFields () {
       if (this.destination) {
+        if (this.destination.isDocument) {
+          // filtering only the fields that can be captured
+          return this.destination.fields.filter(field => {
+            return field.show_in_capture && (!field.readonly && !(field.type.parameters.block_capture || false))
+          })
+        }
+
         return this.destination.fields
+      }
+
+      return []
+    }
+
+    get sourceFields () {
+      if (this.source) {
+        if (this.source.isDocument) {
+          // filtering only the fields that can be captured
+          return this.source.fields.filter(field => {
+            return field.show_in_capture && (!field.readonly && !(field.type.parameters.block_capture || false))
+          })
+        }
+
+        return this.source.fields
       }
 
       return []
