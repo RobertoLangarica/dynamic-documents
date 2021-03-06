@@ -8,6 +8,7 @@ import { Prop, Watch } from 'vue-property-decorator'
 export default class EmbedMixin extends Vue {
 @Prop({ required: false, type: String, default: '' }) readonly download_auth!:string
 @Prop({ required: false, type: Boolean, default: false }) readonly need_auth!:boolean
+@Prop({ required: false, type: Boolean, default: false }) readonly invisibleDialogs!:boolean
 
     doc_ref_identifier:string = 'doc_creation'
     available_views = [
@@ -38,6 +39,9 @@ export default class EmbedMixin extends Vue {
         this.authorized = true
         this.$api.setAuthorization(this.download_auth, '')
       }
+
+      // @ts-ignore
+      this.$root.invisibleDialogs = this.invisibleDialogs
     }
 
     mounted () {
@@ -96,11 +100,6 @@ export default class EmbedMixin extends Vue {
     handleMessages (message, data:{[key:string]:any}) {
       let handled:boolean = false
       switch (message) {
-        case 'invisible_dialogs':
-          handled = true
-          // @ts-ignore
-          this.$root.invisibleDialogs = !data.show
-          break;
         case 'authorize':
           handled = true
           this.authorization = data.token
