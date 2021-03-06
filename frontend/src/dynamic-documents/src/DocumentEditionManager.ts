@@ -113,6 +113,36 @@ export class DocumentEditionManager {
     return changes
   }
 
+  async refreshDocument () {
+    if (!this.store) {
+      /* no store to sync data */
+      return
+    }
+    let result = await this.store.dispatch('updateDocument', this.id)
+
+    if (!result.success) {
+      // TODO Error handling
+      return
+    }
+
+    // TODO merge local changes
+
+    // Discarding local changes
+    let remote = result.data
+    Object.assign(this, remote)
+
+    // Empty changes
+    this.changedFields = []
+    this.documentChanges = []
+
+    // We use this deep copy to avoid any array reference
+    Object.keys(this).forEach(k => {
+      if (Array.isArray(this[k])) {
+        this[k] = this[k].map(item => Object.assign({}, item))
+      }
+    })
+  }
+
   updateDocument (change) {
     this.documentChanges.push(change)
   }
