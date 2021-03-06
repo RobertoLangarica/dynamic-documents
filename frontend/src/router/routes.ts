@@ -40,25 +40,25 @@ const routes: RouteConfig[] = [
         name: 'template_creation',
         path: 'template/creation',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: true, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '' })
+        props: route => ({ isTemplate: true, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '', invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
       },
       {
         name: 'template_edition',
         path: 'template/edition/:id',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: true, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '' })
+        props: route => ({ isTemplate: true, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '', invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
       },
       {
         name: 'document_edition',
         path: 'document/edition/:id',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: false, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '' })
+        props: route => ({ isTemplate: false, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '', invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
       },
       {
         name: 'document_view',
         path: 'document/view/:id',
         component: () => import('pages/embeds/View.vue'),
-        props: route => ({ isTemplate: false, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '' })
+        props: route => ({ isTemplate: false, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '', invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
       },
       {
         name: 'filtered_document',
@@ -76,7 +76,7 @@ const routes: RouteConfig[] = [
         name: 'fillmap',
         path: 'capture/map',
         component: () => import('pages/embeds/FillmapManager.vue'),
-        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false })
+        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
       }
     ]
   },
