@@ -1,7 +1,6 @@
 <template>
   <article class="document-container q-pa-md">
-    <h1 v-if="docReady" :contenteditable="isInEditView"
-        @input="e=>name=e.target.innerText">
+    <h1 v-if="docReady && !refreshing" :contenteditable="isInEditView" @input="e=>name=e.target.innerText">
       {{ initialName }}
     </h1>
     <div v-if="docReady" class="dd-fields-container page" :class="{'dd-edit-view': isInEditView, 'dd-capture-view': isInCaptureView, 'dd-print-view': isInPrintView}">
@@ -41,7 +40,7 @@
                :color="isDirty ? 'info' : 'grey-7'" />
       </div>
     </template>
-    <q-inner-loading :showing="downloading" />
+    <q-inner-loading :showing="downloading || refreshing" />
   </article>
 </template>
 
@@ -73,6 +72,7 @@ export default class Document extends Vue {
   manager: DocumentEditionManager = {} as any;
   fields: DDField[] = [];
   docReady = false;
+  refreshing = false;
   creatingNewDocument:boolean = false
   initialName: string = "";
   downloading:boolean = false;
@@ -237,6 +237,15 @@ export default class Document extends Vue {
     } else {
       throw new Error('Unable to save the document as a new document')
     }
+  }
+
+  async refreshDocument () {
+    this.refreshing = true
+    await this.manager.refreshDocument()
+    await this.$nextTick()
+    this.initialName = this.manager.name;
+    this.fields = this.manager.fields;
+    this.refreshing = false
   }
 
   // Used when an external window request the fields
