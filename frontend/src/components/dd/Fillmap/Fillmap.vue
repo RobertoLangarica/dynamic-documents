@@ -10,29 +10,33 @@
     </div>
     <div class="col row justify-between" :class="{'content':source && destination, 'content-no-overflow':!source || !destinationFields}" style="position:relative;">
       <!-- SOURCE -->
-      <div class="col-5 dd-edit-view">
+      <div class="col-5 dd-edit-view" style="position:relative;">
         <field-group-component v-if="source"
                                :fields="source.fields"
                                :fillmap_view_src="true"
                                @drag_fill="onFill"
                                class="col-12"
         />
+        <div v-if="!source || loading_src" class="loading_container">
+          <div class="bg" />
+          <q-spinner color="primary" />
+        </div>
       </div>
       <!-- DESTINATION -->
-      <div class="col-5 dd-edit-view">
+      <div class="col-5 dd-edit-view" style="position:relative;">
         <field-group-component v-if="destination"
                                :fields="destinationFields"
                                :fillmap_view_dest="true"
                                @remove_fill="onRemoveFill"
                                class="col-12"
         />
-      </div>
-      <div v-if="!source || !destination || loading" class="loading_container">
-        <div class="bg" />
-        <q-spinner color="primary" />
+        <div v-if="!destination || loading_dest" class="loading_container">
+          <div class="bg" />
+          <q-spinner color="primary" />
+        </div>
       </div>
     </div>
-    <div class="col-auto row justify-end q-pa-md q-col-gutter-x-xl">
+    <div v-if="!embedded" class="col-auto row justify-end q-pa-md q-col-gutter-x-xl">
       <div><q-btn color="secondary" flat label="Cancelar" @click="onCancel" /></div>
       <div><q-btn color="primary" label="Aceptar cambios" @click="onSaveChanges" /></div>
     </div>
@@ -59,7 +63,8 @@ export default class Fillmap extends Vue {
 
     changes:IFillmap = {} as any
     fieldCapturedValues:{id:string, value:any}[] = []
-    loading:boolean = false
+    loading_dest:boolean = false
+    loading_src:boolean = false
     initializing:boolean = false
 
     @Watch('source', { immediate: true })
@@ -70,9 +75,9 @@ export default class Fillmap extends Vue {
         // Initialize again when both destination and source exists
         this.initializing = true
         // Load the fillmap
-        this.loading = true
+        this.loading_src = true
         await this.$store.dispatch('fillmaps/getFillmap', { source: value.type, destination: this.destination.type })
-        this.loading = false
+        this.loading_src = false
 
         this.$nextTick(() => {
           this.autoFill()
@@ -89,9 +94,9 @@ export default class Fillmap extends Vue {
         // Initialize again when both destination and source exists
         this.initializing = true
         // Load the fillmap
-        this.loading = true
+        this.loading_dest = true
         await this.$store.dispatch('fillmaps/getFillmap', { source: this.source.type, destination: value.type })
-        this.loading = false
+        this.loading_dest = false
 
         this.$nextTick(() => {
           this.autoFill()
@@ -246,6 +251,11 @@ export default class Fillmap extends Vue {
       }
       this.$emit('save', toSend)
     }
+
+    get embedded () {
+      // @ts-ignore
+      return this.$root.invisibleDialogs
+    }
 }
 </script>
 
@@ -288,8 +298,8 @@ export default class Fillmap extends Vue {
 }
 
 .loading_container .q-spinner {
-    width: 3.5rem;
-    height: 3.5rem;
-    margin-top: 25%;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-top: 30%;
 }
 </style>
