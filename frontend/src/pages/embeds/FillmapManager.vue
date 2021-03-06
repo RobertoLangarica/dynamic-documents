@@ -1,6 +1,6 @@
 <template>
   <div v-if="authorized" class="column" style="max-height: 100vh; height: 100vh;">
-    <div class="col-auto row justify-between" v-if="!invisibleDialogs">
+    <div class="col-auto row justify-between" v-if="!embedded">
       <q-select
         class="col-4 q-pt-sm"
         v-model="selectedSrc"
@@ -19,7 +19,7 @@
       />
     </div>
 
-    <fillmap class="col" :source="source" :destination="destination" @save="onSaveChanges" @cancel="onCancel" />
+    <fillmap ref="fillmap" class="col" :source="source" :destination="destination" @save="onSaveChanges" @cancel="onCancel" />
   </div>
   <span v-else />
 </template>
@@ -53,7 +53,7 @@ export default class FillmapManager extends mixins(EmbedMixin) {
 
     async mounted () {
       // TODO REMOVE this
-      if (!this.invisibleDialogs) {
+      if (!this.embedded) {
         void this.$store.dispatch("getDocuments");
       }
 
@@ -97,7 +97,7 @@ export default class FillmapManager extends mixins(EmbedMixin) {
     }
 
     onCancel () {
-      if (!this.invisibleDialogs) {
+      if (!this.embedded) {
         this.$router.go(-1)
       } else {
         this.sendMessage('fillmap_canceled')
@@ -105,6 +105,7 @@ export default class FillmapManager extends mixins(EmbedMixin) {
     }
 
     async onSaveChanges ({ fillmap, captured_values }:{fillmap:IFillmap, captured_values:{id:string, value:any}[]}) {
+      console.log('saving changes')
       let saving:Promise<any>[] = []
       // Saving doc
       if (this.destination?.isDocument) {
@@ -123,7 +124,7 @@ export default class FillmapManager extends mixins(EmbedMixin) {
           }
 
           // Save completed
-          if (!this.invisibleDialogs) {
+          if (!this.embedded) {
             // go back
             this.$router.go(-1)
           } else {
@@ -140,7 +141,6 @@ export default class FillmapManager extends mixins(EmbedMixin) {
     async onMessage (message, data, handled = false) {
       switch (message) {
         case 'set_destination_document':
-          console.log('Receiving', data)
           handled = true
           this.destination = null
           this.destination = await this.getDocumentObjectType(data.id)
@@ -154,6 +154,10 @@ export default class FillmapManager extends mixins(EmbedMixin) {
           handled = true
           this.destination = data
           break;
+        case 'save_changes':
+          handled = true
+          this.$refs.fillmap.onSaveChanges()
+          break;
         default:
           if (!handled) {
             console.log(`Unrecognized event->${message}`)
@@ -161,10 +165,9 @@ export default class FillmapManager extends mixins(EmbedMixin) {
       }
     }
 
-    get invisibleDialogs () {
-      return true
+    get embedded () {
       // @ts-ignore
-    //   return this.$root.invisibleDialogs
+      return this.$root.invisibleDialogs
     }
 }
 </script>
