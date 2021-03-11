@@ -40,7 +40,7 @@ import {
 } from "tiptap-extensions";
 import EditorMenu from "./EditorMenu.vue";
 import FieldEmbeded from "./FieldEmbedded";
-import FieldSelectorDialog from "components/dd/FieldSelectorDialog.vue";
+import FieldSelectorDialog from "src/components/dd/FieldSelector/FieldSelectorDialog.vue";
 
 @Component({
   components: { EditorContent, EditorMenuBar, EditorMenu },
