@@ -5,6 +5,8 @@ import { Type } from "class-transformer";
 export enum EFieldComponentID {
   INPUT_TEXT = 'input-text',
   INPUT_NUMBER = 'input-number',
+  INPUT_INTEGER = 'input-integer',
+  INPUT_PERCENTAGE = 'input-percentage',
   INPUT_CURRENCY = 'input-currency',
   GROUP = 'group',
   INPUT_PARAGRAPH = 'input-paragraph',
@@ -37,8 +39,10 @@ export class DDFieldType extends DDSimpleEntity {
 export const FieldComponentUI: Record<EFieldComponentID, string> = {
   [EFieldComponentID.INPUT_TEXT]: 'nq-input',
   [EFieldComponentID.INPUT_PARAGRAPH]: 'field-text-editor-component',
-  [EFieldComponentID.INPUT_NUMBER]: 'nq-input-number',
-  [EFieldComponentID.INPUT_CURRENCY]: 'nq-input-currency',
+  [EFieldComponentID.INPUT_NUMBER]: 'input-number-wrapper',
+  [EFieldComponentID.INPUT_INTEGER]: 'input-number-wrapper',
+  [EFieldComponentID.INPUT_PERCENTAGE]: 'input-number-wrapper',
+  [EFieldComponentID.INPUT_CURRENCY]: 'input-number-wrapper',
   [EFieldComponentID.NOT_DEFINED]: 'nq-input',
   [EFieldComponentID.GROUP]: 'field-group-component'
 }

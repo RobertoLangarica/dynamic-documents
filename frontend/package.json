@@ -21,6 +21,7 @@
     "class-validator": "^0.12.2",
     "core-js": "^3.6.5",
     "js-file-download": "^0.4.12",
+    "numeral": "^2.0.6",
     "prosemirror-utils": "^0.9.6",
     "quasar": "^1.15.1",
     "reflect-metadata": "^0.1.13",
