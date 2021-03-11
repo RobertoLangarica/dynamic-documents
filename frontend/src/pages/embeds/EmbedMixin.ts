@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import Transforms from 'src/transformations'
 import IDDView from 'src/dynamic-documents/src/core/IDDView'
-import { Prop, Watch } from 'vue-property-decorator'
+import { Prop } from 'vue-property-decorator'
 
 @Component
 export default class EmbedMixin extends Vue {
@@ -46,8 +46,8 @@ export default class EmbedMixin extends Vue {
 
     mounted () {
       // This hook is called before the component hook
-      this.$root.$on('send_message', this.onSendMessage.bind(this))
-      window.addEventListener("message", this.onEventMessageReceived.bind(this), false);
+      this.$root.$on('send_message', this.onSendMessage)
+      window.addEventListener("message", this.onEventMessageReceived, false);
 
       this.sendMessage('embed_mounted')
     }
@@ -55,8 +55,8 @@ export default class EmbedMixin extends Vue {
     addDocRefListeners () {
       this.$nextTick(() => {
         if (!this.docRef_initialized && !!this.docRef) {
-          this.docRef.$on('mount_ready', this.onDocReady.bind(this))
-          this.docRef.$on('loaded_document', this.onDocLoaded.bind(this))
+          this.docRef.$on('mount_ready', this.onDocReady)
+          this.docRef.$on('loaded_document', this.onDocLoaded)
           // only once
           this.docRef_initialized = true
         }
@@ -65,12 +65,12 @@ export default class EmbedMixin extends Vue {
 
     beforeDestroy () {
     // This hook is called before the component hook
-      this.$root.$off('send_message')
-      window.removeEventListener('message', this.onEventMessageReceived.bind(this))
+      this.$root.$off('send_message', this.onSendMessage)
+      window.removeEventListener('message', this.onEventMessageReceived)
 
       if (this.docRef) {
-        this.docRef.$off('mount_ready')
-        this.docRef.$off('loaded_document')
+        this.docRef.$off('mount_ready', this.onDocReady)
+        this.docRef.$off('loaded_document', this.onDocLoaded)
       }
     }
 
@@ -111,10 +111,6 @@ export default class EmbedMixin extends Vue {
         case 'cancel_dialog_action':
           handled = true
           this.$root.$emit(message, data)
-          break;
-        case 'apply_transforms':
-          handled = true
-          this.sendMessage('transforms_applied', Transforms.apply(data.transforms, data.value))
           break;
         case 'get_fields':
           handled = true

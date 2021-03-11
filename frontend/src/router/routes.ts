@@ -77,6 +77,24 @@ const routes: RouteConfig[] = [
         path: 'capture/map',
         component: () => import('pages/embeds/FillmapManager.vue'),
         props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
+      },
+      {
+        name: 'field_type_selection',
+        path: 'field/type/selection',
+        component: () => import('components/dd/FieldTypeSelection/FieldTypeSelection.vue'),
+        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
+      },
+      {
+        name: 'field_config',
+        path: 'field/config',
+        component: () => import('components/dd/FieldConfig/FieldConfig.vue'),
+        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
+      },
+      {
+        name: 'field_selector',
+        path: 'field/selector',
+        component: () => import('components/dd/FieldSelector/FieldSelector.vue'),
+        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
       }
     ]
   },
