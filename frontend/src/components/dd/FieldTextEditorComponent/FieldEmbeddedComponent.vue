@@ -33,7 +33,7 @@ import {
 import FieldEmbeded from "./FieldEmbedded";
 import Transforms from 'src/transformations'
 
-import TransformationsDialog from "components/dd/TransformationsDialog.vue";
+import TransformationsDialog from "src/components/dd/Transformations/TransformationsDialog.vue";
 
 @Component({
   components: {
@@ -117,7 +117,20 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 
   get transformedValue () {
-    return Transforms.apply(this.transformations.split(','), this.value)
+    let appliedTransforms = this.transformations.split(',').map(name=>{
+      let splitted = name.split(':')
+      let transform = this.$store.getters.transformation(splitted[0])
+
+      if(splitted.length > 1){
+        // Override input
+        let parameters =  { input:splitted[1] }
+        parameters = Object.assign({},transform.parameters,parameters)
+        Object.assign(transform,{ parameters:parameters })
+      }
+
+      return transform
+    })
+    return Transforms.apply(appliedTransforms, this.value)
   }
 
   get isParagraph () {

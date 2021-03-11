@@ -94,6 +94,9 @@ const getters: GetterTree<IDDState, StateInterface> = {
 
   fieldsTypesByCategory: (state: IDDState) => (category: string): DDFieldType[] => {
     return state.types.filter((fieldType: DDFieldType) => fieldType.category === category)
+  },
+  transformation:(state:IDDState) => (name:string)=>{
+    return state.transformations.find(t=>t.name === name)
   }
 }
 

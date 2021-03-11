@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 
-const numberToText = (n) => {
+const numberToText = (n, params) => {
   let numero = parseInt(n + '')
 
   let respuesta = ''

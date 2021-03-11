@@ -1,7 +1,8 @@
 import { isNumber, isNumberString } from 'class-validator'
 import number_to_text from './number_to_text'
+import date_format from './date_format'
 
-const firstLetterUppercase = (value) => {
+const firstLetterUppercase = (value, params) => {
   let split = String(value).split(' ')
   let result = ''
   split.forEach((s, index) => {
@@ -23,21 +24,23 @@ const numberTransformer = (v, transformer) => {
 
   return v
 }
+
 const transformations = {
+  date_format,
   number_to_text,
   first_letter_upercase: firstLetterUppercase,
-  lowercase: v => String(v).toLowerCase(),
-  uppercase: v => String(v).toUpperCase(),
-  ceil: v => numberTransformer(v, Math.ceil),
-  round: v => numberTransformer(v, Math.round),
-  floor: v => numberTransformer(v, Math.floor)
+  lowercase: (v, params) => String(v).toLowerCase(),
+  uppercase: (v, params) => String(v).toUpperCase(),
+  ceil: (v, params) => numberTransformer(v, Math.ceil),
+  round: (v, params) => numberTransformer(v, Math.round),
+  floor: (v, params) => numberTransformer(v, Math.floor)
 }
 
 export default (applied, value) => {
   let result = value
   applied.forEach(t => {
-    if (transformations[`${t}`]) {
-      result = transformations[`${t}`](result)
+    if (transformations[`${t.name}`]) {
+      result = transformations[`${t.name}`](result, t.parameters)
     }
   })
   return result
