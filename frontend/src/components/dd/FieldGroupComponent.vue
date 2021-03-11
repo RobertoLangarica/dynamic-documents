@@ -54,12 +54,12 @@ import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 
 import draggable from "vuedraggable";
-import FieldTypeDialog from "components/FieldTypeDialog.vue";
 import FieldComponent from "components/dd/FieldComponent.vue";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
+import FieldTypeSelectionDialog from "./FieldTypeSelection/FieldTypeSelectionDialog.vue";
 
-@Component({ name: 'field-group-component', components: { draggable, 'field-type-dialog': FieldTypeDialog, 'field-component': FieldComponent } })
+@Component({ name: 'field-group-component', components: { draggable, FieldTypeSelectionDialog, 'field-component': FieldComponent } })
 export default class FieldGroupComponent extends Vue {
 @Prop({ required: false, default: '' }) readonly group!:string
 @Prop({ required: true }) readonly fields!:DDField[]
@@ -96,7 +96,7 @@ onDragEnded (e:{oldIndex:number, newIndex:number}) {
 showAddFieldDialog () {
   this.$q
     .dialog({
-      component: FieldTypeDialog,
+      component: FieldTypeSelectionDialog,
       parent: this,
       text: "something"
     })

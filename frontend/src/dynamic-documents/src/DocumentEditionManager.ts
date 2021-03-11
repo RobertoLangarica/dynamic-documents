@@ -270,7 +270,6 @@ export class DocumentEditionManager {
     if (!change.id) {
       throw new Error('An id should be provided for any field change')
     }
-
     if (fieldRef) {
       // local changes
       Object.assign(fieldRef, change)
@@ -278,6 +277,14 @@ export class DocumentEditionManager {
 
     // list for remote changes
     this.changedFields.push(change)
+
+    // Triggering some reactivity
+    let index = this.fields.findIndex(f => f.id === change.id)
+    if (index >= 0) {
+      let field = this.fields[index]
+      this.fields.splice(index, 1)
+      this.fields.splice(index, 0, field)
+    }
   }
 
   getCleanCopy () {

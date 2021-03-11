@@ -31,7 +31,7 @@
         v-model="value"
         :is="getComponent(field.type)"
         :class="`dd-field dd-${field.type.component}`"
-        :label="field.label"
+        :label="field.label || field.name"
         :hint="!isInPrintView ? field.hint : null"
         :readonly="isReadOnly"
         :group="field.id"
@@ -88,9 +88,17 @@ export default class FieldComponent extends Vue {
   readonly debounce!: number;
 
   initialName: string = "";
-
+  ignoreNextNameChange: boolean = false
   mounted () {
     this.initialName = this.field.name;
+  }
+
+  @Watch('field.name')
+  onNameChanged (value, old) {
+    if (!this.ignoreNextNameChange) {
+      this.initialName = value
+    }
+    this.ignoreNextNameChange = false
   }
 
   get show () {
@@ -111,6 +119,7 @@ export default class FieldComponent extends Vue {
 
   set name (value) {
     this.field.name = value;
+    this.ignoreNextNameChange = true
     this.notifyUpdate({ id: this.field.id, name: value } as DDField); // Sending only the data that changed
   }
 
@@ -149,8 +158,6 @@ export default class FieldComponent extends Vue {
 
   onShowConfigDiaog () {
     this.$q.dialog({
-      maximized: true,
-      fullWidth: true,
       component: FieldConfigDialog,
       parent: this,
       field: this.field
