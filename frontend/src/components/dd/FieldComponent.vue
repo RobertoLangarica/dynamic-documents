@@ -68,14 +68,14 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import {
   DDFieldType
 } from "src/dynamic-documents/src/core/DDFieldType";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
-import FieldTypeDialog from "components/FieldTypeDialog.vue";
-import FieldConfigDialog from "components/dd/FieldConfigDialog.vue";
+import FieldConfigDialog from "src/components/dd/FieldConfig/FieldConfigDialog.vue";
 import draggable from 'vuedraggable'
+import FieldTypeSelectionDialog from "./FieldTypeSelection/FieldTypeSelectionDialog.vue";
 
 @Component({ components: { FieldConfigDialog, draggable } })
 export default class FieldComponent extends Vue {
@@ -138,7 +138,7 @@ export default class FieldComponent extends Vue {
   showAddFieldDialog () {
     this.$q
       .dialog({
-        component: FieldTypeDialog,
+        component: FieldTypeSelectionDialog,
         parent: this,
         text: "something"
       })
