@@ -14,17 +14,6 @@
             <q-icon name="date_range">
             </q-icon>
         </template>
-        <!-- <template v-slot:append>
-            <q-btn flat round icon="date_range" :disable="readonly">
-                <q-popup-proxy @before-show="onBeforeOpen" transition-show="scale" transition-hide="scale">
-                    <q-date v-model="popupDate" :mask="mask" years-in-month-view>
-                    <div class="row items-center justify-end q-gutter-sm">
-                        <q-btn label="Aceptar" color="primary" flat @click="save" v-close-popup />
-                    </div>
-                    </q-date>
-                </q-popup-proxy>
-            </q-btn>
-        </template> -->
     </nq-field>
 </template>
 
