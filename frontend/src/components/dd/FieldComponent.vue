@@ -31,7 +31,7 @@
         v-model="value"
         :is="getComponent(field.type)"
         :class="`dd-field dd-${field.type.component}`"
-        :label="field.label || field.name"
+        :label="isInEditView ? field.label : field.label || field.name"
         :hint="!isInPrintView ? field.hint : null"
         :readonly="isReadOnly"
         :group="field.id"
