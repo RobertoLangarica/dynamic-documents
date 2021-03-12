@@ -1,7 +1,5 @@
 <template>
-    <span>
-        <input-date v-model="value" v-bind="$attrs"/>
-    </span>
+    <input-date v-model="value" v-bind="$attrs"/>
 </template>
 
 <script lang="ts">

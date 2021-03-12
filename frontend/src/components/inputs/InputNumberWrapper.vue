@@ -1,5 +1,4 @@
 <template>
-    <span>
     <input-number 
         v-model="value" 
         :pattern="pattern" 
@@ -7,7 +6,6 @@
         :suffix="suffix" 
         v-bind="$attrs"
         />
-        </span>
 </template>
 
 <script lang="ts">
