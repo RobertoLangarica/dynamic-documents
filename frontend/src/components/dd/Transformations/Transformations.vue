@@ -1,7 +1,7 @@
 <template>
     <div>
         <q-select
-            label="Transformaciones"
+            label=""
             dense
             options-dense
             :options="transformOptions"
@@ -9,7 +9,7 @@
             multiple
             map-options
             emit-value
-            display-value=""
+            display-value="Transformaciones"
             @input="onSelected"
         >
             <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
@@ -142,7 +142,6 @@ export default class Transformations extends mixins(EmbedMixin) {
         this.selected = []
         this.initialTransforms.forEach(s => {
             let splitted = s.split(':')
-            console.log(splitted)
             let name = splitted[0]
             let tr = this.transformations.find(t => t.value.name === name);
             if (tr) {
