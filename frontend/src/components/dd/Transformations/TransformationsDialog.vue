@@ -77,6 +77,7 @@ export default class TransformationsDialog extends Vue {
     }
 
     onSelected (selected) {
+      console.log('SELECTED:',selected)
       this.$emit("ok", selected);
       this.show = false
     }
