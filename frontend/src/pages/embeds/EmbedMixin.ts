@@ -75,7 +75,7 @@ export default class EmbedMixin extends Vue {
     }
 
     onSendMessage ({ message, data }) {
-      this.sendMessage(message, data || {})
+      this.sendMessage(message, data !== undefined ? data : {})
     }
 
     onEventMessageReceived (event:{[key:string]:any}) {
@@ -165,7 +165,6 @@ export default class EmbedMixin extends Vue {
       let event = JSON.stringify({
         [message]: data
       })
-
       window.parent.postMessage(event, '*')
     }
 }
