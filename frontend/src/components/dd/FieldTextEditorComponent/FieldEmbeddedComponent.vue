@@ -8,7 +8,9 @@
     </template>
     <template v-else>
       <span v-if="!isParagraph">{{ transformedValue }}</span>
-      <editor-content v-else :editor="editor" :readonly="true" :fields="fields" />
+      <template v-else>
+        <editor-content v-if="!!editor" :editor="editor" :readonly="true" :fields="fields" />
+      </template>
     </template>
     <transformations-dialog v-model="showTransforms" :field_value="value" @ok="onSaveTransformations" :initial_transformations="transformations.split(',')" />
   </div>
@@ -47,9 +49,39 @@ export default class FieldEmbeddedComponent extends Vue {
   @Prop({ required: false }) readonly view;
 
   showTransforms = false
-  editor: Editor = {};
+  editor: Editor|null = null;
   selected:boolean = false
+  created () {
+    
+  }
 
+  @Watch('field', {immediate: true})
+  onFieldChanged(field){
+    if(!!field){
+      if(field.type.component === EFieldComponentID.INPUT_PARAGRAPH){
+        if(this.editor){
+          this.editor.setContent(field.value);
+        } else {
+          this.editor = new Editor({
+            extensions: [
+              new BulletList(),
+              new Heading({ levels: [1, 2, 3] }),
+              new ListItem(),
+              new OrderedList(),
+              new Bold(),
+              new Italic(),
+              new Strike(),
+              new Underline(),
+              new History(),
+              new FieldEmbeded()
+            ],
+            editable: false,
+            content: field.value
+          });
+        }
+      }
+    }
+  }
   @Watch('view.state.selection')
   onSelectionChange (value, old) {
     if (!value.empty) {
@@ -110,9 +142,6 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 
   get value () {
-    if (this.field) {
-      this.editor.setContent(this.field.value);
-    }
     return this.field ? this.field.value : "";
   }
 
@@ -147,9 +176,7 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 
   get isParagraph () {
-    return (
-      this.field?.type.component === EFieldComponentID.INPUT_PARAGRAPH || false
-    );
+    return this.field ? this.field.type.component === EFieldComponentID.INPUT_PARAGRAPH : false
   }
 
   get readonly () {
@@ -165,25 +192,6 @@ export default class FieldEmbeddedComponent extends Vue {
     return (this.fields as any[]).find(
       (f:{[key:string]:any}) => f.id === this.field_id
     ) as DDField;
-  }
-
-  created () {
-    this.editor = new Editor({
-      extensions: [
-        new BulletList(),
-        new Heading({ levels: [1, 2, 3] }),
-        new ListItem(),
-        new OrderedList(),
-        new Bold(),
-        new Italic(),
-        new Strike(),
-        new Underline(),
-        new History(),
-        new FieldEmbeded()
-      ],
-      editable: false,
-      content: this.field.value
-    });
   }
 
   onSettings () {
