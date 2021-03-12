@@ -95,6 +95,12 @@ const routes: RouteConfig[] = [
         path: 'field/selector',
         component: () => import('components/dd/FieldSelector/FieldSelector.vue'),
         props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
+      },
+      {
+        name: 'field_transforms',
+        path: 'field/transforms',
+        component: () => import('components/dd/Transformations/Transformations.vue'),
+        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
       }
     ]
   },
