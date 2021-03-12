@@ -117,10 +117,12 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 
   get transformedValue () {
-    let appliedTransforms = this.transformations.split(',').map(name=>{
+    let appliedTransforms = this.transformations.split(',')
+    .filter(name=>!!name)
+    .map(name=>{
       let splitted = name.split(':')
-      let transform = this.$store.getters.transformation(splitted[0])
-
+      let transform = this.deepTransformCopy(this.$store.getters.transformation(splitted[0]))
+      
       if(splitted.length > 1){
         // Override input
         let parameters =  { input:splitted[1] }
@@ -131,6 +133,17 @@ export default class FieldEmbeddedComponent extends Vue {
       return transform
     })
     return Transforms.apply(appliedTransforms, this.value)
+  }
+
+  deepTransformCopy(target){
+      let result = Object.assign({},target)
+      Object.keys(result).forEach(key=>{
+          if(typeof result[key] === 'object'){
+              result[key] = Object.assign({},result[key])
+          }
+      })
+
+      return result
   }
 
   get isParagraph () {
