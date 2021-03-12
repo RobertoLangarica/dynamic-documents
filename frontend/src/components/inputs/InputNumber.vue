@@ -25,7 +25,7 @@ export default class InputNumber extends Vue{
   @Prop({ type: String, default: 'md'}) size!:string
   @Prop({ type: String, default: 'right'}) align!:string
   
-  focused = false
+  focused:boolean = false
   formattedValue:string|number = 0
 
   created(){

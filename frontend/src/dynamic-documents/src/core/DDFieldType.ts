@@ -8,6 +8,7 @@ export enum EFieldComponentID {
   INPUT_INTEGER = 'input-integer',
   INPUT_PERCENTAGE = 'input-percentage',
   INPUT_CURRENCY = 'input-currency',
+  INPUT_DATE = 'date-time',
   GROUP = 'group',
   INPUT_PARAGRAPH = 'input-paragraph',
   NOT_DEFINED = ''
@@ -43,6 +44,7 @@ export const FieldComponentUI: Record<EFieldComponentID, string> = {
   [EFieldComponentID.INPUT_INTEGER]: 'input-number-wrapper',
   [EFieldComponentID.INPUT_PERCENTAGE]: 'input-number-wrapper',
   [EFieldComponentID.INPUT_CURRENCY]: 'input-number-wrapper',
+  [EFieldComponentID.INPUT_DATE]: 'input-date-wrapper',
   [EFieldComponentID.NOT_DEFINED]: 'nq-input',
   [EFieldComponentID.GROUP]: 'field-group-component'
 }

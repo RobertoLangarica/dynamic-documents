@@ -1,5 +1,5 @@
 <template>
-<span>
+    <span>
     <input-number 
         v-model="value" 
         :pattern="pattern" 

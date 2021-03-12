@@ -1,0 +1,24 @@
+<template>
+    <span>
+        <input-date v-model="value" v-bind="$attrs"/>
+    </span>
+</template>
+
+<script lang="ts">
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import { DDField } from "src/dynamic-documents/src/core/DDField";
+import InputDate from './InputDate.vue'
+
+@Component({name:'InputDateWrapper', components:{'input-date':InputDate}})
+export default class InputDateWrapper extends Vue{
+    @Prop({ required: true }) readonly field!: DDField;
+
+    get value(){
+        return this.field.value
+    }
+
+    set value(value){
+        this.$emit('input', value)
+    }
+}
+</script>
