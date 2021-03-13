@@ -42,10 +42,8 @@ export default class InputDate extends Vue{
     }
 
     @Watch('value')
-    onValueChanged (newValue: number|string) {
-        if (!this.focused) {
+    onValueChanged (newValue: string) {
         this.formattedValue = this.format(newValue)
-        }
     }
 
     onBeforeOpen(){
