@@ -1,10 +1,14 @@
-import { SimpleEntity } from "src/common/entities/simple_entity.entity";
-import { Entity, Column, ManyToMany, JoinTable } from "typeorm";
-import { IsJSON } from "class-validator";
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('transformations')
-export class Transformation extends SimpleEntity {
-    @Column({ type: 'jsonb', default: '{}' }) @IsJSON()
-    parameters: string
+export class Transformation {
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
+
+    @Column()
+    name: string;
+
+    @Column({ type: 'jsonb', default: '{}' })
+    parameters: {[key:string]:any}
 
 }
