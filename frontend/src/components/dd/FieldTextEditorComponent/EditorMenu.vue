@@ -2,7 +2,7 @@
   <editor-menu-bar class="menubar" :class="{ 'is-hidden':hidden }" :editor="editor" v-slot="{ commands, isActive }">
     <div class="row justify-start">
       <q-btn flat dense class="col-1 menubar__button" @click="$emit('embed_field',commands.field_embedded) " size="xs">
-        <q-icon name="image" />
+        <q-icon name="queue" />
       </q-btn>
 
       <q-btn flat dense class="col-1 menubar__button" :class="{ 'is-active': isActive.bold() }" @click="commands.bold" size="xs">
