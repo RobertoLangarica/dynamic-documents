@@ -74,8 +74,20 @@ export default class FieldTypeSelection extends mixins(EmbedMixin) {
     switch (component) {
       case 'input-paragraph':
         return 'format_align_justify'
+      case 'date-time':
+        return 'event'
+      case 'input-currency':
+        return 'paid'
+      case 'input-number':
+        return 'calculate'
+      case 'input-integer':
+        return 'looks_6'
+      case 'input-percentage':
+        return 'timelapse'
+      case 'input-text':
+        return 'text_fields'
       case 'group':
-        return 'select_all'
+        return 'category'
       default:
         return 'keyboard'
     }
