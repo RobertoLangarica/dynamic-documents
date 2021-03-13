@@ -1,6 +1,7 @@
 import { isNumber, isNumberString } from 'class-validator'
 import number_to_text from './number_to_text'
 import date_format from './date_format'
+import format_number from './format_number'
 
 const firstLetterUppercase = (value, params) => {
   let split = String(value).split(' ')
@@ -12,9 +13,9 @@ const firstLetterUppercase = (value, params) => {
   return result
 }
 
-const numberTransformer = (v, transformer) => {
+export const numberTransformer = (v, transformer) => {
   let r = v
-  if (isNumberString(v)) {
+  if (isNumberString(r)) {
     r = parseFloat(v)
   }
 
@@ -33,7 +34,10 @@ const transformations = {
   uppercase: (v, params) => String(v).toUpperCase(),
   ceil: (v, params) => numberTransformer(v, Math.ceil),
   round: (v, params) => numberTransformer(v, Math.round),
-  floor: (v, params) => numberTransformer(v, Math.floor)
+  floor: (v, params) => numberTransformer(v, Math.floor),
+  number: format_number,
+  percentage: format_number,
+  currency: format_number
 }
 
 export default (applied, value) => {
