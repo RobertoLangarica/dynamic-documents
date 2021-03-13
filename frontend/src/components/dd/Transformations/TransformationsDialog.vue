@@ -12,8 +12,8 @@
           :initial_options="initial_transformations"/>
       </q-card-section>
       <q-card-actions align="right" class="col-12">
-        <q-btn flat rounded color="secondary" label="Cancelar" @click="onCancel" />
-        <q-btn rounded color="primary" label="Aceptar" @click="onAccept" />
+        <q-btn flat color="secondary" label="Cancelar" @click="onCancel" />
+        <q-btn color="primary" label="Aceptar" @click="onAccept" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -77,7 +77,6 @@ export default class TransformationsDialog extends Vue {
     }
 
     onSelected (selected) {
-      console.log('SELECTED:',selected)
       this.$emit("ok", selected);
       this.show = false
     }
