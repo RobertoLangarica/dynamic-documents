@@ -12,7 +12,7 @@
         <editor-content v-if="!!editor" :editor="editor" :readonly="true" :fields="fields" />
       </template>
     </template>
-    <transformations-dialog v-model="showTransforms" :field_value="value" @ok="onSaveTransformations" :initial_transformations="transformations.split(',')" />
+    <transformations-dialog v-model="showTransforms" :field_value="value" @ok="onSaveTransformations" :initial_transformations="initial_transformations" />
   </div>
 </template>
 
@@ -33,7 +33,7 @@ import {
   History
 } from "tiptap-extensions";
 import FieldEmbeded from "./FieldEmbedded";
-import Transforms from 'src/transformations'
+import Transforms, {separator as transform_separator} from 'src/transformations'
 
 import TransformationsDialog from "src/components/dd/Transformations/TransformationsDialog.vue";
 
@@ -137,6 +137,10 @@ export default class FieldEmbeddedComponent extends Vue {
     this.updateAttrs({ transformations: value });
   }
 
+  get initial_transformations(){
+    return this.transformations.split(transform_separator)
+  }
+
   get name (): string {
     return this.field ? this.field.name : "";
   }
@@ -146,7 +150,7 @@ export default class FieldEmbeddedComponent extends Vue {
   }
 
   get transformedValue () {
-    let appliedTransforms = this.transformations.split(',')
+    let appliedTransforms = this.transformations.split(transform_separator)
     .filter(name=>!!name)
     .map(name=>{
       let splitted = name.split(':')

@@ -55,7 +55,7 @@
 <script lang="ts">
 import draggable from "vuedraggable";
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import Transforms from 'src/transformations'
+import Transforms, {separator as transform_separator} from 'src/transformations'
 import { mixins } from "vue-class-component";
 import EmbedMixin from "src/pages/embeds/EmbedMixin";
 
@@ -161,7 +161,7 @@ export default class Transformations extends mixins(EmbedMixin) {
                 name = t.name
             }
             return name
-        }).join(',')
+        }).join(transform_separator)
     }
 
     get transformedValue () {
