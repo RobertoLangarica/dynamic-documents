@@ -161,7 +161,7 @@ export default class EmbedMixin extends Vue {
       })
     }
 
-    sendMessage (message:string, data:{[key:string]:any} = {}) {
+    sendMessage (message:string, data:{[key:string]:any}|any = {}) {
       let event = JSON.stringify({
         [message]: data
       })
