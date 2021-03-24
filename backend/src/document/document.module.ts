@@ -6,11 +6,12 @@ import { Document } from "./document.entity";
 import { CategoryModule } from "src/categories/category.module";
 import { StatusModule } from "src/status/status.module";
 import { DocumentFilterModule } from "src/document_filter/doc_filter.module";
+import { FillmapModule } from "src/fillmaps/fillmap.module";
 
 @Module({
     controllers: [DocumentController],
     providers: [DocumentService],
-    imports: [TypeOrmModule.forFeature([Document]), CategoryModule, StatusModule, forwardRef(() => DocumentFilterModule)],
+    imports: [TypeOrmModule.forFeature([Document]), CategoryModule, StatusModule, forwardRef(() => DocumentFilterModule), FillmapModule],
     exports: [DocumentService]
 })
 export class DocumentModule { }

@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus, BadRequestException, NotFoundExc
 import { Document } from "./document.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
-import { DocumentDto } from "./dto/document.dto"
+import { CreateDocumentDto, DocumentDto } from "./dto/document.dto"
 import { User } from "src/user/user.entity"
 import { StatusService } from "src/status/status.service"
 import { DocumentConfig } from "./document.config"
@@ -10,6 +10,8 @@ import { DocumentFilterService } from "src/document_filter/doc_filter.service"
 import { FDataDependent, Field } from "src/document/dto/field.dto"
 import { v4 as uuidv4 } from 'uuid'
 import { isNotEmpty } from "class-validator"
+import { Fillmap } from "src/fillmaps/fillmap.entity"
+import { FillmapService } from "src/fillmaps/fillmap.service"
 
 @Injectable()
 export class DocumentService {
@@ -18,6 +20,7 @@ export class DocumentService {
         public readonly doc_repo: Repository<Document>,
         private readonly status_service: StatusService,
         private readonly filter_service: DocumentFilterService,
+        private readonly fillmap_service: FillmapService,
     ) { }
 
     async findAll(categories_query: any, status_query: any, includeTemplates:boolean = false, includeDocuments:boolean = true): Promise<Object> {
@@ -80,7 +83,7 @@ export class DocumentService {
         await this.doc_repo.delete({ id: id })
     }
 
-    async addDocument(data: DocumentDto, isTemplate:boolean = false): Promise<Document> {
+    async addDocument(data: CreateDocumentDto, isTemplate:boolean = false): Promise<Document> {
         //Initial status
         data.status = await this.status_service.findByName(DocumentConfig.initialState)
         data.is_template = isTemplate
@@ -102,7 +105,7 @@ export class DocumentService {
         return document
     }
 
-    async addDocumentFromTemplate(data: DocumentDto): Promise<Document> {
+    async addDocumentFromTemplate(data: CreateDocumentDto): Promise<Document> {
         //Initial status
         data.status = await this.status_service.findByName(DocumentConfig.initialState)
 
@@ -131,6 +134,20 @@ export class DocumentService {
 
         document.fields = sorted
 
+
+        // autofill data
+        if(data.autofill){
+            // get fillmaps
+            let fillmaps = (await this.fillmap_service.findBy('',document.type,true)).items
+
+            data.autofill.forEach(auto=>{
+                let fillmap = fillmaps.find(f=>f.source_type === auto.type)
+                if(fillmap){
+                    this.autoFill(fillmap, document, auto)
+                }
+            })
+        }
+        
         try {
             document = await this.doc_repo.save(document)
         } catch (e) {
@@ -144,6 +161,17 @@ export class DocumentService {
         document.warnings = data.warnings;
 
         return document
+    }
+
+    autoFill(fillmap:Fillmap, document:Document, data:{type:string, data:{[key:string]:any} }){
+        fillmap.fields.forEach(map => {
+            let src = data.data[map.foreign]
+            let dest = document.fields.find(s => s.id === map.destination || s.map_id === map.destination)
+            if (!!dest && !!src) {
+                // Valid change
+                dest.value = src
+            }
+          })
     }
 
     getReferencedField(from: Document, id: string) {

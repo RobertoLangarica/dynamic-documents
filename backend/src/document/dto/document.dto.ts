@@ -5,6 +5,7 @@ import { Type } from "class-transformer"
 import { DocumentVersion } from "./doc_version.dto"
 import { Field } from "src/document/dto/field.dto"
 import { Category } from "src/categories/category.entity"
+import { Fillmap } from "src/fillmaps/fillmap.entity"
 
 export class DocumentDto {
     @IsOptional() @IsUUID() @ApiPropertyOptional()
@@ -43,6 +44,7 @@ export class DocumentDto {
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
     source_id: string
+
 }
 
 export class CreateDocumentDto {
@@ -82,4 +84,7 @@ export class CreateDocumentDto {
 
     @IsOptional() @IsUUID() @ApiPropertyOptional()
     source_id: string
+
+    @IsOptional() @IsArray() @ApiPropertyOptional()
+    autofill: {type:string, data:{[key:string]:any} }[]
 }
