@@ -9,4 +9,6 @@ export interface IFillmap{
     source_type:string;
     destination_type:string;
     fields:IFillmapField[];
+    autofill:boolean;
+    name:string;
 }
