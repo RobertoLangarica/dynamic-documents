@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import Transforms from 'src/transformations'
 import IDDView from 'src/dynamic-documents/src/core/IDDView'
 import { Prop } from 'vue-property-decorator'
 
@@ -9,6 +8,7 @@ export default class EmbedMixin extends Vue {
 @Prop({ required: false, type: String, default: '' }) readonly download_auth!:string
 @Prop({ required: false, type: Boolean, default: false }) readonly need_auth!:boolean
 @Prop({ required: false, type: Boolean, default: false }) readonly invisibleDialogs!:boolean
+@Prop({ required: false, type: Number, default: 0 }) readonly initialView!:number
 
     doc_ref_identifier:string = 'doc_creation'
     available_views = [

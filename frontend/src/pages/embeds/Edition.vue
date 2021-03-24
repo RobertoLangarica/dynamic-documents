@@ -5,6 +5,7 @@
           :id="id"
           :views="available_views"
           :downloadAuthorization="authorization"
+          :initialView="initialView"
           @hook:created="addDocRefListeners"
   />
   <span v-else />
