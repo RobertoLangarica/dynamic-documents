@@ -46,13 +46,13 @@ const routes: RouteConfig[] = [
         name: 'template_edition',
         path: 'template/edition/:id',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: true, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '', invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
+        props: route => ({ isTemplate: true, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '', invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false, initialView: route.query.initialView ? parseInt(route.query.initialView as string) : 0 })
       },
       {
         name: 'document_edition',
         path: 'document/edition/:id',
         component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: false, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '', invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
+        props: route => ({ isTemplate: false, id: route.params.id, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '', invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false, initialView: route.query.initialView ? parseInt(route.query.initialView as string) : 0 })
       },
       {
         name: 'document_view',
