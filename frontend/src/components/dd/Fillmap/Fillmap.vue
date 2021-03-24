@@ -36,6 +36,23 @@
         </div>
       </div>
     </div>
+
+    <div v-if="useAutofillmaps" class="col-auto" style="position: relative;">
+      <div class="row justify-center q-mt-sm q-mb-md">
+        <q-btn color="primary" icon="save_alt" label="Guardar captura" @click="addCurrentAutofillmap" :disabled="!destination || !source" />
+      </div>
+      <div class="col-auto autofillmaps row" v-if="useAutofillmaps">
+        <label>Capturas automáticas</label>
+        <q-badge v-for="item in autofillmaps" :key="item.id" rounded class="q-mx-xs">
+          <q-btn icon="close" round color="grey" dense size="xs" class="q-ma-none q-mr-sm" @click="removeAutofillmap(item.id)" />
+          {{ item.name }}
+        </q-badge>
+      </div>
+      <div v-if="loading_auto" class="inner_loading">
+        <div class="bg" />
+        <q-spinner color="primary" />
+      </div>
+    </div>
     <div v-if="!embedded" class="col-auto row justify-end q-pa-md q-col-gutter-x-xl">
       <div><q-btn color="secondary" flat label="Cancelar" @click="onCancel" /></div>
       <div><q-btn color="primary" label="Aceptar cambios" @click="onSaveChanges" /></div>
@@ -60,12 +77,20 @@ interface IObjectType{
 export default class Fillmap extends Vue {
     @Prop({ type: Object, required: false, default: () => null }) source!:IObjectType|null;
     @Prop({ type: Object, required: false, default: () => null }) destination!:IObjectType|null;
+    @Prop({ type: Boolean, required: false, default: false }) useAutofillmaps!:boolean;
+    @Prop({ type: Boolean, required: false, default: false }) loading_autofillmap!:boolean;
 
     changes:IFillmap = {} as any
     fieldCapturedValues:{id:string, value:any}[] = []
     loading_dest:boolean = false
     loading_src:boolean = false
+    loading_auto:boolean = false
     initializing:boolean = false
+
+    @Watch('loading_autofillmap', { immediate: true })
+    onLoadingAutofillmap (value) {
+      this.loading_auto = value
+    }
 
     @Watch('source', { immediate: true })
     async onSourceChanged (value:IObjectType, old) {
@@ -90,6 +115,15 @@ export default class Fillmap extends Vue {
     async onDestinationChanged (value:IObjectType, old) {
       this.discardChanges({ destination_type: value ? value.type : '' })
 
+      if (value && this.useAutofillmaps) {
+        // Getting the autofillmaps for this destination
+        this.loading_auto = true;
+        await this.$store.dispatch('fillmaps/getAutoFillmaps', value.type)
+        setTimeout(() => {
+          this.loading_auto = false;
+        }, 300)
+      }
+
       if (value && this.source && !this.initializing) {
         // Initialize again when both destination and source exists
         this.initializing = true
@@ -110,6 +144,9 @@ export default class Fillmap extends Vue {
         if (this.destination.isDocument) {
           // filtering only the fields that can be captured
           return this.destination.fields.filter(field => {
+            if (this.useAutofillmaps) {
+              return field.show_in_capture && !(field.type.parameters.block_capture || false)
+            }
             return field.show_in_capture && (!field.readonly && !(field.type.parameters.block_capture || false))
           })
         }
@@ -139,13 +176,22 @@ export default class Fillmap extends Vue {
       return this.$store.getters['fillmaps/fillmap'](this.source ? this.source.type : '', this.destination ? this.destination.type : '', true)
     }
 
+    get autofillmaps ():IFillmap[] {
+      return this.destination ? this.$store.getters['fillmaps/autofillmaps'](this.destination.type) : []
+    }
+
     discardChanges (changes) {
       this.changes = Object.assign(this.changes, changes, { fields: [] })
       // eslint-disable-next-line no-unused-expressions
-      this.destination?.fields.forEach(f => {
-        delete f.map_value
-        delete f.map_name
-      })
+      if (this.destination) {
+        this.destination.fields.forEach(f => {
+          delete f.map_value
+          delete f.map_name
+        })
+
+        // This is necessary to trigger reactiviry on the fields
+        this.destination.fields.unshift(this.destination.fields.shift())
+      }
       this.fieldCapturedValues = []
     }
 
@@ -271,7 +317,28 @@ export default class Fillmap extends Vue {
         captured_values: this.fieldCapturedValues.concat(),
         fillmap: Object.assign({}, this.fillmap, this.changes)
       }
+
       this.$emit('save', toSend)
+    }
+
+    onSaveAutofillmapChanges (fillmap, autofill) {
+      // Sending the fillmap
+      let toSend = Object.assign({}, fillmap, this.changes, { autofill: autofill })
+
+      this.$emit('save_autofillmap', toSend)
+    }
+
+    addCurrentAutofillmap () {
+      let fillmap = Object.assign({}, this.fillmap, { name: this.source!.title })
+      this.onSaveAutofillmapChanges(fillmap, true)
+    }
+
+    removeAutofillmap (id) {
+      console.log('Removing', id)
+      let fillmap = this.autofillmaps.find(m => m.id === id)
+      if (fillmap) {
+        this.onSaveAutofillmapChanges(fillmap, false)
+      }
     }
 
     get embedded () {
@@ -297,7 +364,7 @@ export default class Fillmap extends Vue {
     width: auto;
 }
 
-.loading_container {
+.loading_container, .inner_loading {
     position: absolute;
     top:0px;
     bottom:0px;
@@ -309,7 +376,13 @@ export default class Fillmap extends Vue {
     justify-content: center;
     overflow:hidden;
 }
-.loading_container .bg {
+.loading_container .q-spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-top: 30%;
+}
+
+.loading_container, .inner_loading .bg {
     position: absolute;
     top:0px;
     bottom:0px;
@@ -319,9 +392,34 @@ export default class Fillmap extends Vue {
     opacity: .5;
 }
 
-.loading_container .q-spinner {
+.inner_loading{
+  min-height:0px;
+}
+
+.inner_loading .q-spinner {
     width: 2.5rem;
     height: 2.5rem;
-    margin-top: 30%;
+    align-self: center;
+}
+
+.autofillmaps {
+  border: dotted 1px grey;
+  min-height: 78px;
+  position: relative;
+  border-radius: .25rem;
+  padding: .8rem .25rem .25rem .25rem;
+}
+
+.autofillmaps .q-badge{
+  height:1.4rem;
+}
+
+.autofillmaps label{
+  position: absolute;
+  font-size: 1rem;
+  top: -.8rem;
+  background-color: white;
+  padding: 0rem .25rem 0rem .25rem;
+  margin-left: 1.5rem;
 }
 </style>
