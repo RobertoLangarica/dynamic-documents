@@ -19,7 +19,14 @@
       />
     </div>
 
-    <fillmap ref="fillmap" class="col" :source="source" :destination="destination" @save="onSaveChanges" @cancel="onCancel" />
+    <fillmap ref="fillmap" class="col"
+             :source="source"
+             :destination="destination"
+             :useAutofillmaps="autofillmaps"
+             :loading_autofillmap="loading_autofillmap"
+             @save="onSaveChanges"
+             @save_autofillmap="onSaveAutofillmap"
+             @cancel="onCancel" />
   </div>
   <span v-else />
 </template>
@@ -46,13 +53,13 @@ export default class FillmapManager extends mixins(EmbedMixin) {
     @Prop({ type: String, required: false, default: '' }) readonly src!: string;
     @Prop({ type: String, required: false, default: '' }) readonly dest!: string;
 
+    loading_autofillmap:boolean = false
     source: IObjectType | null = null;
     destination: IObjectType | null = null;
     selectedDest:any = null
     selectedSrc:any = null
 
     async mounted () {
-      // TODO REMOVE this
       if (!this.embedded) {
         void this.$store.dispatch("getDocuments");
       }
@@ -68,6 +75,17 @@ export default class FillmapManager extends mixins(EmbedMixin) {
       } else {
         // Waiting for external data
       }
+    }
+
+    get autofillmaps () {
+      if (this.$route.query.autofillmaps !== undefined) {
+        if (typeof this.$route.query.autofillmaps === 'string') {
+          return this.$route.query.autofillmaps === 'true'
+        }
+
+        return this.$route.query.autofillmaps
+      }
+      return false
     }
 
     async onDocumentSourceSelected (newSource) {
@@ -104,8 +122,12 @@ export default class FillmapManager extends mixins(EmbedMixin) {
       }
     }
 
-    async onSaveChanges ({ fillmap, captured_values }:{fillmap:IFillmap, captured_values:{id:string, value:any}[]}) {
-      console.log('saving changes')
+    saveFillmap (fillmap) {
+      // Saving fillmap
+      return this.$store.dispatch('fillmaps/setFillmap', fillmap)
+    }
+
+    onSaveChanges ({ fillmap, captured_values }:{fillmap:IFillmap, captured_values:{id:string, value:any}[]}) {
       let saving:Promise<any>[] = []
       // Saving doc
       if (this.destination?.isDocument) {
@@ -113,7 +135,7 @@ export default class FillmapManager extends mixins(EmbedMixin) {
       }
 
       // Saving fillmap
-      saving.push(this.$store.dispatch('fillmaps/setFillmap', fillmap))
+      saving.push(this.saveFillmap(fillmap))
 
       Promise.all(saving)
         .then(results => {
@@ -138,6 +160,33 @@ export default class FillmapManager extends mixins(EmbedMixin) {
         })
     }
 
+    onSaveAutofillmap (fillmap:IFillmap) {
+      // The captured values are ignored when saving an autofillmap
+      // Saving fillmap
+      this.loading_autofillmap = true
+      this.saveFillmap(fillmap)
+        .then(result => {
+          // Error
+          if (!result.success) {
+            this.$q.notify({ message: 'Ocurrió un problema al guardar los cambios', color: 'negative' })
+            return
+          }
+
+          // Save completed
+          if (this.embedded) {
+            this.sendMessage('autofillmap_saved')
+          }
+        })
+        .catch(e => {
+          this.$q.notify({ message: 'Ocurrió un problema al guardar los cambios', color: 'negative' })
+        })
+        .then(() => {
+          setTimeout(() => {
+            this.loading_autofillmap = false
+          }, 300)
+        })
+    }
+
     async onMessage (message, data, handled = false) {
       switch (message) {
         case 'set_destination_document':
@@ -149,6 +198,10 @@ export default class FillmapManager extends mixins(EmbedMixin) {
           handled = true
           this.source = null
           this.source = await this.getDocumentObjectType(data.id)
+          break;
+        case 'set_source':
+          handled = true
+          this.source = data
           break;
         case 'set_destination':
           handled = true
