@@ -67,8 +67,10 @@ export default class Document extends Vue {
     ]
   }) readonly views!:any[];
 
+  @Prop({ type: Number, required: false, default: 0 }) readonly initialView!:number;
+
   debounce: number = 500
-  currentView: IDDView = IDDView.EDIT
+  currentView: IDDView = this.initialView
   manager: DocumentEditionManager = {} as any;
   fields: DDField[] = [];
   docReady = false;
