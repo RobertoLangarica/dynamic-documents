@@ -33,6 +33,11 @@ export class FillmapController {
         return this.service.findBy(source, destination)
     }
 
+    @Get('autofillmaps')
+    findAutofillmaps(@Query('destination') destination: string) {
+        return this.service.findBy(undefined, destination, true)
+    }
+
     @Post()
     add(@Body(NoDuplicatedFillmapPipe, FillmapFieldsValidationPipe) dto: FillmapCreationDto) {
         return this.service.addFillmap(dto)

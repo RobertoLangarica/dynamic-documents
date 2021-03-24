@@ -1,6 +1,6 @@
 import { ApiHideProperty, ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { Type } from "class-transformer"
-import { IsArray, IsEmpty, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator"
+import { IsArray, IsBoolean, IsEmpty, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator"
 import { FillmapField } from "./fillmap.entity"
 
 export class FillmapCreationDto {
@@ -22,6 +22,12 @@ export class FillmapCreationDto {
     @IsNotEmpty() @IsArray() @ApiProperty()
     @Type(() => FillmapField)
     fields: FillmapField[]
+    
+    @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    autofill: boolean
+
+    @IsOptional() @IsString() @ApiPropertyOptional()
+    name: string
 }
 
 export class FillmapDto {
@@ -32,13 +38,19 @@ export class FillmapDto {
     @IsEmpty() @ApiHideProperty()
     updated_at: string
 
-    @IsOptional() @IsString() @ApiPropertyOptional()
+    @IsEmpty() @ApiHideProperty()
     source_type:string
 
-    @IsOptional() @IsString() @ApiPropertyOptional()
+    @IsEmpty() @ApiHideProperty()
     destination_type:string
 
     @IsOptional() @IsArray() @ApiPropertyOptional()
     @Type(() => FillmapField)
     fields: FillmapField[]
+
+    @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    autofill: boolean
+
+    @IsOptional() @IsString() @ApiPropertyOptional()
+    name: string
 }

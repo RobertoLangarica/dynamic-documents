@@ -18,8 +18,14 @@ export class Fillmap extends  EntityWithTimeStampt{
 
     @Column()
     destination_type:string
-
+    
     @Column({ type: 'jsonb', default: [] })
     @Type(() => FillmapField)
     fields: FillmapField[]
+    
+    @Column({default:false})
+    autofill:boolean
+
+    @Column()
+    name:string
 }

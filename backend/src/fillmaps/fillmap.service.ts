@@ -18,17 +18,24 @@ export class FillmapService {
         return { items: this.transformResponse(await this.fillmap_repo.find()) }
     }
 
-    async findBy(source:string, destination:string): Promise<{items:Fillmap[]}> {
+    async findBy(source:string, destination:string, onlyAutofillmaps:boolean = false): Promise<{items:Fillmap[]}> {
         // source-destination
         let where:any = Object.assign({},source ? {source_type:source}:{}, destination ? {destination_type:destination}:{})
+
+        if(onlyAutofillmaps){
+            Object.assign(where,{autofill:true})
+        }
+
         let items = await this.fillmap_repo.find({where})
         
         // destination-source
-        if(items.length === 0){
+        // when looking autofills the reverse order don't apply
+        if(items.length === 0 && !onlyAutofillmaps){
             where = Object.assign({},source ? {destination_type:source}:{}, destination ? {source_type:destination}:{})
             let reverseItems = await this.fillmap_repo.find({where})
             items = items.concat(reverseItems)
         }
+
         return { items: this.transformResponse(items) }
     }
 
@@ -46,18 +53,6 @@ export class FillmapService {
     async updateFillmap(id: string, data: FillmapDto) {
         data.id = id;
         let fillmap = await this.fillmap_repo.preload(data)
-
-        // Avoiding duplicates
-        let duplicated_key = await this.fillmap_repo.findOne({where: {
-                            source_type:fillmap.source_type, 
-                            destination_type:fillmap.destination_type,
-                            id: Not(id) 
-                        },
-                        select: ['id']
-                        })
-        if(duplicated_key){
-            throw new ConflictException(`Duplicated Fillmap. A Fillmap with source_type:${fillmap.source_type} and destination_type:${fillmap.destination_type} already exists.`)
-        }
 
         fillmap = await this.fillmap_repo.save(fillmap)
         return this.transformResponse(fillmap)
