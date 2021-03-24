@@ -190,7 +190,7 @@ export default class Fillmap extends Vue {
         })
 
         // This is necessary to trigger reactiviry on the fields
-        this.destination.fields.unshift(this.destination.fields.shift())
+        this.destination.fields.unshift(this.destination.fields.shift() as DDField)
       }
       this.fieldCapturedValues = []
     }
