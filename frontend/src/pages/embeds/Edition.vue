@@ -1,5 +1,6 @@
 <template>
   <dd-doc v-if="authorized"
+          class="dd"
           ref="doc_creation"
           :isTemplate="isTemplate"
           :id="id"
@@ -27,12 +28,7 @@ export default class Creation extends mixins(EmbedMixin) {
         case 'create':
           handled = true
           /* Saving */
-          try {
-            let document = await (this.$refs.doc_creation as any).saveAsNew()
-            this.sendMessage('created', document)
-          } catch (e) {
-            this.sendMessage('creation_error')
-          }
+          await (this.$refs.doc_creation as any).saveAsNew()
           break;
         case 'save':
           handled = true
@@ -52,3 +48,9 @@ export default class Creation extends mixins(EmbedMixin) {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+  .dd{
+    border-radius: 6px;
+  }
+</style>
