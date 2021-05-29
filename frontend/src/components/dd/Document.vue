@@ -3,6 +3,8 @@
     <h1 v-if="docReady && !refreshing" :contenteditable="isInEditView" @input="e=>name=e.target.innerText">
       {{ initialName }}
     </h1>
+
+    <!-- DOCUMENT -->
     <div v-if="docReady" class="dd-fields-container page" :class="{'dd-edit-view': isInEditView, 'dd-capture-view': isInCaptureView, 'dd-print-view': isInPrintView}">
       <field-group-component
         :fields="fields"
@@ -11,8 +13,10 @@
         :print_view="isInPrintView"
       />
     </div>
+
+    <!-- MENU -->
     <template v-if="docReady">
-      <div v-if="views.length > 0 || showDownload || (!isInPrintView && !creatingNewDocument)" class="fixed-top-right q-py-sm q-px-none bg-white column justify-end shadow-1 q-mt-md view-buttons-container">
+      <div v-if="views.length > 0 || showDownload || (!isInPrintView && !creatingNewDocument)" class="fixed-top-right q-py-sm q-px-none bg-white column justify-end shadow-1 view-buttons-container">
         <q-btn
           flat align="left"
           :color="view.value === currentView ? 'info' : 'grey-7'"
@@ -36,6 +40,13 @@
                align="left"
                label="Guardar"
                @click="onSaveChanges"
+               icon="save"
+               :color="isDirty ? 'info' : 'grey-7'" />
+        <q-btn v-if="!isInPrintView && creatingNewDocument"
+               flat
+               align="left"
+               label="Crear"
+               @click="saveAsNew"
                icon="save"
                :color="isDirty ? 'info' : 'grey-7'" />
       </div>
@@ -231,13 +242,14 @@ export default class Document extends Vue {
    */
   async saveAsNew () {
     // Letting the manager to know the store so it can save and update anything
+    this.$root.$emit('send_message', { message: 'creating' })
     this.manager.store = this.$store;
     let result:{[key:string]:any} = await this.manager.saveAsNew()
 
     if (result.success) {
-      return result.data
+      this.$root.$emit('send_message', { message: 'created', data: result.data })
     } else {
-      throw new Error('Unable to save the document as a new document')
+      this.$root.$emit('send_message', { message: 'creation_error' })
     }
   }
 
@@ -291,6 +303,7 @@ export default class Document extends Vue {
     transition: right 0.5s;
     border-top-left-radius: 1rem;
     border-bottom-left-radius: 1rem;
+    margin-top: 4.5rem;
   }
   .view-buttons-container:hover {
     right: 0;
