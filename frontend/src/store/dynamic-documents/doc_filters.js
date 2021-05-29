@@ -43,7 +43,7 @@ const actions = {
     let expired = result.data ? result.data.statusCode === 403 : false
     return { success: false, filter_expired: expired }
   },
-  async setFilteredDocument ({ commit, getters }, payload) {
+  async setFilteredDocument ({ commit }, payload) {
     let path = `/filters/${payload.id}/filtered`
     console.log(`PATCH ${path}`)
     let result = await api.patch(path, payload)
