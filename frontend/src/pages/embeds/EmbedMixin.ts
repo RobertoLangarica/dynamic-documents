@@ -151,14 +151,14 @@ export default class EmbedMixin extends Vue {
       }
     }
 
-    onDocReady () {
-      this.sendMessage('dd_ready')
+    async onDocReady () {
+      await this.$nextTick()
+      let el = this.docRef.$el
+      this.sendMessage('dd_resize', { width: Math.max(el.scrollWidth, (el as any).offsetWidth), height: Math.max(el.scrollHeight, (el as any).offsetHeight) })
 
-      this.$nextTick(() => {
-        let el = this.docRef.$el
-        this.sendMessage('dd_resize', { width: Math.max(el.scrollWidth, (el as any).offsetWidth), height: Math.max(el.scrollHeight, (el as any).offsetHeight) })
-        this.ready = true
-      })
+      this.ready = true
+      await this.$nextTick()
+      this.sendMessage('dd_ready')
     }
 
     sendMessage (message:string, data:{[key:string]:any}|any = {}) {
