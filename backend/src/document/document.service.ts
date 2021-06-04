@@ -175,12 +175,13 @@ export class DocumentService {
     }
 
     getReferencedField(from: Document, id: string) {
+        // Returning the field if it exists
         let field = from.fields.find(f => f.id === id)
-
         if (field) {
             return field
         }
 
+        // If source_field == id, means that this field is a copu of id and source_field is evidence of that
         field = from.fields.find(f => f.source_field === id)
 
         return field
