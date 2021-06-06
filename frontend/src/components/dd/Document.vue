@@ -42,6 +42,13 @@
                flat align="left"
                color="grey-7"
                label="Descargar" icon="download" @click="onDownload" />
+        <q-btn v-if="!isTemplate"
+               flat
+               align="left"
+               label="Links de captura"
+               @click="onShowFilters"
+               icon="link"
+               color="grey-7" />
         <q-btn v-if="!isInPrintView && !creatingNewDocument"
                flat
                align="left"
@@ -164,7 +171,7 @@ export default class Document extends Vue {
       return null
     }
 
-    let action = this.isTemplate ? 'getTemplate' : this.isFilter ? 'doc_filters/getFilteredDocument' : 'getDocument'
+    let action = this.isTemplate ? 'getTemplate' : this.isFilter ? 'filtered_docs/getFilteredDocument' : 'getDocument'
     document = await this.$store.dispatch(action, this.id);
 
     if (!document || document.success === false) {
@@ -188,11 +195,13 @@ export default class Document extends Vue {
     if (!document) {
       // Placeholder name
       this.manager.name = (this.isTemplate ? 'Plantilla' : 'Documento') + ' sin nombre'
+      this.manager.is_template = this.isTemplate
       this.creatingNewDocument = true
     } else if(this.allowAutoCapture){
       // Getting the fillmaps ready (needed by the nested fields)
       await this.$store.dispatch('fillmaps/getByDoc', this.id)
     }
+
     this.initialName = this.manager.name;
 
     this.fields = this.manager.fields;
@@ -286,9 +295,14 @@ export default class Document extends Vue {
     this.downloading = false
   }
 
+  onShowFilters(){
+    this.$root.$emit('send_message', { message: 'show_filters' })
+  }
+
   onPrint () {
     window.print()
   }
+  
 }
 </script>
 <style lang="scss" scoped>
@@ -312,8 +326,8 @@ export default class Document extends Vue {
     box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1);
   }
   .view-buttons-container {
-    width: 12rem;
-    right: -9rem;
+    width: 14rem;
+    right: -11rem;
     transition: right 0.5s;
     border-top-left-radius: 1rem;
     border-bottom-left-radius: 1rem;
