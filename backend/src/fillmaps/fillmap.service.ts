@@ -7,7 +7,7 @@ import { Fillmap } from "./fillmap.entity";
 @Injectable()
 export class FillmapService {
     constructor(@InjectRepository(Fillmap)
-    private readonly fillmap_repo: Repository<Fillmap>
+    public readonly fillmap_repo: Repository<Fillmap>
     ) { }
 
     async findById(id: string): Promise<Fillmap> {

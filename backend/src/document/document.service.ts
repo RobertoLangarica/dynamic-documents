@@ -153,9 +153,24 @@ export class DocumentService {
                 }
             })
         }
-        
+
         try {
             document = await this.doc_repo.save(document)
+            // Creating a copy of the fillmaps with this document as destination
+            let fillmaps:Fillmap[] = (await this.fillmap_service.findBy('',template.id, false)).items
+            fillmaps = fillmaps.map(map=>{
+                if(map.source_type === document.type){
+                    map.source_type = document.id
+                } 
+                if(map.destination_type){
+                    map.destination_type = document.id
+                }
+                delete map.id
+                delete map.updated_at
+                delete map.created_at
+                return this.fillmap_service.fillmap_repo.create(map)
+            })
+            await this.fillmap_service.fillmap_repo.save(fillmaps)
         } catch (e) {
             if (e.code && e.code == 23505) {
                 throw new HttpException(e.detail, HttpStatus.CONFLICT)
