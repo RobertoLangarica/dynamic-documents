@@ -2,17 +2,22 @@ import api from 'api-client-wrapper'
 
 export interface IFillmapState{
   list:any[];
+  retrievedDocs:{[key:string]:boolean};
   retrievedAutofillmaps:{[key:string]:boolean};
 }
 
 const state = {
   list: [],
+  retrievedDocs: {},
   retrievedAutofillmaps: {}
 }
 
 const mutations = {
-  retrieved (state, value) {
-    state.retrieved[value] = true
+  retrievedAutoFillmap (state, value) {
+    state.retrievedAutofillmaps[value] = true
+  },
+  retrievedDoc (state, value) {
+    state.retrievedDocs[value] = true
   },
   replace (state, value) {
     let itemIndex = state.list.findIndex(i => i.id === value.id)
@@ -42,6 +47,9 @@ const getters = {
   },
   autofillmaps: state => destination_type => {
     return state.list.filter(f => f.destination_type === destination_type && f.autofill)
+  },
+  byDoc: state => doc_id => {
+    return state.list.filter(f => f.destination_type === doc_id || f.source_type === doc_id)
   }
 }
 
@@ -50,6 +58,20 @@ const getEmptyFillmap = (source_type, destination_type) => {
 }
 
 const actions = {
+  async getByDoc ({ commit, getters }, docID) {
+    // Cached
+    if (state.retrievedDocs[docID]) { return getters.byDoc(docID) }
+
+    // Remote
+    let path = `/fillmaps/by-type?destination=${docID}`
+    console.log(`GET ${path}`)
+    let result = await api.get(path)
+    if (result.success) {
+      commit('retrievedDoc', docID)
+      result.data.items.forEach(item => commit('replace', item))
+    }
+    return getters.byDoc(docID)
+  },
   async getFillmap ({ commit, getters }, { source, destination }) {
     // Empty source or destination
     if (!source || !destination) {
@@ -80,6 +102,7 @@ const actions = {
     console.log(`GET ${path}`)
     let result = await api.get(path)
     if (result.success) {
+      commit('retrievedAutoFillmap', destination)
       result.data.items.forEach(item => commit('replace', item))
     }
     return getters.autofillmaps(destination)
@@ -92,11 +115,20 @@ const actions = {
       // Is an update
       path += `/${payload.id}`
       // The source and destination are not allowed to be changed
-      delete payload.source_type
-      delete payload.destination_type
-
+      payload = filterObject(payload, {
+        source_type: true,
+        destination_type: true,
+        created_at: true,
+        updated_at: true
+      })
       method = 'patch'
+    } else {
+      // avoid sending unnecessary data
+      payload = filterObject(payload, { created_at: true, updated_at: true })
     }
+
+    // Forcing autofill
+    payload.autofill = true;
 
     console.log(`${method.toUpperCase()} ${path}`)
     let result = await api[method](path, payload)
@@ -107,6 +139,12 @@ const actions = {
 
     return result
   }
+}
+
+const filterObject = (target:any, filter:any) => {
+  let copy = Object.assign({}, target)
+  Object.keys(filter).forEach(key => delete copy[key])
+  return copy
 }
 
 export default {
