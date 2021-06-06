@@ -1,8 +1,13 @@
 <template>
   <article class="document-container q-pa-md">
-    <h1 v-if="docReady && !refreshing" :contenteditable="isInEditView" @input="e=>name=e.target.innerText">
-      {{ initialName }}
-    </h1>
+    <div class="row title-container" :class="{'justify-between':isInEditView,'justify-start':!isInEditView}" style="max-width:21.5cm;">
+      <h1 class="col" v-if="docReady && !refreshing" :contenteditable="isInEditView" @input="e=>name=e.target.innerText">
+        {{ initialName }}
+      </h1>
+      <template v-if="isInCaptureView && allowAutoCapture">
+        <btn-autocapture :manager="manager" label="Auto capturar documento"/>
+      </template>
+    </div>
 
     <!-- DOCUMENT -->
     <div v-if="docReady" class="dd-fields-container page" :class="{'dd-edit-view': isInEditView, 'dd-capture-view': isInCaptureView, 'dd-print-view': isInPrintView}">
@@ -11,6 +16,8 @@
         :edit_view="isInEditView"
         :capture_view="isInCaptureView"
         :print_view="isInPrintView"
+        :allowAutoCapture="allowAutoCapture"
+        :manager="manager"
       />
     </div>
 
@@ -60,13 +67,16 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
 import IDDView from "src/dynamic-documents/src/core/IDDView";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
+import FiltersList from 'src/components/dd/Filters/FiltersList.vue'
+import BtnAutocapture from './Fillmap/BtnAutocapture.vue'
 
-@Component({})
+@Component({ components: { 'filters-list': FiltersList, BtnAutocapture } })
 export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
   @Prop({ type: Boolean, required: false, default: false }) readonly isFilter!: boolean;
   @Prop({ type: Boolean, required: false, default: true }) readonly allowDownload!:boolean;
+  @Prop({ type: Boolean, required: false, default: true }) readonly allowAutoCapture!:boolean;
   @Prop({ type: String, required: false, default: '' }) readonly downloadAuthorization!:string;
   @Prop({
     type: Array,
@@ -179,6 +189,9 @@ export default class Document extends Vue {
       // Placeholder name
       this.manager.name = (this.isTemplate ? 'Plantilla' : 'Documento') + ' sin nombre'
       this.creatingNewDocument = true
+    } else if(this.allowAutoCapture){
+      // Getting the fillmaps ready (needed by the nested fields)
+      await this.$store.dispatch('fillmaps/getByDoc', this.id)
     }
     this.initialName = this.manager.name;
 
@@ -328,5 +341,10 @@ export default class Document extends Vue {
       box-shadow: none;
     }
   }
+}
+
+.title-container{
+  max-width: 21.5cm;
+  margin: 0 auto;
 }
 </style>
