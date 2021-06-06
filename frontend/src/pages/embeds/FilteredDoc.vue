@@ -9,6 +9,7 @@
             :views="available_views"
             @expired="onExpired"
             :allowDownload="false"
+            :allowAutoCapture="false"
             @hook:created="addDocRefListeners"
     />
     <q-card v-else class="row justify-center items-center text-center">
