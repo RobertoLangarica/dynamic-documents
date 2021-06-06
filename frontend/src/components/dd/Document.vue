@@ -294,7 +294,8 @@ export default class Document extends Vue {
 <style lang="scss" scoped>
 .document-container {
   background-color: #eeeeee;
-  height: 100vh;
+  min-height: 100vh;
+  height: auto;
   .add-a-field {
     margin-left: -1rem;
   }
