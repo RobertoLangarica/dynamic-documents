@@ -40,6 +40,14 @@ export default class Creation extends mixins(EmbedMixin) {
           /* Refresh */
           await (this.$refs.doc_creation as any).refreshDocument()
           break;
+        case 'set-fillmap-src':
+          handled = true
+          this.$root.$emit('set-fillmap-src', data.sources)
+          break;
+        case 'selected-fillmap-source':
+          handled = true
+          this.$root.$emit('selected-fillmap-source', data)
+          break;
         default:
           if (!handled) {
             console.log(`Unrecognized event->${message}`)
