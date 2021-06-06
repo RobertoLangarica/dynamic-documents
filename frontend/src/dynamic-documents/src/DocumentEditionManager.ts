@@ -4,7 +4,6 @@ import { DDField } from './core/DDField'
 import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
 import { DDFieldType } from './core/DDFieldType';
-import { DDTemplate } from './core/DDTemplate';
 import { DDDocument } from './core/DDDocument';
 
 export class DocumentEditionManager {
@@ -311,7 +310,7 @@ export class DocumentEditionManager {
     }
   }
 
-  static createFromRemoteObject (remote: DDTemplate | DDDocument): DocumentEditionManager {
+  static createFromRemoteObject (remote: DDDocument): DocumentEditionManager {
     let manager = new DocumentEditionManager()
     Object.assign(manager, remote)
 
