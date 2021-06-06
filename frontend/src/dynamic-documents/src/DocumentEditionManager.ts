@@ -5,6 +5,7 @@ import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
 import { DDFieldType } from './core/DDFieldType';
 import { DDDocument } from './core/DDDocument';
+import { IFillmap, IFillmapField } from './core/DDFillmap';
 
 export class DocumentEditionManager {
   id: string = uuidv4()
@@ -44,7 +45,7 @@ export class DocumentEditionManager {
     } else if (this.isTemplate) {
       action = 'setTemplate'
     } else {
-      action = 'doc_filters/setFilteredDocument'
+      action = 'filtered_docs/setFilteredDocument'
     }
     return action
   }
@@ -66,6 +67,9 @@ export class DocumentEditionManager {
     let documentChanges = this.mergeDocumentChanges()
     let fieldChanges = this.mergeFieldChanges()
     let changes = Object.assign(documentChanges, { id: this.id, fields: fieldChanges })
+
+    // Remove the deleted fields from any fillmap of this document
+    await Promise.all(fieldChanges.filter(f => f.deleted).map(deleted => this.deleteFromFillmaps(deleted)))
 
     let result = await this.store?.dispatch(this.storeAction, changes)
     if (!result.success) {
@@ -103,7 +107,7 @@ export class DocumentEditionManager {
     let changes = Object.keys(merged).map(key => merged[key])
     changes = changes.map(change => {
       if (change.deleted) {
-        return { id: change.id, deleted: true }
+        return { id: change.id, deleted: true, map_id: change.map_id }
       }
 
       return change
@@ -252,12 +256,43 @@ export class DocumentEditionManager {
     this.addDeletedField(deleted)
   }
 
+  async deleteFromFillmaps (deleted:DDField) {
+    if (!this.store) { return }
+
+    let map_id = deleted.map_id || deleted.id
+    let fillmaps = this.store.getters['fillmaps/byDoc'](this.id)
+    // Find all containing the deleted field
+    fillmaps = fillmaps.filter((fillmap:IFillmap) => {
+      // filtering all the fillmaps containing this field
+      let field = fillmap.fields.find((f:IFillmapField) => map_id === f.destination || map_id === f.foreign)
+      return !!field
+    })
+
+    // delete from all the fillmaps
+    return Promise.all(fillmaps.map((fillmap:IFillmap) => {
+      let payload = Object.assign({}, fillmap, { fields: fillmap.fields.concat() })
+      let index = payload.fields.findIndex(f => map_id === f.destination || map_id === f.foreign)
+
+      if (index >= 0) {
+        payload.fields.splice(index, 1)
+        return this.store!.dispatch('fillmaps/setFillmap', payload)
+      }
+
+      // Nothing to delete
+      return Promise.resolve()
+    }))
+  }
+
   addDeletedField (field: DDField) {
-    this.updateField({ id: field.id, deleted: true }, field)
+    this.updateField({ id: field.id, deleted: true, map_id: field.map_id })
   }
 
   addAddedField (field:DDField) {
     this.updateField(Object.assign({}, field, { is_new: true }))
+  }
+
+  getGroupFields (group_id:string):DDField[] {
+    return this.fields.filter(f => f.group_by === group_id)
   }
 
   /**
