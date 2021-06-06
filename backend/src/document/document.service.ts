@@ -80,7 +80,14 @@ export class DocumentService {
             throw new NotFoundException()
         }
 
-        await this.doc_repo.delete({ id: id })
+        // delete fillmaps
+         await this.fillmap_service.fillmap_repo.createQueryBuilder()
+            .where('source_type = :id OR destination_type = :id',{id:id})
+            .delete()
+            .execute()
+        
+         // delete document
+         await this.doc_repo.delete({ id: id })
     }
 
     async addDocument(data: CreateDocumentDto, isTemplate:boolean = false): Promise<Document> {
@@ -134,11 +141,10 @@ export class DocumentService {
 
         document.fields = sorted
 
-
-        // autofill data
+        // autofill the document using the incomming data
         if(data.autofill){
             // get fillmaps
-            let fillmaps = (await this.fillmap_service.findBy('',document.type,true)).items
+            let fillmaps = (await this.fillmap_service.findBy('',template.id,true)).items
 
             data.autofill.forEach(auto=>{
                 let fillmap = fillmaps.find(f=>f.source_type === auto.type)
