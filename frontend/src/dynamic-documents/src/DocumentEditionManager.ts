@@ -223,7 +223,7 @@ export class DocumentEditionManager {
     this.fields.forEach(field => {
       // Deleting any dependency
       if (field.dependent?.on === deleted.id) {
-        this.updateField({ id: field.id, dependent: null }, field)
+        this.updateField({ id: field.id, dependent: null })
       }
 
       // Deleting any embed
@@ -233,12 +233,12 @@ export class DocumentEditionManager {
           id: field.id,
           embedded_fields: field.embedded_fields.filter(item => item !== deleted.id),
           use_embedded: field.embedded_fields.length > 0
-        }, field)
+        })
       }
 
       // Delete any "replicate with" reference
       if (field.replicate_with === deleted.id) {
-        this.updateField({ id: field.id, replicate_with: '' }, field)
+        this.updateField({ id: field.id, replicate_with: '' })
       }
 
       // If it is a group all the group members are deleted
@@ -262,18 +262,12 @@ export class DocumentEditionManager {
 
   /**
    *
-   * @param change Change represent the properties that are changing, so we notify only the changes and not all the field.
-   * @param fieldRef If provided all the changes will be reflected in this reference
+   * @param change Partial field only with the changing properties, so we notify only the changes and not all the field.
    */
-  updateField (change:DDField | any, fieldRef:DDField | null = null) {
+  updateField (change:DDField | any) {
     if (!change.id) {
       throw new Error('An id should be provided for any field change')
     }
-    if (fieldRef) {
-      // local changes
-      Object.assign(fieldRef, change)
-    }
-
     // list for remote changes
     this.changedFields.push(change)
 
@@ -281,6 +275,8 @@ export class DocumentEditionManager {
     let index = this.fields.findIndex(f => f.id === change.id)
     if (index >= 0) {
       let field = this.fields[index]
+      // local changes
+      Object.assign(field, change)
       this.fields.splice(index, 1)
       this.fields.splice(index, 0, field)
     }
