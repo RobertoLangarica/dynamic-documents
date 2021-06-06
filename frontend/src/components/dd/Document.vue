@@ -138,17 +138,23 @@ export default class Document extends Vue {
     this.updateDocument({ name: value })// Sending only the data that changed
   }
 
+  beforeMount () {
+    void this.$store.dispatch("getTransformations");
+    void this.$store.dispatch("getTypes");
+
+    this.$root.$on("f-add", this.onFieldAdded.bind(this));
+    this.$root.$on("f-update", this.onFieldUpdated.bind(this));
+    this.$root.$on("f-delete", this.onFieldDeleted.bind(this));
+    this.$root.$on("f-sort_field", this.onSortField.bind(this));
+    this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
+  }
+
   beforeDestroy () {
     this.$root.$off("f-add");
     this.$root.$off("f-update");
     this.$root.$off("f-delete");
     this.$root.$off("f-sort_field");
     this.$root.$off("f-add_under_sort_index");
-  }
-
-  beforeMount () {
-    void this.$store.dispatch("getTransformations");
-    void this.$store.dispatch("getTypes");
   }
 
   async loadDocument () {
@@ -175,12 +181,6 @@ export default class Document extends Vue {
   }
 
   async mounted () {
-    this.$root.$on("f-add", this.onFieldAdded.bind(this));
-    this.$root.$on("f-update", this.onFieldUpdated.bind(this));
-    this.$root.$on("f-delete", this.onFieldDeleted.bind(this));
-    this.$root.$on("f-sort_field", this.onSortField.bind(this));
-    this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
-
     let document = await this.loadDocument()
     this.$emit('loaded_document', document)
 
