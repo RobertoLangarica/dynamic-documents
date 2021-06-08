@@ -68,9 +68,9 @@ const routes: RouteConfig[] = [
       },
       {
         name: 'fillmap',
-        path: 'capture/map',
-        component: () => import('pages/embeds/FillmapManager.vue'),
-        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
+        path: 'capture/map/:document_id/:fillmap_type',
+        component: () => import('src/pages/embeds/FillmapCapture.vue'),
+        props: route => ({ document_id: route.params.document_id, fillmap_type: route.params.fillmap_type, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
       }
     ]
   },
