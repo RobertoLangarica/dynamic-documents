@@ -274,7 +274,7 @@ export default class Fillmap extends Vue {
       }
 
       // Add new change to the map
-      this.changes.fields.push({ foreign: fromID, destination: toID })
+      this.changes.fields.push({ foreign: fromID, destination: toID, name: from.name || to.name || '' })
 
       // Making the field reflect the change
       to.map_value = from.value
