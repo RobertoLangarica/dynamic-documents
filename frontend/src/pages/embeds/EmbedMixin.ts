@@ -106,6 +106,7 @@ export default class EmbedMixin extends Vue {
           this.$api.setAuthorization(data.token, '');
           this.authorized = true
           this.sendMessage('authorized')
+          this.afterAuthorization()
           break;
         case 'complete_dialog_action':
         case 'cancel_dialog_action':
@@ -122,6 +123,10 @@ export default class EmbedMixin extends Vue {
       }
 
       void this.onMessage(message, data, handled)
+    }
+
+    afterAuthorization () {
+      // empty for override purposes
     }
 
     onMessage (message:string, data:{[key:string]:any} = {}, handled = false) {
