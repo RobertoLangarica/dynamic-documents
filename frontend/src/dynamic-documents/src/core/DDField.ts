@@ -81,6 +81,8 @@ export class DDField {
 
   show_in_print: boolean = true
 
+  show_in_edition: boolean = true
+
   sort_index: number = 0
 
   // If true then the field should be removed in the next remote update
