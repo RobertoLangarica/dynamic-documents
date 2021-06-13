@@ -242,6 +242,18 @@ const actions: ActionTree<IDDState, StateInterface> = {
         resolve(e)
       })
     })
+  },
+  async cloneField({},{document_id, field_id, keep_maps}){
+    let path = `/documents/${document_id}/field/${field_id}?keep_maps=${keep_maps}`
+    console.log('GET', path)
+    
+    let result = await api.get(path)
+    
+    if(result.success){
+      return result.data.items
+    }
+
+    return []
   }
 }
 
