@@ -75,10 +75,10 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
 import IDDView from "src/dynamic-documents/src/core/IDDView";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
-import FiltersList from 'src/components/dd/Filters/FiltersList.vue'
 import BtnAutocapture from './Fillmap/BtnAutocapture.vue'
+import InputFieldCreation from './InputFieldCreation.vue'
 
-@Component({ components: { 'filters-list': FiltersList, BtnAutocapture } })
+@Component({ components: { BtnAutocapture, InputFieldCreation } })
 export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
