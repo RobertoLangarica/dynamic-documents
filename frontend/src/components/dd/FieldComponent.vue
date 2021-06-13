@@ -27,6 +27,8 @@
       </div>
       <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
       <field-fillmap v-if="showFillmapMapper" :manager="manager" :field_id="field.id" :doc_type="manager.id" />
+      <div class="row justify-end" v-if="showReplicateButton"><q-btn icon="control_point_duplicate" round size="sm" color="grey-6" @click="onReplicate" /></div>
+      <div class="row justify-end" v-if="showDeleteReplication"><q-btn icon="delete" round size="sm" color="grey-6" @click="onDelete" /></div>
       <component
         v-model="value"
         :is="getComponent(field.type)"
@@ -47,6 +49,7 @@
     <div v-if="isInEditView" class="q-ml-sm dd-field-config column items-start justify-start">
       <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" @click="onShowConfigDiaog" />
       <q-btn icon="delete" flat round size="md" dense class="cursor-pointer" color="grey" @click="onDelete" />
+      <q-btn icon="content_copy" flat round size="md" dense class="cursor-pointer" color="grey" @click="onCopy" />
     </div>
     <template v-if="isInCaptureView && allowAutoCapture">
       <btn-autocapture :manager="manager" :field_id="field.id" />
@@ -91,7 +94,15 @@ export default class FieldComponent extends Vue {
     this.ignoreNextNameChange = false
   }
 
-  get showGroupAutocapture(){
+  get showDeleteReplication () {
+    return this.isInCaptureView && this.field.replicate_with
+  }
+
+  get showReplicateButton () {
+    return this.isInCaptureView && this.field.replication ? this.field.replication.allow : false
+  }
+
+  get showGroupAutocapture () {
     return this.isGroup && this.allowAutoCapture && this.isInCaptureView
   }
 
@@ -104,7 +115,7 @@ export default class FieldComponent extends Vue {
   }
 
   get show () {
-    return this.isInEditView || (this.isInCaptureView && this.field.show_in_capture) || (this.isInPrintView && this.field.show_in_print)
+    return (this.isInEditView && this.field.show_in_edition) || (this.isInCaptureView && this.field.show_in_capture) || (this.isInPrintView && this.field.show_in_print)
   }
 
   get isReadOnly () {
@@ -176,6 +187,13 @@ export default class FieldComponent extends Vue {
     });
   }
 
+  onReplicate () {
+    this.$root.$emit("f-replicate", this.field.id)
+  }
+
+  onCopy () {
+    this.$root.$emit("f-copy", this.field.id)
+  }
 }
 </script>
 
