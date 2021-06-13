@@ -98,16 +98,14 @@ export default class Document extends Vue {
 
   @Prop({ type: Number, required: false, default: 0 }) readonly initialView!:number;
 
-  debounce: number = 500
   currentView: IDDView = this.initialView
   manager: DocumentEditionManager = {} as any;
   fields: DDField[] = [];
-  docReady = false;
-  refreshing = false;
+  docReady:boolean = false;
+  refreshing:boolean = false;
+  busy:boolean = false;
   creatingNewDocument:boolean = false
   initialName: string = "";
-  downloading:boolean = false;
-  saving:boolean = false;
 
   @Watch('views', { immediate: true })
   onAllowedViewschanged (value:any[], old:any[]) {
@@ -115,6 +113,10 @@ export default class Document extends Vue {
       // Selecting an allowed view
       this.currentView = value.length ? value[0].value : IDDView.PRINT
     }
+  }
+
+  get loading () {
+    return this.busy || this.refreshing
   }
 
   get isDirty () {
@@ -155,6 +157,9 @@ export default class Document extends Vue {
     this.$root.$on("f-delete", this.onFieldDeleted.bind(this));
     this.$root.$on("f-sort_field", this.onSortField.bind(this));
     this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
+    this.$root.$on("f-copy", this.onCopyField.bind(this));
+    this.$root.$on("f-replicate", this.onReplicateField.bind(this));
+    console.log('Added listeners')
   }
 
   beforeDestroy () {
@@ -163,6 +168,8 @@ export default class Document extends Vue {
     this.$root.$off("f-delete");
     this.$root.$off("f-sort_field");
     this.$root.$off("f-add_under_sort_index");
+    this.$root.$off("f-copy");
+    this.$root.$off("f-replicate");
   }
 
   async loadDocument () {
@@ -245,9 +252,9 @@ export default class Document extends Vue {
 
   async onSaveChanges () {
     this.$root.$emit('send_message', { message: 'saving', data: { name: this.manager.name } })
-    this.saving = true
+    this.busy = true
     let successfull = await this.manager.saveChanges()
-    this.saving = false
+    this.busy = false
 
     if (successfull) {
       this.$root.$emit('send_message', { message: 'saved' })
@@ -291,19 +298,36 @@ export default class Document extends Vue {
   }
 
   async onDownload () {
-    this.downloading = true
+    this.busy = true
     await this.$store.dispatch('download', { id: this.manager.id, name: this.manager.name, auth: this.downloadAuthorization })
-    this.downloading = false
+    this.busy = false
   }
 
-  onShowFilters(){
+  onShowFilters () {
     this.$root.$emit('send_message', { message: 'show_filters' })
   }
 
   onPrint () {
     window.print()
   }
-  
+
+  async onCopyField (field_id:string) {
+    this.busy = true
+    let success = await this.manager.copyField(field_id)
+    if (!success) {
+      this.$q.notify({ message: 'Ups! ocurrió un error', color: 'negative' })
+    }
+    this.busy = false
+  }
+
+  async onReplicateField (field_id:string) {
+    this.busy = true
+    let success = await this.manager.replicateField(field_id)
+    if (!success) {
+      this.$q.notify({ message: 'Ups! ocurrió un error', color: 'negative' })
+    }
+    this.busy = false
+  }
 }
 </script>
 <style lang="scss" scoped>
