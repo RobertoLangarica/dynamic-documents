@@ -57,6 +57,19 @@
       </q-item-section>
     </q-item>
 
+    <!-- Allow capture replication -->
+    <q-item tag="label" v-ripple>
+      <q-item-section avatar top>
+        <q-checkbox v-model="allowReplication" />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>Se copia durante la captura</q-item-label>
+        <q-item-label caption>
+          Indica si este campo puede replicarse en modo de captura
+        </q-item-label>
+      </q-item-section>
+    </q-item>
+  </div>
 </template>
 
 <script lang="ts">
@@ -109,6 +122,13 @@ export default class FieldConfig extends mixins(EmbedMixin) {
       return this.fieldData.type ? this.fieldData.type.parameters.block_capture || false : false
     }
 
+    get allowReplication ():boolean {
+      return this.fieldData.replication ? this.fieldData.replication.allow : false
+    }
+
+    set allowReplication (value:boolean) {
+      this.fieldData.replication = Object.assign({}, this.fieldData.replication ? this.fieldData.replication : {}, { allow: value } as any)
+      this.fieldData = Object.assign({}, this.fieldData)
     }
 
     getUpdatedData () {
