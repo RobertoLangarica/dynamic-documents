@@ -14,7 +14,7 @@
         @onShowAddFieldDialog="showAddFieldDialog"
       />
     </draggable>
-    <q-btn v-if="!readonly"
+    <q-btn v-if="!readonly && isGroup"
            icon="add"
            rounded
            flat
@@ -49,6 +49,10 @@ export default class FieldGroupComponent extends Vue {
 @Prop({ required: false, default: false }) readonly print_view!:boolean ;
 @Prop({ type: Boolean, required: false, default: true }) readonly allowAutoCapture!:boolean;
 @Prop({ required: false, default: () => null }) readonly manager!:DocumentEditionManager ;
+
+get isGroup () {
+  return this.group !== ''
+}
 
 get myFields () {
   if (this.group === '') {
