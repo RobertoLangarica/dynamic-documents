@@ -19,6 +19,7 @@
         :allowAutoCapture="allowAutoCapture"
         :manager="manager"
       />
+      <input-field-creation :autofocus="!fields.length"/>
     </div>
 
     <!-- MENU -->
