@@ -150,6 +150,91 @@ export class DocumentEditionManager {
     this.documentChanges.push(change)
   }
 
+  async replicateField (field_id:string):Promise<boolean> {
+    let cloned = await this.cloneField(field_id, true)
+    if (cloned.length) {
+      let index = this.fields.findIndex(f => f.id === field_id)
+      cloned = cloned.map(f => {
+        f.replicate_with = field_id
+        f.show_in_edition = false
+        f.replication = undefined
+        return f
+      })
+      cloned = this.insertFieldsAt(index + 1, cloned)
+
+      return true
+    }
+
+    return false
+  }
+
+  async copyField (field_id:string):Promise<boolean> {
+    let cloned = await this.cloneField(field_id, true)
+    if (cloned.length) {
+      let index = this.fields.findIndex(f => f.id === field_id)
+      cloned = this.insertFieldsAt(index + 1, cloned)
+
+      return true
+    }
+
+    return false
+  }
+
+  insertFieldsAt (insertIndex:number, fields:DDField[]) {
+    // The existing one goes down
+    for (let i = insertIndex; i < this.fields.length; i++) {
+      let field = this.fields[i]
+      this.updateField({ id: field.id, sort_index: field.sort_index + fields.length })
+    }
+
+    // Sort index
+    fields = fields.map((f:DDField, index:number) => {
+      f.sort_index = insertIndex + index
+      return f
+    })
+
+    // Inserting
+    fields.forEach((field:DDField, index:number) => {
+      this.fields.splice(insertIndex + index, 0, field)
+      this.addAddedField(field)
+    })
+
+    return fields
+  }
+
+  async cloneField (field_id:string, keep_maps:boolean):Promise<DDField[]> {
+    let cloneIndex = this.fields.findIndex(f => f.id === field_id)
+    if (cloneIndex < 0) {
+      // Non existent field
+      return []
+    }
+
+    let toClone = this.fields[cloneIndex]
+
+    let cloned:DDField[] = []
+    // local simple copy?
+    if ((!toClone.dependent || isEmpty(toClone.dependent.on)) && !toClone.use_embedded && !DDField.isGroup(toClone)) {
+      let field = Object.assign({}, toClone, { source_field: toClone.id, id: uuidv4() })
+      if (keep_maps) {
+        // Normal maps behavior
+        if (!toClone.map_id) {
+          field.map_id = toClone.id
+        }
+      } else {
+        // No preervation of any map
+        field.map_id = ''
+      }
+      cloned.push(plainToClass(DDField, field))
+    } else {
+      // Remote copy
+      if (this.store) {
+        cloned = (await this.store.dispatch('cloneField', { document_id: this.id, field_id, keep_maps }))
+          .map(f => plainToClass(DDField, f))
+      }
+    }
+    return cloned
+  }
+
   addField (field: DDField) {
     field.sort_index = this.fields.length
     this.fields.push(field)
