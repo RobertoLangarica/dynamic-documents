@@ -4,35 +4,35 @@
       <q-card-section class="row justify-between items-center">
         <span class="text-h5">Auto Capturar</span>
         <div>
-            <q-btn round flat icon="close" @click="onCancel"/>
+          <q-btn round flat icon="close" @click="onCancel" />
         </div>
       </q-card-section>
       <q-card-section>
-          A partir de
-          <q-select 
-            v-model="source" 
-            :options="sources" 
-            option-value="type" 
-            option-label="title"
-            outlined
-            @input="onSourceTypeSelected"
-            />
+        A partir de
+        <q-select
+          v-model="source"
+          :options="sources"
+          option-value="type"
+          option-label="title"
+          outlined
+          @input="onSourceTypeSelected"
+        />
       </q-card-section>
       <q-card-section>
-          Utilizar
-          <div class="row justify-between items-center">
-            <template v-if="showSourceSelector">
-            <div><q-badge color="grey-9 q-mr-md q-px-md q-py-xs">{{selectedSource.title}}</q-badge></div>
-            <q-btn color="positive" label="Cambiar" icon="refresh" size="small" @click="onSourceTypeSelected"/>
-            </template>
-            <span v-else>--</span>
-          </div>
+        Utilizar
+        <div class="row justify-between items-center">
+          <template v-if="showSourceSelector">
+            <div><q-badge color="grey-9 q-mr-md q-px-md q-py-xs">{{ selectedSource.title }}</q-badge></div>
+            <q-btn color="positive" label="Cambiar" icon="refresh" size="small" @click="onSourceTypeSelected" />
+          </template>
+          <span v-else>--</span>
+        </div>
       </q-card-section>
       <q-card-actions class="q-pa-md" align="center">
-        <q-btn class="full-width" color="secondary" label="Aceptar" @click="onAccept" :disable="acceptDisabled"/>
+        <q-btn class="full-width" color="secondary" label="Aceptar" @click="onAccept" :disable="acceptDisabled" />
       </q-card-actions>
     </q-card>
-    <q-inner-loading :showing="loading" color="primary" class="bg-transparent" style="max-width:none; max-height:none;"/>
+    <q-inner-loading :showing="loading" color="primary" class="bg-transparent" style="max-width:none; max-height:none;" />
   </q-dialog>
 </template>
 
