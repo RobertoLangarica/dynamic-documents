@@ -5,11 +5,11 @@
         <h6 class="q-ma-none">{{ title }}</h6>
       </q-card-section>
       <q-card-section class="col-12">
-        <transformations 
+        <transformations
           ref="transforms"
-          :value="field_value" 
-          :options="transformOptions" 
-          :initial_options="initial_transformations"/>
+          :value="field_value"
+          :options="transformOptions"
+          :initial_options="initial_transformations" />
       </q-card-section>
       <q-card-actions align="right" class="col-12">
         <q-btn flat color="secondary" label="Cancelar" @click="onCancel" />
@@ -21,7 +21,6 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import Transforms from 'src/transformations'
 import Transformations from './Transformations.vue'
 
 @Component({ components: { Transformations } })
@@ -68,11 +67,11 @@ export default class TransformationsDialog extends Vue {
       }
     }
 
-    get transformOptions(){
+    get transformOptions () {
       return this.$store.state.dd.transformations
     }
 
-    onAccept(){
+    onAccept () {
       this.onSelected((this.$refs.transforms as any).getSelectedTransformationsAsString())
     }
 

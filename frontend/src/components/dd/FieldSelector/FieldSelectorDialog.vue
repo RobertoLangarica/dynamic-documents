@@ -5,7 +5,7 @@
         <span class="text-h6">{{ title }}</span>
       </q-card-section>
       <q-card-section class="col" style="overflow:auto;">
-        <field-selector ref="selector" :fields="fields"/>
+        <field-selector ref="selector" :fields="fields" />
       </q-card-section>
       <q-card-actions align="right" class="col-auto">
         <q-btn flat color="secondary" label="Cancelar" @click="hide" />
@@ -21,7 +21,7 @@ import { QDialog } from 'quasar'
 import { DDField } from 'src/dynamic-documents/src/core/DDField'
 import FieldSelector from 'src/components/dd/FieldSelector/FieldSelector.vue'
 
-@Component({ components:{ FieldSelector } })
+@Component({ components: { FieldSelector } })
 export default class FieldSelectorDialog extends Vue {
     @Prop({ required: false, default: 'Elige un campo' }) readonly title!: string;
     @Prop({ required: true }) readonly fields!:DDField[]
@@ -29,7 +29,7 @@ export default class FieldSelectorDialog extends Vue {
     show () { (this.$refs.dialog as QDialog).show() }
     hide () { (this.$refs.dialog as QDialog).hide() }
 
-    onAccept(){ this.onSelect((this.$refs.selector as any).getSelected()) }
+    onAccept () { this.onSelect((this.$refs.selector as any).getSelected()) }
 
     onSelect (selected) {
       this.$emit('ok', selected)

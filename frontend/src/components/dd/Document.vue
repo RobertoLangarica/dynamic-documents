@@ -5,7 +5,7 @@
         {{ initialName }}
       </h1>
       <template v-if="isInCaptureView && allowAutoCapture">
-        <btn-autocapture :manager="manager" label="Auto capturar documento"/>
+        <btn-autocapture :manager="manager" label="Auto capturar documento" />
       </template>
     </div>
 
@@ -66,7 +66,7 @@
                :color="isDirty ? 'info' : 'grey-7'" />
       </div>
     </template>
-    <q-inner-loading :showing="downloading || refreshing" />
+    <q-inner-loading :showing="loading" />
   </article>
 </template>
 
@@ -198,7 +198,7 @@ export default class Document extends Vue {
       this.manager.name = (this.isTemplate ? 'Plantilla' : 'Documento') + ' sin nombre'
       this.manager.is_template = this.isTemplate
       this.creatingNewDocument = true
-    } else if(this.allowAutoCapture){
+    } else if (this.allowAutoCapture) {
       // Getting the fillmaps ready (needed by the nested fields)
       await this.$store.dispatch('fillmaps/getByDoc', this.id)
     }

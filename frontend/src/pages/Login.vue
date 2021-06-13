@@ -1,13 +1,13 @@
 <template>
   <div class="row justify-center">
-      <h1 class="col-12 text-center">
-        Login
-      </h1>
-      <form class="col-12 row justify-center">
-      <q-input v-model="email" class="col-7" label="Email" autocomplete="username"/>
+    <h1 class="col-12 text-center">
+      Login
+    </h1>
+    <form class="col-12 row justify-center">
+      <q-input v-model="email" class="col-7" label="Email" autocomplete="username" />
       <q-input v-model="password" class="col-7 q-mt-xl" label="Password" type="password" autocomplete="current-password" />
       <q-btn label="login" class="col-7" color="primary" @click.prevent="onSend" />
-      </form>
+    </form>
   </div>
 </template>
 

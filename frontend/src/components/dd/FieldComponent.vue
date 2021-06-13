@@ -14,19 +14,19 @@
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="dd-field-content">
-        <div v-if="isInEditView" class="row justify-between">
-          <q-badge color="grey-8 dd-field-name " >
-            <template v-if="isInEditView">
-              <span contenteditable="true"
-                    @input="e=>name=e.target.innerText">{{ initialName }}</span>
-              <q-icon name="keyboard" class="q-ml-sm" v-if="field.show_in_capture" />
-              <q-icon name="print" class="q-ml-sm" v-if="field.show_in_print" />
-            </template>
-            <span v-else>{{ initialName }}</span>
-          </q-badge>
-        </div>
-        <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo"/>
-        <field-fillmap v-if="showFillmapMapper" :map_id="field.map_id || field.id" :doc_type="manager.id"/>
+      <div v-if="isInEditView" class="row justify-between">
+        <q-badge color="grey-8 dd-field-name ">
+          <template v-if="isInEditView">
+            <span contenteditable="true"
+                  @input="e=>name=e.target.innerText">{{ initialName }}</span>
+            <q-icon name="keyboard" class="q-ml-sm" v-if="field.show_in_capture" />
+            <q-icon name="print" class="q-ml-sm" v-if="field.show_in_print" />
+          </template>
+          <span v-else>{{ initialName }}</span>
+        </q-badge>
+      </div>
+      <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
+      <field-fillmap v-if="showFillmapMapper" :manager="manager" :field_id="field.id" :doc_type="manager.id" />
       <component
         v-model="value"
         :is="getComponent(field.type)"
@@ -45,20 +45,18 @@
       />
     </div>
     <div v-if="isInEditView" class="q-ml-sm dd-field-config column items-start justify-start">
-      <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" @click="onShowConfigDiaog"/>
-      <q-btn icon="delete" flat round size="md" dense class="cursor-pointer" color="grey" @click="onDelete"/>
+      <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" @click="onShowConfigDiaog" />
+      <q-btn icon="delete" flat round size="md" dense class="cursor-pointer" color="grey" @click="onDelete" />
     </div>
     <template v-if="isInCaptureView && allowAutoCapture">
-      <btn-autocapture :manager="manager" :field_id="field.id"/>
+      <btn-autocapture :manager="manager" :field_id="field.id" />
     </template>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import {
-  DDFieldType, EFieldComponentID
-} from "src/dynamic-documents/src/core/DDFieldType";
+import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import FieldConfigDialog from "src/components/dd/FieldConfig/FieldConfigDialog.vue";
 import draggable from 'vuedraggable'
@@ -75,7 +73,7 @@ export default class FieldComponent extends Vue {
   @Prop({ type: Boolean, required: true }) readonly isInCaptureView!: boolean;
   @Prop({ type: Boolean, required: true }) readonly isInPrintView!: boolean;
   @Prop({ type: Boolean, required: false, default: true }) readonly allowAutoCapture!:boolean;
-  @Prop({ required: false, default:()=>null }) readonly manager!:DocumentEditionManager;
+  @Prop({ required: false, default: () => null }) readonly manager!:DocumentEditionManager;
   @Prop({ type: Number, required: false, default: 500 })
   readonly debounce!: number;
 
@@ -97,12 +95,12 @@ export default class FieldComponent extends Vue {
     return this.isGroup && this.allowAutoCapture && this.isInCaptureView
   }
 
-  get showFillmapMapper(){
+  get showFillmapMapper () {
     return !this.isGroup && this.allowAutoCapture && this.isInEditView
   }
 
-  get isGroup(){
-    return this.field.type.component === EFieldComponentID.GROUP
+  get isGroup () {
+    return DDField.isGroup(this.field)
   }
 
   get show () {
@@ -141,7 +139,6 @@ export default class FieldComponent extends Vue {
   }
 
   onDelete () {
-    console.log('Emiting delete', this.field)
     this.$root.$emit("f-delete", this.field);
   }
 

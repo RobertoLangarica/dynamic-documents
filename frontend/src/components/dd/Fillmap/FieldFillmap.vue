@@ -1,11 +1,11 @@
 <template>
-    <q-badge color="yellow-5" class="row text-black cursor-pointer" multi-line @click="onClick">
-        <q-icon name="bolt" size="sm" color="orange"/>
-        <template v-if="hasMap">
-            <span class="q-mx-sm">{{label}}</span>
-            <q-btn round unelevated size="xs" icon="close" color="grey-6" @click="onDelete" :loading="loading"/>
-        </template>
-    </q-badge>
+  <q-badge color="yellow-5" class="row text-black cursor-pointer" multi-line @click="onClick">
+    <q-icon name="bolt" size="sm" color="orange" />
+    <template v-if="hasMap">
+      <span class="q-mx-sm">{{ label }}</span>
+      <q-btn round unelevated size="xs" icon="close" color="grey-6" @click.stop="onDelete" :loading="loading" />
+    </template>
+  </q-badge>
 </template>
 
 <script>

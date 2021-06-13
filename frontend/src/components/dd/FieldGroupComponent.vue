@@ -36,7 +36,6 @@ import { Prop } from "vue-property-decorator";
 import draggable from "vuedraggable";
 import FieldComponent from "components/dd/FieldComponent.vue";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
-import { IFillmap } from "src/dynamic-documents/src/core/DDFillmap";
 import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 import FieldTypeSelectionDialog from "./FieldTypeSelection/FieldTypeSelectionDialog.vue";
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
@@ -49,7 +48,7 @@ export default class FieldGroupComponent extends Vue {
 @Prop({ required: false, default: false }) readonly capture_view!:boolean ;
 @Prop({ required: false, default: false }) readonly print_view!:boolean ;
 @Prop({ type: Boolean, required: false, default: true }) readonly allowAutoCapture!:boolean;
-@Prop({ required: false, default:()=>null }) readonly manager!:DocumentEditionManager ;
+@Prop({ required: false, default: () => null }) readonly manager!:DocumentEditionManager ;
 
 get myFields () {
   if (this.group === '') {

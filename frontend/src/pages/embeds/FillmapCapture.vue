@@ -9,12 +9,11 @@ import { mixins } from 'vue-class-component';
 import EmbedMixin from './EmbedMixin';
 import { DDDocument } from 'src/dynamic-documents/src/core/DDDocument';
 
-
 @Component({ })
 export default class FillmapManager extends mixins(EmbedMixin) {
     @Prop({ type: String, required: true }) readonly document_id!: string;
     @Prop({ type: String, required: true }) readonly fillmap_type!: string;
-    
+
     async afterAuthorization () {
       await Promise.all([
         this.$store.dispatch('getDocument', this.document_id),
