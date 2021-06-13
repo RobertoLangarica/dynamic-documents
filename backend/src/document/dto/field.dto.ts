@@ -112,6 +112,10 @@ export class Field {
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
     @Expose()
     show_in_print: boolean
+    
+    @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    @Expose()
+    show_in_edition: boolean
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
     @Expose()
