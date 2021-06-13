@@ -112,6 +112,16 @@ export class DocumentService {
         return document
     }
 
+    async cloneField(document_id:string, field_id:string, keep_maps:boolean): Promise<{items:Field[]}> {
+        let source = await this.findById(document_id, false)
+        let foo = this.doc_repo.create({name:'foo', fields:[]})
+
+        // The copied fields are return for the front to decide what to do with the copy
+        await this.copyField(foo, field_id, source, keep_maps)
+
+        return { items:foo.fields }
+    }
+
     async addDocumentFromTemplate(data: CreateDocumentDto): Promise<Document> {
         //Initial status
         data.status = await this.status_service.findByName(DocumentConfig.initialState)
@@ -129,7 +139,7 @@ export class DocumentService {
 
         for (let i = 0; i < template.fields.length; i++) {
             let src = template.fields[i]
-            await this.copyField(document, src.id, template)
+            await this.copyField(document, src.id, template, true)
         }
 
         // The sorting order of the copied fields is probably not the original one
@@ -202,17 +212,24 @@ export class DocumentService {
             return field
         }
 
-        // If source_field == id, means that this field is a copu of id and source_field is evidence of that
+        // If source_field == id, means that this field is a copy of id and source_field is evidence of that
         field = from.fields.find(f => f.source_field === id)
 
         return field
     }
 
-    simpleFieldCopy(sourceField: Field): Field {
+    simpleFieldCopy(sourceField: Field, keep_maps:boolean = true): Field {
         let field = Object.assign({}, sourceField, { source_field: sourceField.id, id: uuidv4() })
-        if (!sourceField.map_id) {
-            field.map_id = sourceField.id
+        if(keep_maps){
+            // Normal maps behavior
+            if (!sourceField.map_id) {
+                field.map_id = sourceField.id
+            }
+        } else {
+            // No preervation of any map
+            field.map_id = ''
         }
+
         // Any relation is set to blank
         field.use_embedded = false
         delete field.dependent
@@ -232,7 +249,7 @@ export class DocumentService {
    * @param {*} idToCopy UUID
    * @param {*} source Document
    */
-    async copyField(document: Document, idToCopy: string, source: Document) {
+    async copyField(document: Document, idToCopy: string, source: Document, keep_maps:boolean = true) {
         let sourceField: Field | undefined
         let field: Field
 
@@ -250,7 +267,7 @@ export class DocumentService {
             return
         }
         // Copy the field
-        field = this.simpleFieldCopy(sourceField)
+        field = this.simpleFieldCopy(sourceField, keep_maps)
 
         // Adding the copy before any deep copy (to avoid circular references)
         document.fields.push(field)
@@ -259,7 +276,7 @@ export class DocumentService {
         if (sourceField.dependent && isNotEmpty(sourceField.dependent.on)) {
             let ref = this.getReferencedField(document, sourceField.dependent.on)
             if (!ref) {
-                await this.copyField(document, sourceField.dependent.on, source)
+                await this.copyField(document, sourceField.dependent.on, source, keep_maps)
                 ref = this.getReferencedField(document, sourceField.dependent.on)
             }
             field.dependent = new FDataDependent()
@@ -272,7 +289,7 @@ export class DocumentService {
             // the group this field belongs to should be copied
             let ref = this.getReferencedField(document, sourceField.group_by!)
             if (!ref) {
-                await this.copyField(document, sourceField.group_by!, source)
+                await this.copyField(document, sourceField.group_by!, source, keep_maps)
                 ref = this.getReferencedField(document, sourceField.group_by!)
             }
             field.group_by = ref!.id
@@ -285,7 +302,7 @@ export class DocumentService {
                 let item = sourceField.embedded_fields![i]
                 let ref = this.getReferencedField(document, item)
                 if (!ref) {
-                    await this.copyField(document, item, source)
+                    await this.copyField(document, item, source, keep_maps)
                     ref = this.getReferencedField(document, item)
                 }
 
@@ -303,7 +320,7 @@ export class DocumentService {
         if (isNotEmpty(sourceField.replicate_with)) {
             let ref = this.getReferencedField(document, sourceField.replicate_with!)
             if (!ref) {
-                await this.copyField(document, sourceField.replicate_with!, source)
+                await this.copyField(document, sourceField.replicate_with!, source, keep_maps)
                 ref = this.getReferencedField(document, sourceField.replicate_with!)
             }
             field.replicate_with = ref!.id
@@ -317,7 +334,7 @@ export class DocumentService {
                 let item = inGroup[i]
                 let ref = this.getReferencedField(document, item.id)
                 if (!ref) {
-                    await this.copyField(document, item.id, source)
+                    await this.copyField(document, item.id, source, keep_maps)
                     ref = this.getReferencedField(document, item.id)
                 }
 
