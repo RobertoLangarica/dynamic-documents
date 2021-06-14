@@ -6,6 +6,8 @@ import { StateInterface } from 'src/store';
 import { DDFieldType } from './core/DDFieldType';
 import { DDDocument } from './core/DDDocument';
 import { IFillmap, IFillmapField } from './core/DDFillmap';
+import { isEmpty } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 
 export class DocumentEditionManager {
   id: string = uuidv4()
@@ -321,7 +323,13 @@ export class DocumentEditionManager {
 
   deleteField (deleted: DDField) {
     let deleteIndex = this.fields.findIndex(f => f.id === deleted.id)
+    if (deleteIndex < 0) {
+      // already deleted in another pass
+      return
+    }
+
     this.fields.splice(deleteIndex, 1)
+    let toDelete:DDField[] = []
 
     // Remove any reference to the deleted field
     this.fields.forEach(field => {
@@ -342,22 +350,29 @@ export class DocumentEditionManager {
 
       // Delete any "replicate with" reference
       if (field.replicate_with === deleted.id) {
-        this.updateField({ id: field.id, replicate_with: '' })
+        toDelete.push(field)
       }
 
-      // If it is a group all the group members are deleted
-      if (DDField.isGroup(deleted)) {
-        if (field.group_by === deleted.id) {
-          this.deleteField(field)
-        }
+      // The group members are deleted
+      if (field.group_by === deleted.id) {
+        toDelete.push(field)
       }
     })
+
+    // Deleting the group memebers or the replicated ones
+    toDelete.forEach(field => this.deleteField(field))
 
     this.addDeletedField(deleted)
   }
 
   async deleteFromFillmaps (deleted:DDField) {
     if (!this.store) { return }
+
+    let another = this.fields.find(f => f.map_id === deleted.id || (f.map_id && f.map_id === deleted.map_id) || f.id === deleted.map_id)
+    if (another) {
+      // NO changes for any fillmap since another field needs the same map
+      return;
+    }
 
     let map_id = deleted.map_id || deleted.id
     let fillmaps = this.store.getters['fillmaps/byDoc'](this.id)
@@ -410,6 +425,12 @@ export class DocumentEditionManager {
     let index = this.fields.findIndex(f => f.id === change.id)
     if (index >= 0) {
       let field = this.fields[index]
+
+      // Removing properties that should'nt be copied
+      change = { ...change };
+      delete change.is_new
+      delete change.deleted
+
       // local changes
       Object.assign(field, change)
       this.fields.splice(index, 1)
