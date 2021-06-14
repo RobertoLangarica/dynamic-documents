@@ -58,6 +58,19 @@ export class FillmapService {
         return this.transformResponse(fillmap)
     }
 
+    async removeFieldFromFillmap(id: string, field_identifier:string) {
+        let fillmap = await this.fillmap_repo.findOneOrFail(id)
+
+        let index = fillmap.fields.findIndex(f => field_identifier === f.destination || field_identifier === f.foreign)
+
+        if (index >= 0) {
+          fillmap.fields.splice(index, 1)
+          fillmap = await this.fillmap_repo.save(fillmap)
+        }
+
+        return this.transformResponse(fillmap)
+    }
+
     async deleteFillmap(id: string) {
         await this.fillmap_repo.delete({ id: id })
     }
