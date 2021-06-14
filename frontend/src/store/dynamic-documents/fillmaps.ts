@@ -107,7 +107,20 @@ const actions = {
     }
     return getters.autofillmaps(destination)
   },
+  async deleteField ({ commit }, { fillmap_id, field_identifier }) {
+    let path = `/fillmaps/${fillmap_id}/fields/${field_identifier}`
+
+    console.log(`PATCH ${path}`)
+    let result = await api.patch(path)
+
+    if (result.success) {
+      commit('replace', result.data)
+    }
+
+    return result
+  },
   async setFillmap ({ commit }, payload) {
+    // WARNING for deleting field from the fillmap use deleteField
     let path = `/fillmaps`
     let method = 'post'
 
