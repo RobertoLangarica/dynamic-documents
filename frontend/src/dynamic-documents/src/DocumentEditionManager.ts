@@ -385,12 +385,9 @@ export class DocumentEditionManager {
 
     // delete from all the fillmaps
     return Promise.all(fillmaps.map((fillmap:IFillmap) => {
-      let payload = Object.assign({}, fillmap, { fields: fillmap.fields.concat() })
-      let index = payload.fields.findIndex(f => map_id === f.destination || map_id === f.foreign)
-
+      let index = fillmap.fields.findIndex(f => map_id === f.destination || map_id === f.foreign)
       if (index >= 0) {
-        payload.fields.splice(index, 1)
-        return this.store!.dispatch('fillmaps/setFillmap', payload)
+        return this.store!.dispatch('fillmaps/deleteField', { fillmap_id: fillmap.id, field_identifier: map_id })
       }
 
       // Nothing to delete
