@@ -84,8 +84,8 @@ export default Vue.extend({
 
       // await this.$nextTick() // To avoid the component click handler
 
-      // Any other field on the document share the same map_id
-      let another = this.manager.fields.find(f => f.id !== this.field_id && (f.id === this.map_id || f.map_id === this.map_id))
+      // Any other field on the document share the same fillmap
+      let another = this.manager.fields.find(f => f.id !== this.field_id && (f.map_id === this.field_id || f.id === this.map_id || f.map_id === this.map_id))
 
       if (another) {
         // can't change the fillmap since another field is using it
@@ -93,17 +93,13 @@ export default Vue.extend({
         this.manager.updateField({ id: this.field_id, map_id: uuidv4() })
       } else {
         // delete
-        let payload = Object.assign({}, this.fillmap, { fields: this.fillmap.fields.concat() })
-        let index = payload.fields.findIndex(f => this.map_id === f.destination || this.map_id === f.foreign)
-
+        let index = this.fillmap.fields.findIndex(f => this.map_id === f.destination || this.map_id === f.foreign)
         if (index >= 0) {
-          payload.fields.splice(index, 1)
-        }
+          let result = await this.$store.dispatch('fillmaps/deleteField', { fillmap_id: this.fillmap.id, field_identifier: this.map_id })
 
-        let result = await this.$store.dispatch('fillmaps/setFillmap', payload)
-
-        if (!result.success) {
-          this.$q.notify({ message: 'Ocurrió un problema al guardar los cambios', color: 'negative' })
+          if (!result.success) {
+            this.$q.notify({ message: 'Ocurrió un problema al guardar los cambios', color: 'negative' })
+          }
         }
       }
       this.loading = false
