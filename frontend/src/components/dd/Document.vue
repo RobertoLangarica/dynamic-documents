@@ -19,7 +19,7 @@
         :allowAutoCapture="allowAutoCapture"
         :manager="manager"
       />
-      <input-field-creation :autofocus="!fields.length"/>
+      <input-field-creation :autofocus="!fields.length" />
     </div>
 
     <!-- MENU -->
@@ -312,6 +312,12 @@ export default class Document extends Vue {
   }
 
   async onCopyField (field_id:string) {
+    if (!this.manager.canBeCopiedOrReplicated(field_id)) {
+      // can't be copied
+      this.$q.notify({ message: 'Primero debes guardar los cambios!', color: 'secondary' })
+      return
+    }
+
     this.busy = true
     let success = await this.manager.copyField(field_id)
     if (!success) {
@@ -321,6 +327,12 @@ export default class Document extends Vue {
   }
 
   async onReplicateField (field_id:string) {
+    if (!this.manager.canBeCopiedOrReplicated(field_id)) {
+      // can't be copied
+      this.$q.notify({ message: 'Primero debes guardar los cambios!', color: 'secondary' })
+      return
+    }
+
     this.busy = true
     let success = await this.manager.replicateField(field_id)
     if (!success) {
