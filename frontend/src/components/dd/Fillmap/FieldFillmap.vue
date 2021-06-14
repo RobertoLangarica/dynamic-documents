@@ -69,6 +69,13 @@ export default Vue.extend({
       // Nothing to do until the map is removed
       if (this.hasMap) return;
 
+      // checking if this field needs to be saved before
+      if (!this.manager.canBeCopiedOrReplicated(this.field_id)) {
+      // need saving
+        this.$q.notify({ message: 'Primero debes guardar los cambios!', color: 'secondary' })
+        return
+      }
+
       // Opening the dialog for the field mapping
       this.$q.dialog({ component: FillmapMapDialog, parent: this, field_id: this.map_id, doc_type: this.doc_type })
     },
