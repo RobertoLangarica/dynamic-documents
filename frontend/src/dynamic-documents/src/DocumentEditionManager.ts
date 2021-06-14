@@ -150,6 +150,21 @@ export class DocumentEditionManager {
     this.documentChanges.push(change)
   }
 
+  canBeCopiedOrReplicated (field_id:string):boolean {
+    let f = this.changedFields.find(f => f.id === field_id)
+    if (!f) {
+      // A field with no changes could be copied
+      return true;
+    }
+
+    if (f.deleted || f.is_new) {
+      // A deleted field or a new field can't be copied
+      return false
+    }
+
+    return true
+  }
+
   async replicateField (field_id:string):Promise<boolean> {
     let cloned = await this.cloneField(field_id, true)
     if (cloned.length) {
