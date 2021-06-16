@@ -7,9 +7,6 @@ import { StateInterface } from '..'
 import { plainToClass } from 'class-transformer'
 import axios from 'axios'
 const FileDownload = require('js-file-download');
-
-api.baseURL = process.env.API_URL!
-
 export interface IDDState {
   documents: DDDocument[],
   templates: DDDocument[],
