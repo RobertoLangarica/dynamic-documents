@@ -1,32 +1,10 @@
 <template>
-  <div v-show="show" class="dd-field-container">
+  <div v-show="show" :class="'dd-field-container'+(isInEditView ? ' edit-mode' :'' )">
     <div class="dd-field-controls q-pt-md" v-if="isInEditView">
-      <q-btn
-        icon="add"
-        flat
-        round
-        size="md"
-        dense
-        class="cursor-pointer"
-        color="grey"
-        @click="showAddFieldDialog"
-      />
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="dd-field-content">
-      <div v-if="isInEditView" class="row justify-between">
-        <q-badge color="grey-8 dd-field-name ">
-          <template v-if="isInEditView">
-            <span contenteditable="true"
-                  @input="e=>name=e.target.innerText">{{ initialName }}</span>
-            <q-icon name="keyboard" class="q-ml-sm" v-if="field.show_in_capture" />
-            <q-icon name="print" class="q-ml-sm" v-if="field.show_in_print" />
-          </template>
-          <span v-else>{{ initialName }}</span>
-        </q-badge>
-      </div>
       <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
-      <field-fillmap v-if="showFillmapMapper" :manager="manager" :field_id="field.id" :doc_type="manager.id" />
       <div class="row justify-end" v-if="showReplicateButton"><q-btn icon="control_point_duplicate" round size="sm" color="grey-6" @click="onReplicate" /></div>
       <div class="row justify-end" v-if="showDeleteReplication"><q-btn icon="delete" round size="sm" color="grey-6" @click="onDelete" /></div>
       <component
@@ -34,7 +12,7 @@
         :is="getComponent(field.type)"
         :class="`dd-field dd-${field.type.component}`"
         :hint="!isInPrintView ? field.hint : null"
-        :label="isInEditView ? field.label : field.label || field.name"
+        :label="isInEditView ? field.label || field.name : field.label || field.name"
         :readonly="isReadOnly"
         :group="field.id"
         :fields="fields"
@@ -44,12 +22,53 @@
         :print_view="isInPrintView"
         :allowAutoCapture="allowAutoCapture"
         :manager="manager"
-      />
+        stack-label
+        align="left"
+      >
+        <template v-slot:prepend>
+          <field-fillmap :ref="field.id" v-if="showFillmapMapper" :manager="manager" :field_id="field.id" :doc_type="manager.id" />
+        </template>
+      </component>
     </div>
-    <div v-if="isInEditView" class="q-ml-sm dd-field-config column items-start justify-start">
-      <q-btn icon="settings" flat round size="md" dense class="cursor-pointer" color="grey" @click="onShowConfigDiaog" />
-      <q-btn icon="delete" flat round size="md" dense class="cursor-pointer" color="grey" @click="onDelete" />
-      <q-btn icon="content_copy" flat round size="md" dense class="cursor-pointer" color="grey" @click="onCopy" />
+    <div v-if="isInEditView" class="q-pt-md dd-field-config column items-start justify-start">
+      <q-btn icon="more_vert" flat round size="md" dense class="cursor-drag" color="grey">
+        <q-menu anchor="top right" self="bottom right">
+          <q-list class="edit-item">
+            <q-item clickable @click.native="ToggleShowInCapture">
+              <q-item-section>
+                <q-btn align="left" flat dense :ripple="false" icon="keyboard" label="Mostrar en captura" class="full-width edit-menu">
+                  <q-icon name="keyboard" :class="'icon-check'+(show_in_capture?' active':'')" />
+                </q-btn>
+              </q-item-section>
+            </q-item>
+            <q-item clickable @click.native="ToggleShowInPrint">
+              <q-item-section>
+                <q-btn align="left" flat dense :ripple="false" icon="description" label="Mostrar en impresión" class="full-width edit-menu">
+                  <q-icon name="description" :class="'icon-check'+(show_in_print?' active':'')" />
+                </q-btn>
+              </q-item-section>
+            </q-item>
+            <q-item v-if="(typeof $refs[`${field.id}`] != `undefined`)" clickable v-close-popup @click.native="$refs[`${field.id}`].onClick()">
+              <q-item-section><q-btn align="left" flat dense :ripple="false" icon="bolt" label="Pre captura" class="full-width edit-menu" /></q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click.native="showAddFieldDialog">
+              <q-item-section><q-btn align="left" flat dense :ripple="false" icon="vertical_align_top" label="Agregar antes" class="full-width edit-menu" /></q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click.native="showAddFieldDialog">
+              <q-item-section><q-btn align="left" flat dense :ripple="false" icon="vertical_align_bottom" label="Agregar después" class="full-width edit-menu" /></q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click.native="onShowConfigDiaog">
+              <q-item-section><q-btn align="left" flat dense :ripple="false" icon="settings" label="Configurar" class="full-width edit-menu" /></q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click.native="onCopy">
+              <q-item-section><q-btn align="left" flat dense :ripple="false" icon="content_copy" label="Duplicar" class="full-width edit-menu" /></q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click.native="onDelete">
+              <q-item-section><q-btn align="left" flat dense :ripple="false" icon="delete" label="Eliminar" class="full-width edit-menu" /></q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
     </div>
     <template v-if="isInCaptureView && allowAutoCapture">
       <btn-autocapture :manager="manager" :field_id="field.id" />
@@ -145,6 +164,24 @@ export default class FieldComponent extends Vue {
     this.notifyUpdate({ id: this.field.id, value: value } as DDField); // Sending only the data that changed
   }
 
+  get show_in_capture () {
+    return this.field.show_in_capture;
+  }
+
+  set show_in_capture (show_in_capture) {
+    this.field.show_in_capture = show_in_capture;
+    this.notifyUpdate({ id: this.field.id, show_in_capture: show_in_capture } as DDField); // Sending only the data that changed
+  }
+
+  get show_in_print () {
+    return this.field.show_in_print;
+  }
+
+  set show_in_print (show_in_print) {
+    this.field.show_in_print = show_in_print;
+    this.notifyUpdate({ id: this.field.id, show_in_print: show_in_print } as DDField); // Sending only the data that changed
+  }
+
   getComponent (fieldType: DDFieldType) {
     return DDFieldType.getUIComponentName(fieldType)
   }
@@ -194,6 +231,14 @@ export default class FieldComponent extends Vue {
   onCopy () {
     this.$root.$emit("f-copy", this.field.id)
   }
+
+  ToggleShowInCapture () {
+    this.show_in_capture = !this.show_in_capture
+  }
+
+  ToggleShowInPrint () {
+    this.show_in_print = !this.show_in_print
+  }
 }
 </script>
 
@@ -211,5 +256,45 @@ export default class FieldComponent extends Vue {
     border: 1px dotted grey;
     border-radius: 0.25rem;
 }
-
+.dd-input-paragraph .q-field__control:before{
+    border: 0px;
+    outline:none;
+}
+.dd-input-paragraph .q-field__control:after{
+    border-width: 0px !important;
+    border: 0px solid transparent;
+    outline:none;
+}
+.dd-field-container.edit-mode:hover{
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+}
+.edit-menu{
+  font-family: "Roboto", "-apple-system", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-transform: none;
+  font-weight: normal;
+  color: #000000;
+  background-color: transparent !important;
+  transition: unset !important;
+  .q-focus-helper {
+    visibility: hidden;
+  }
+}
+.edit-item {
+  .q-item{
+    min-height: 0px;
+    padding: 0px;
+    padding-right: 8px;
+  }
+}
+.icon-check {
+  position: absolute;
+  color: #447DBC;
+  opacity: 0;
+}
+.icon-check.active {
+  opacity: 1;
+}
 </style>
