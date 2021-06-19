@@ -85,6 +85,8 @@ export class DDField {
 
   sort_index: number = 0
 
+  size: string = 'col-12'
+
   // If true then the field should be removed in the next remote update
   deleted?: boolean
 
@@ -113,20 +115,5 @@ export class DDField {
     }
 
     return field.type.name === 'Grupo'
-  }
-
-  static getCopy (field: DDField):DDField {
-    let copy = Object.assign({}, field)
-    copy.source_field = field.id;
-    copy.id = uuidv4()
-
-    // any array gets copied instead of using the reference that Object.assign gives us
-    Object.keys(copy).forEach(k => {
-      if (Array.isArray(copy[k])) {
-        copy[k] = copy[k].map(item => Object.assign({}, item))
-      }
-    })
-
-    return copy
   }
 }

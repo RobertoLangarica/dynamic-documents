@@ -12,7 +12,7 @@
         :is="getComponent(field.type)"
         :class="`dd-field dd-${field.type.component}`"
         :hint="!isInPrintView ? field.hint : null"
-        :label="isInEditView ? field.label || field.name : field.label || field.name"
+        :label="field.label || field.name"
         :readonly="isReadOnly"
         :group="field.id"
         :fields="fields"
