@@ -111,7 +111,6 @@ onFieldTypeSelected (type:DDFieldType) {
     position: relative;
     .dd-field-controls {
       display: flex;
-      width: 5em;
       opacity: 0;
       transition: opacity 0.25s;
       justify-content: flex-end;
@@ -170,7 +169,8 @@ onFieldTypeSelected (type:DDFieldType) {
 }
 .dd-fields-container.dd-edit-view {
   .dd-field-container {
-    margin: 1em -1cm 1em -1.75cm;
+    margin: 1em -3em;
+    padding: 8px 0px;
   }
   .nq-select.q-field--outlined.dd-field .q-field__control,
   .nq-input.q-field--outlined.dd-field .q-field__control,
