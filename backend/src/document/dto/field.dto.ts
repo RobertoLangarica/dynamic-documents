@@ -132,4 +132,8 @@ export class Field {
     @IsOptional() @IsNumber() @ApiPropertyOptional()
     @Expose()
     sort_index: number = 0
+
+    @IsOptional() @IsNumber() @ApiPropertyOptional()
+    @Expose()
+    size: string = 'col-12'
 }
