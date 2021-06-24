@@ -267,8 +267,8 @@ $color-grey: rgb(0.6, 0.6, 0.6);
 .editor {
   position: relative;
   width: 100%;
-  height: 100%;
-  margin: 0 auto 5rem auto;
+  height: auto;
+  margin: 0 auto;
 
   &__content {
     overflow-wrap: break-word;

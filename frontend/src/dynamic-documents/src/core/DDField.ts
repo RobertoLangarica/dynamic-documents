@@ -85,7 +85,7 @@ export class DDField {
 
   sort_index: number = 0
 
-  size: string = 'col-12'
+  size: string = '12'
 
   // If true then the field should be removed in the next remote update
   deleted?: boolean
