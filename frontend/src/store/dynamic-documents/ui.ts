@@ -14,7 +14,6 @@ const mutations = {
 
 const getters = {
   HoveredELement: (state): any => {
-    console.log('Hovered')
     return state.hoveredElement
   }
 }

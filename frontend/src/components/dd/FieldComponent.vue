@@ -1,6 +1,6 @@
 <template>
-  <div v-show="show" class="dd-field-container col-12" :class="(isOver==this?'edit_mode ':' ')+'col-md-'+widthSize" @mouseover="showEditMenu" @mouseleave="hideEditMenu">
-    <div class="dd-field-controls q-pt-md" v-if="isInEditView">
+  <div v-show="show" class="dd-field-container col-12 q-px-sm" :class="(isOver==field.id?'field_hover ':' ')+'col-md-'+widthSize" @mouseover="showEditMenu" @mouseleave="hideEditMenu">
+    <div class="dd-field-controls q-pt-md" :class="{hide_action:isOver!=field.id}" v-if="isInEditView">
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="dd-field-content">
@@ -30,7 +30,7 @@
         </template>
       </component>
     </div>
-    <div v-if="isInEditView" class="q-pt-md dd-field-config column items-start justify-start">
+    <div v-if="isInEditView" class="q-pt-md dd-field-config column items-start justify-start"  :class="{hide_action:isOver!=field.id}">
       <q-btn icon="more_vert" flat round size="md" dense color="grey">
         <q-menu anchor="top right" self="bottom right">
           <q-list class="edit-item">
@@ -141,21 +141,15 @@ export default class FieldComponent extends Vue {
   @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
 
   showEditMenu (event) {
-    if (this.$store.state.hoveredElement != this) {
-      //this.$store.state.hoveredElement = this
-      //this.$store.dispatch('changeHoveredElement',this)
-      console.log("this")
+    if (this.$store.state.hoveredElement != this.field.id) {
+      this.$store.dispatch('changeHoveredElement',this.field.id)
     }
     event.stopPropagation()
     event.preventDefault()
   }
 
   hideEditMenu () {
-    if (this.$store.state.hoveredElement == this) {
-      //this.$store.state.hoveredElement = null
-      //this.$store.dispatch('changeHoveredElement',null)
-      console.log("null")
-    }
+    this.$store.dispatch('changeHoveredElement',null)
   }
 
   initialName: string = "";
@@ -344,9 +338,12 @@ export default class FieldComponent extends Vue {
     border: 0px solid transparent;
     outline:none;
 }
-.dd-field-container.edit_mode{
+.dd-field-container.field_hover{
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
+}
+.hide_action{
+  opacity: 0 !important;
 }
 .edit-menu{
   font-family: "Roboto", "-apple-system", "Helvetica Neue", Helvetica, Arial, sans-serif;
