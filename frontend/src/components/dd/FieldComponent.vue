@@ -1,6 +1,6 @@
 <template>
-  <div v-show="show" :class="'dd-field-container'+(isInEditView ? ' edit-mode' :'' )">
-    <div class="dd-field-controls q-pt-md" v-if="isInEditView">
+  <div v-show="show" class="dd-field-container col-12 q-px-sm" :class="(isOver==field.id?'field_hover ':' ')+'col-md-'+widthSize" @mouseover="showEditMenu" @mouseleave="hideEditMenu">
+    <div class="dd-field-controls q-pt-md" :class="{hide_action:isOver!=field.id}" v-if="isInEditView">
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
     <div class="dd-field-content">
@@ -30,8 +30,8 @@
         </template>
       </component>
     </div>
-    <div v-if="isInEditView" class="q-pt-md dd-field-config column items-start justify-start">
-      <q-btn icon="more_vert" flat round size="md" dense class="cursor-drag" color="grey">
+    <div v-if="isInEditView" class="q-pt-md dd-field-config column items-start justify-start"  :class="{hide_action:isOver!=field.id}">
+      <q-btn icon="more_vert" flat round size="md" dense color="grey">
         <q-menu anchor="top right" self="bottom right">
           <q-list class="edit-item">
             <q-item clickable @click.native="ToggleShowInCapture">
@@ -66,6 +66,45 @@
             <q-item clickable v-close-popup @click.native="onDelete">
               <q-item-section><q-btn align="left" flat dense :ripple="false" icon="delete" label="Eliminar" class="full-width edit-menu" /></q-item-section>
             </q-item>
+            <q-item clickable>
+              <q-item-section><q-btn align="left" flat dense :ripple="false" icon="settings_ethernet" label="Ancho" class="full-width edit-menu" /></q-item-section>
+              <q-item-section side>
+                <q-icon name="keyboard_arrow_right" />
+              </q-item-section>
+
+              <q-menu anchor="top end" self="top start">
+                <q-list class="edit-item">
+                  <q-item clickable @click.native="SetFieldSize('12')">
+                    <q-item-section>
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="100%" class="full-width edit-menu">
+                        <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '12'?' active':'')" />
+                      </q-btn>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable @click.native="SetFieldSize('8')">
+                    <q-item-section>
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="66%" class="full-width edit-menu">
+                        <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '8'?' active':'')" />
+                      </q-btn>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable @click.native="SetFieldSize('6')">
+                    <q-item-section>
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="50%" class="full-width edit-menu">
+                        <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '6'?' active':'')" />
+                      </q-btn>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable @click.native="SetFieldSize('4')">
+                    <q-item-section>
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="33%" class="full-width edit-menu">
+                        <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '4'?' active':'')" />
+                      </q-btn>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-item>
           </q-list>
         </q-menu>
       </q-btn>
@@ -77,8 +116,9 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
+
+import { Vue, Component, Prop, Watch, Emit } from "vue-property-decorator";
+import { DDFieldType} from "src/dynamic-documents/src/core/DDFieldType";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import FieldConfigDialog from "src/components/dd/FieldConfig/FieldConfigDialog.vue";
 import draggable from 'vuedraggable'
@@ -86,8 +126,10 @@ import FieldTypeSelectionDialog from "./FieldTypeSelection/FieldTypeSelectionDia
 import FieldFillmap from './Fillmap/FieldFillmap.vue'
 import BtnAutocapture from './Fillmap/BtnAutocapture.vue'
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
+import { mapGetters} from 'vuex'
 
-@Component({ components: { FieldConfigDialog, draggable, FieldFillmap, BtnAutocapture } })
+@Component({ components: { FieldConfigDialog, draggable, FieldFillmap, BtnAutocapture },
+  computed:{...mapGetters({isOver:'HoveredELement'})}})
 export default class FieldComponent extends Vue {
   @Prop({ required: true }) readonly field!: DDField;
   @Prop({ type: Array, required: true }) readonly fields!: DDField[];
@@ -96,13 +138,26 @@ export default class FieldComponent extends Vue {
   @Prop({ type: Boolean, required: true }) readonly isInPrintView!: boolean;
   @Prop({ type: Boolean, required: false, default: true }) readonly allowAutoCapture!:boolean;
   @Prop({ required: false, default: () => null }) readonly manager!:DocumentEditionManager;
-  @Prop({ type: Number, required: false, default: 500 })
-  readonly debounce!: number;
+  @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
+
+  showEditMenu (event) {
+    if (this.$store.state.hoveredElement != this.field.id) {
+      this.$store.dispatch('changeHoveredElement',this.field.id)
+    }
+    event.stopPropagation()
+    event.preventDefault()
+  }
+
+  hideEditMenu () {
+    this.$store.dispatch('changeHoveredElement',null)
+  }
 
   initialName: string = "";
+  widthSize: string = "";
   ignoreNextNameChange: boolean = false
   mounted () {
     this.initialName = this.field.name;
+    this.widthSize = this.field.size;
   }
 
   @Watch('field.name')
@@ -111,6 +166,11 @@ export default class FieldComponent extends Vue {
       this.initialName = value
     }
     this.ignoreNextNameChange = false
+  }
+
+  @Watch('field.size')
+  onSizeChanged (value, old) {
+    this.widthSize = value
   }
 
   get showDeleteReplication () {
@@ -182,6 +242,15 @@ export default class FieldComponent extends Vue {
     this.notifyUpdate({ id: this.field.id, show_in_print: show_in_print } as DDField); // Sending only the data that changed
   }
 
+  get field_size () {
+    return this.field.size;
+  }
+
+  set field_size (field_size) {
+    this.field.size = field_size;
+    this.notifyUpdate({ id: this.field.id, size: field_size } as DDField); // Sending only the data that changed
+  }
+
   getComponent (fieldType: DDFieldType) {
     return DDFieldType.getUIComponentName(fieldType)
   }
@@ -239,6 +308,10 @@ export default class FieldComponent extends Vue {
   ToggleShowInPrint () {
     this.show_in_print = !this.show_in_print
   }
+
+  SetFieldSize (field_size) {
+    this.field_size = field_size
+  }
 }
 </script>
 
@@ -265,9 +338,12 @@ export default class FieldComponent extends Vue {
     border: 0px solid transparent;
     outline:none;
 }
-.dd-field-container.edit-mode:hover{
+.dd-field-container.field_hover{
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
+}
+.hide_action{
+  opacity: 0 !important;
 }
 .edit-menu{
   font-family: "Roboto", "-apple-system", "Helvetica Neue", Helvetica, Arial, sans-serif;

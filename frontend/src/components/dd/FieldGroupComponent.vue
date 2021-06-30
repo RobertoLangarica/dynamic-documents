@@ -1,6 +1,6 @@
 <template>
   <div class="dd-field-group">
-    <draggable v-model="myFields" handle=".cursor-drag" @end="onDragEnded" :animation="200">
+    <draggable v-model="myFields" handle=".cursor-drag" @end="onDragEnded" :animation="200" class="full-width row">
       <field-component
         v-for="field in myFields"
         :key="field.id"
@@ -21,7 +21,7 @@
            size="md"
            class="cursor-pointer add-a-field"
            color="grey"
-           label="Agregar un elemento"
+           :label="isGroup?'Agregar al grupo':'Agregar un elemento'"
            @click="showAddFieldDialog"
     />
     <div />
@@ -99,7 +99,7 @@ onFieldTypeSelected (type:DDFieldType) {
   .dd-field-group .dd-field-group {
     background-color: white;
     padding: 1rem 0.5em 0.5em 1.75em;
-    border: 1px dotted grey;
+    border: 1px dashed grey;
     border-radius: 0.25rem;
   }
 }
@@ -169,7 +169,7 @@ onFieldTypeSelected (type:DDFieldType) {
 }
 .dd-fields-container.dd-edit-view {
   .dd-field-container {
-    margin: 1em -3em;
+    margin: 1em 0px;
     padding: 8px 0px;
   }
   .nq-select.q-field--outlined.dd-field .q-field__control,

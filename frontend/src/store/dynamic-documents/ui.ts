@@ -7,19 +7,25 @@ const state = {
 }
 
 const mutations = {
-  chanceHoveredElement (state, value) {
+  changeHoveredElement (state, value) {
     state.hoveredElement = value
   }
 }
 
 const getters = {
+  HoveredELement: (state): any => {
+    return state.hoveredElement
+  }
 }
 
 const actions = {
+  changeHoveredElement ({ commit }, value) {
+    commit('changeHoveredElement', value)
+  }
 }
 
 export default {
-  namespaced: true,
+  namespaced: false,
   state,
   mutations,
   getters,
