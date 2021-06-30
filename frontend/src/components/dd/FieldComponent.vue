@@ -1,5 +1,5 @@
 <template>
-  <div v-show="show" class="dd-field-container col-12 q-px-sm" :class="(isOver==field.id?'field_hover ':' ')+'col-md-'+widthSize" @mouseover="showEditMenu" @mouseleave="hideEditMenu">
+  <div v-show="show" class="dd-field-container col-12" :class="((isOver==field.id && isInEditView)?'field_hover ':' ')+'col-md-'+widthSize+(isGroup?'':' q-px-sm')" @mouseover="showEditMenu" @mouseleave="hideEditMenu">
     <div class="dd-field-controls q-pt-md" :class="{hide_action:isOver!=field.id}" v-if="isInEditView">
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
@@ -129,7 +129,7 @@ import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditio
 import { mapGetters} from 'vuex'
 
 @Component({ components: { FieldConfigDialog, draggable, FieldFillmap, BtnAutocapture },
-  computed:{...mapGetters({isOver:'HoveredELement'})}})
+  computed:{...mapGetters({isOver:'HoveredElement'})}})
 export default class FieldComponent extends Vue {
   @Prop({ required: true }) readonly field!: DDField;
   @Prop({ type: Array, required: true }) readonly fields!: DDField[];

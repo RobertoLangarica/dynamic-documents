@@ -13,7 +13,7 @@ const mutations = {
 }
 
 const getters = {
-  HoveredELement: (state): any => {
+  HoveredElement: (state): any => {
     return state.hoveredElement
   }
 }
