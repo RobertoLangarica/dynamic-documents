@@ -48,13 +48,21 @@
     <div>
       <div><strong class="q-mr-sm">Original:</strong>{{ valueToTransform }}</div>
       <div><strong class="q-mr-sm">Transformado:</strong> <span v-if="selected.length">{{ transformedValue }}</span></div>
+      <div v-if="helpTexts.length">
+        <strong class="q-mr-sm">Ayuda:</strong>
+        <q-list>
+          <q-expansion-item v-for="item in helpTexts" :label="item.name" :key="item.name">
+            {{ item.help }}
+          </q-expansion-item>
+        </q-list>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import draggable from "vuedraggable";
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Component, Prop, Watch } from 'vue-property-decorator'
 import Transforms, { separator as transform_separator } from 'src/transformations'
 import { mixins } from "vue-class-component";
 import EmbedMixin from "src/pages/embeds/EmbedMixin";
@@ -170,6 +178,12 @@ export default class Transformations extends mixins(EmbedMixin) {
       }
 
       return Transforms.apply(this.selected, this.valueToTransform)
+    }
+
+    get helpTexts () {
+      let texts = this.selected.map(v => ({ name: this.$t(`transformations.${v.name}_short`), help: this.$t(`transformations.help.${v.name}`) })).filter(v => !!v.help)
+      texts = texts.filter((t:any, index:number) => index === texts.findIndex(t2 => t2.name === t.name))
+      return texts
     }
 
     deepTransformCopy (target) {

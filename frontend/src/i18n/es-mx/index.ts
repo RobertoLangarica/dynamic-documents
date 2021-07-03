@@ -36,6 +36,20 @@ export default {
     description_currency: 'Formato de moneda',
     percentage: 'Porcentaje',
     percentage_short: '%',
-    description_percentage: 'Formato de porcentaje'
+    description_percentage: 'Formato de porcentaje',
+    help: {
+      floor: '',
+      ceil: '',
+      round: '',
+      lowercase: '',
+      uppercase: '',
+      first_letter_upercase: '',
+      date_format: 'Ayuda para formato de fecha',
+      number_to_text: '',
+      text_to_number: '',
+      number: '',
+      currency: '',
+      percentage: ''
+    }
   }
 }
