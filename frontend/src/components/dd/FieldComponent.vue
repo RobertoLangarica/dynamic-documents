@@ -30,7 +30,7 @@
         </template>
       </component>
     </div>
-    <div v-if="isInEditView" class="q-pt-md dd-field-config column items-start justify-start"  :class="{hide_action:isOver!=field.id}">
+    <div v-if="isInEditView" class="q-pt-md dd-field-config column items-start justify-start" :class="{hide_action:isOver!=field.id}">
       <q-btn icon="more_vert" flat round size="md" dense color="grey">
         <q-menu anchor="top right" self="bottom right">
           <q-list class="edit-item">
@@ -117,8 +117,8 @@
 
 <script lang="ts">
 
-import { Vue, Component, Prop, Watch, Emit } from "vue-property-decorator";
-import { DDFieldType} from "src/dynamic-documents/src/core/DDFieldType";
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
+import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import FieldConfigDialog from "src/components/dd/FieldConfig/FieldConfigDialog.vue";
 import draggable from 'vuedraggable'
@@ -126,10 +126,12 @@ import FieldTypeSelectionDialog from "./FieldTypeSelection/FieldTypeSelectionDia
 import FieldFillmap from './Fillmap/FieldFillmap.vue'
 import BtnAutocapture from './Fillmap/BtnAutocapture.vue'
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
-import { mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 
-@Component({ components: { FieldConfigDialog, draggable, FieldFillmap, BtnAutocapture },
-  computed:{...mapGetters({isOver:'HoveredElement'})}})
+@Component({
+  components: { FieldConfigDialog, draggable, FieldFillmap, BtnAutocapture },
+  computed: { ...mapGetters({ isOver: 'HoveredElement' }) }
+})
 export default class FieldComponent extends Vue {
   @Prop({ required: true }) readonly field!: DDField;
   @Prop({ type: Array, required: true }) readonly fields!: DDField[];
@@ -142,14 +144,14 @@ export default class FieldComponent extends Vue {
 
   showEditMenu (event) {
     if (this.$store.state.hoveredElement != this.field.id) {
-      this.$store.dispatch('changeHoveredElement',this.field.id)
+      this.$store.dispatch('changeHoveredElement', this.field.id)
     }
     event.stopPropagation()
     event.preventDefault()
   }
 
   hideEditMenu () {
-    this.$store.dispatch('changeHoveredElement',null)
+    this.$store.dispatch('changeHoveredElement', null)
   }
 
   initialName: string = "";
