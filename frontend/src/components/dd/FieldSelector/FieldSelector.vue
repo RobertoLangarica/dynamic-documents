@@ -44,13 +44,13 @@ export default class FieldSelector extends mixins(EmbedMixin) {
       let general:IFieldItem = { name: 'Generales', fields: [], group: true, key: 'general_group' }
       let groups:{[key:string] : IFieldItem;} = {}
       let sortedGroups:IFieldItem[] = []
-      let defaultGroup:IFieldItem = { name: '', fields: [], group: true, key: 'pending' }
+      let defaultGroup:()=>IFieldItem = () => ({ name: '', fields: [], group: true, key: 'pending' })
 
       fields.forEach(f => {
         if (DDField.isGroup(f)) {
           // the group could exists before this field since it is referenced by other fields
           if (!groups[f.id]) {
-            groups[f.id] = Object.assign({}, defaultGroup) as any
+            groups[f.id] = Object.assign({}, defaultGroup()) as any
           }
 
           groups[f.id].name = f.name
@@ -63,7 +63,7 @@ export default class FieldSelector extends mixins(EmbedMixin) {
           let g = f.group_by
 
           if (!groups[g]) {
-            groups[f.id] = Object.assign({}, defaultGroup) as any
+            groups[f.id] = Object.assign({}, defaultGroup()) as any
           }
             groups[g].fields!.push({ name: f.name, field: f, group: false, selected: false, key: f.id })
         }
