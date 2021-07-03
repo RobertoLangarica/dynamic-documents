@@ -29,8 +29,9 @@ export default class InputDate extends Vue {
     @Prop({ required: false, default: '' }) value!:string
     @Prop({ required: false }) readonly print_view!: boolean;
     @Prop({ required: false }) readonly readonly!: boolean;
-    @Prop({ required: false, default: 'DD/MM/YY' }) readonly dateFormat!: string;
+    @Prop({ required: false, default: 'DD/MM/YYYY' }) readonly dateFormat!: string;
     @Prop({ required: false, default: 'YYYY-MM-DD HH:mm:ss' }) readonly mask!: string;
+    @Prop({ required: false, default: 'es' }) readonly language!: string;
 
     formattedValue:string = ''
     popupDate:string = ''
@@ -40,7 +41,12 @@ export default class InputDate extends Vue {
     }
 
     format (value: string) {
-      return moment(value).format(this.dateFormat)
+      if (!moment(value).locale(this.language).isValid()) {
+        // TODO: Better handling of invalid dates
+        return ''
+      }
+
+      return moment(value).locale(this.language).format(this.dateFormat)
     }
 
     @Watch('value')
@@ -50,11 +56,11 @@ export default class InputDate extends Vue {
 
     onBeforeOpen () {
       let date = this.value ? new Date(Date.parse(this.value)) : new Date(Date.now())
-      this.popupDate = moment(date.toISOString()).format(this.mask)
+      this.popupDate = moment(date.toISOString()).locale(this.language).format(this.mask)
     }
 
     save () {
-      let iso = moment(this.popupDate).toISOString()
+      let iso = moment(this.popupDate).locale(this.language).toISOString()
       this.formattedValue = this.format(iso)
       this.$emit('input', iso)
     }
