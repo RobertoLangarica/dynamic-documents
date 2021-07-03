@@ -1,5 +1,9 @@
 <template>
-  <input-date v-model="value" v-bind="$attrs" />
+  <input-date v-model="value" v-bind="$attrs">
+    <template v-slot:prepend>
+      <slot name="prepend" />
+    </template>
+  </input-date>
 </template>
 
 <script lang="ts">

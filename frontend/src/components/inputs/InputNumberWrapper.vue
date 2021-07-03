@@ -5,17 +5,25 @@
     :prefix="prefix"
     :suffix="suffix"
     v-bind="$attrs"
-  />
+  >
+    <template v-slot:prepend>
+      <slot name="prepend" />
+    </template>
+  </input-number>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, Prop } from "vue-property-decorator";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import InputNumber from './InputNumber.vue'
 
 @Component({ name: 'InputNumberWrapper', components: { 'input-number': InputNumber } })
 export default class InputNumberWrapper extends Vue {
     @Prop({ required: true }) readonly field!: DDField;
+
+    mounted () {
+      console.log(this.$slots)
+    }
 
     get value () {
       return this.field.value

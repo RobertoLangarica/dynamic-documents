@@ -14,6 +14,9 @@
         </q-popup-proxy>
       </q-btn>
     </template>
+    <template v-slot:prepend>
+      <slot name="prepend" />
+    </template>
   </nq-field>
 </template>
 

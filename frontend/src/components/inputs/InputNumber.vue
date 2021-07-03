@@ -7,7 +7,11 @@
            class="nq-input nq-component nq-input-number"
            :dense="size==='sm' || size==='xs' || $attrs.dense"
            :input-class="`nq-input-field ${$attrs['input-class'] || ''} size-${size} text-${align}`"
-  />
+  >
+    <template v-slot:prepend>
+      <slot name="prepend" />
+    </template>
+  </q-input>
 </template>
 
 <script lang="ts">
