@@ -21,10 +21,6 @@ import InputNumber from './InputNumber.vue'
 export default class InputNumberWrapper extends Vue {
     @Prop({ required: true }) readonly field!: DDField;
 
-    mounted () {
-      console.log(this.$slots)
-    }
-
     get value () {
       return this.field.value
     }
