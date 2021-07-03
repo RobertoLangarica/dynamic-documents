@@ -19,7 +19,7 @@
         :allowAutoCapture="allowAutoCapture"
         :manager="manager"
       />
-      <input-field-creation :autofocus="!fields.length" />
+      <input-field-creation v-if="isInEditView" :autofocus="!fields.length" />
     </div>
 
     <!-- MENU -->
