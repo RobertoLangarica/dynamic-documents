@@ -5,9 +5,7 @@
     </div>
     <q-input v-if="isInEditView && !isGroup && field.type.component != 'input-paragraph'" v-model="name" label="" color="dd-label" :borderless="true" class="floating-label" :class="{'floating-label-mapper' : (typeof $refs[`${field.id}`] != `undefined`)}"></q-input>
     <div class="dd-field-content">
-      <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
       <div class="row justify-end" v-if="showReplicateButton"><q-btn icon="control_point_duplicate" round size="sm" color="grey-6" @click="onReplicate" /></div>
-      <div class="row justify-end" v-if="showDeleteReplication"><q-btn icon="delete" round size="sm" color="grey-6" @click="onDelete" /></div>
       <component
         v-model="value"
         :is="getComponent(field.type)"
@@ -28,6 +26,8 @@
       >
         <template v-slot:prepend>
           <field-fillmap :ref="field.id" v-if="showFillmapMapper" :manager="manager" :field_id="field.id" :doc_type="manager.id" />
+          <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
+          <div class="row justify-end" v-if="showDeleteReplication"><q-btn icon="delete" round size="sm" color="grey-6" @click="onDelete" /></div>
         </template>
       </component>
     </div>
