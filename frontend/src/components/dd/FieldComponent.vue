@@ -3,6 +3,7 @@
     <div class="dd-field-controls q-pt-md" :class="{hide_action:isOver!=field.id}" v-if="isInEditView">
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
+    <q-input v-if="isInEditView && !isGroup && field.type.component != 'input-paragraph'" v-model="name" label="" color="dd-label" :borderless="true" class="floating-label" :class="{'floating-label-mapper' : (typeof $refs[`${field.id}`] != `undefined`)}"></q-input>
     <div class="dd-field-content">
       <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
       <div class="row justify-end" v-if="showReplicateButton"><q-btn icon="control_point_duplicate" round size="sm" color="grey-6" @click="onReplicate" /></div>
@@ -12,7 +13,7 @@
         :is="getComponent(field.type)"
         :class="`dd-field dd-${field.type.component}`"
         :hint="!isInPrintView ? field.hint : null"
-        :label="field.label || field.name"
+        :label="isInEditView?'':name"
         :readonly="isReadOnly"
         :group="field.id"
         :fields="fields"
@@ -343,6 +344,21 @@ export default class FieldComponent extends Vue {
 .dd-field-container.field_hover{
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
+}
+.text-dd-label {
+  color: grey;
+}
+.bg-dd-label {
+  background: transparent;
+}
+.floating-label {
+  position: absolute;
+  z-index: 1000;
+  top: -10px;
+  left: 2.6rem;
+}
+.floating-label-mapper {
+  left: 5.5rem;
 }
 .hide_action{
   opacity: 0 !important;
