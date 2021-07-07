@@ -96,6 +96,8 @@ export class DDField {
   // Identifier used in the fillmaps
   map_id?: string
 
+  border: number = 0;
+
   static createFromType (type: DDFieldType): DDField {
     let field = new DDField()
     field.name = type.name
