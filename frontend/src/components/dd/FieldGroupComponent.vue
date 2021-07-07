@@ -1,5 +1,5 @@
 <template>
-  <div class="dd-field-group">
+  <div class="dd-field-group" :class="{'dd-group-has-border':border!=0}">
     <draggable v-model="myFields" handle=".cursor-drag" @end="onDragEnded" :animation="200" class="full-width row">
       <field-component
         v-for="field in myFields"
@@ -47,6 +47,7 @@ export default class FieldGroupComponent extends Vue {
 @Prop({ required: false, default: false }) readonly edit_view!:boolean ;
 @Prop({ required: false, default: false }) readonly capture_view!:boolean ;
 @Prop({ required: false, default: false }) readonly print_view!:boolean ;
+@Prop({ required: false, default: 0 }) readonly border!:number ;
 @Prop({ type: Boolean, required: false, default: true }) readonly allowAutoCapture!:boolean;
 @Prop({ required: false, default: () => null }) readonly manager!:DocumentEditionManager ;
 
@@ -102,6 +103,10 @@ onFieldTypeSelected (type:DDFieldType) {
     border: 1px dashed grey;
     border-radius: 0.25rem;
   }
+}
+.dd-group-has-border{
+  border: 1px solid grey !important;
+  border-radius: 0.25rem;
 }
 
 .dd-fields-container {

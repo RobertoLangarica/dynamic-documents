@@ -19,6 +19,7 @@
         :edit_view="isInEditView"
         :capture_view="isInCaptureView"
         :print_view="isInPrintView"
+        :border="border"
         :allowAutoCapture="allowAutoCapture"
         :manager="manager"
         stack-label
@@ -48,6 +49,13 @@
               <q-item-section>
                 <q-btn align="left" flat dense :ripple="false" icon="description" label="Mostrar en impresión" class="full-width edit-menu">
                   <q-icon name="description" :class="'icon-check'+(show_in_print?' active':'')" />
+                </q-btn>
+              </q-item-section>
+            </q-item>
+            <q-item v-if="isGroup" clickable @click.native="ToggleBorder">
+              <q-item-section>
+                <q-btn align="left" flat dense :ripple="false" icon="crop_din" label="Borde" class="full-width edit-menu">
+                  <q-icon name="crop_din" :class="'icon-check'+(border?' active':'')" />
                 </q-btn>
               </q-item-section>
             </q-item>
@@ -247,6 +255,15 @@ export default class FieldComponent extends Vue {
     this.notifyUpdate({ id: this.field.id, show_in_print: show_in_print } as DDField); // Sending only the data that changed
   }
 
+  get border () {
+    return this.field.border;
+  }
+
+  set border (value) {
+    this.field.border = value;
+    this.notifyUpdate({ id: this.field.id, border: value } as DDField); // Sending only the data that changed
+  }
+
   get field_size () {
     return this.field.size;
   }
@@ -312,6 +329,10 @@ export default class FieldComponent extends Vue {
 
   ToggleShowInPrint () {
     this.show_in_print = !this.show_in_print
+  }
+
+  ToggleBorder () {
+    this.border = (this.border + 1) % 2
   }
 
   SetFieldSize (field_size) {
