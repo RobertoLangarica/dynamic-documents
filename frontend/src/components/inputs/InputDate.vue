@@ -17,6 +17,9 @@
     <template v-slot:prepend>
       <slot name="prepend" />
     </template>
+    <template v-slot:append>
+      <slot name="append" />
+    </template>
   </nq-field>
 </template>
 

@@ -26,6 +26,8 @@
       >
         <template v-slot:prepend>
           <field-fillmap :ref="field.id" v-if="showFillmapMapper" :manager="manager" :field_id="field.id" :doc_type="manager.id" />
+        </template>
+        <template v-slot:append>
           <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
           <div class="row justify-end" v-if="showDeleteReplication"><q-btn icon="delete" round size="sm" color="grey-6" @click="onDelete" /></div>
         </template>
