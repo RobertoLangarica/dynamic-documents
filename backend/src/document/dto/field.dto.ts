@@ -135,5 +135,9 @@ export class Field {
 
     @IsOptional() @IsNumber() @ApiPropertyOptional()
     @Expose()
-    size: string = 'col-12'
+    size: string
+
+    @IsOptional() @IsNumber() @ApiPropertyOptional()
+    @Expose()
+    border: number
 }
