@@ -63,7 +63,7 @@
         <q-checkbox v-model="allowReplication" />
       </q-item-section>
       <q-item-section>
-        <q-item-label>Se copia durante la captura</q-item-label>
+        <q-item-label>Puede ser duplicado</q-item-label>
         <q-item-label caption>
           Indica si este campo puede replicarse en modo de captura
         </q-item-label>

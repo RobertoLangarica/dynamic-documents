@@ -3,16 +3,15 @@
     <div class="dd-field-controls q-pt-md" :class="{hide_action:isOver!=field.id}" v-if="isInEditView">
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
+    <q-input v-if="isInEditView && !isGroup && field.type.component != 'input-paragraph'" v-model="name" label="" color="dd-label" :borderless="true" class="floating-label" :class="{'floating-label-mapper' : (typeof $refs[`${field.id}`] != `undefined`)}"></q-input>
     <div class="dd-field-content">
-      <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
       <div class="row justify-end" v-if="showReplicateButton"><q-btn icon="control_point_duplicate" round size="sm" color="grey-6" @click="onReplicate" /></div>
-      <div class="row justify-end" v-if="showDeleteReplication"><q-btn icon="delete" round size="sm" color="grey-6" @click="onDelete" /></div>
       <component
         v-model="value"
         :is="getComponent(field.type)"
         :class="`dd-field dd-${field.type.component}`"
         :hint="!isInPrintView ? field.hint : null"
-        :label="field.label || field.name"
+        :label="isInEditView?'':name"
         :readonly="isReadOnly"
         :group="field.id"
         :fields="fields"
@@ -20,6 +19,7 @@
         :edit_view="isInEditView"
         :capture_view="isInCaptureView"
         :print_view="isInPrintView"
+        :border="border"
         :allowAutoCapture="allowAutoCapture"
         :manager="manager"
         stack-label
@@ -27,6 +27,10 @@
       >
         <template v-slot:prepend>
           <field-fillmap :ref="field.id" v-if="showFillmapMapper" :manager="manager" :field_id="field.id" :doc_type="manager.id" />
+        </template>
+        <template v-slot:append>
+          <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
+          <div class="row justify-end" v-if="showDeleteReplication"><q-btn icon="delete" round size="sm" color="grey-6" @click="onDelete" /></div>
         </template>
       </component>
     </div>
@@ -45,6 +49,13 @@
               <q-item-section>
                 <q-btn align="left" flat dense :ripple="false" icon="description" label="Mostrar en impresión" class="full-width edit-menu">
                   <q-icon name="description" :class="'icon-check'+(show_in_print?' active':'')" />
+                </q-btn>
+              </q-item-section>
+            </q-item>
+            <q-item v-if="isGroup" clickable @click.native="ToggleBorder">
+              <q-item-section>
+                <q-btn align="left" flat dense :ripple="false" icon="crop_din" label="Borde" class="full-width edit-menu">
+                  <q-icon name="crop_din" :class="'icon-check'+(border?' active':'')" />
                 </q-btn>
               </q-item-section>
             </q-item>
@@ -244,6 +255,15 @@ export default class FieldComponent extends Vue {
     this.notifyUpdate({ id: this.field.id, show_in_print: show_in_print } as DDField); // Sending only the data that changed
   }
 
+  get border () {
+    return this.field.border;
+  }
+
+  set border (value) {
+    this.field.border = value;
+    this.notifyUpdate({ id: this.field.id, border: value } as DDField); // Sending only the data that changed
+  }
+
   get field_size () {
     return this.field.size;
   }
@@ -311,6 +331,10 @@ export default class FieldComponent extends Vue {
     this.show_in_print = !this.show_in_print
   }
 
+  ToggleBorder () {
+    this.border = (this.border + 1) % 2
+  }
+
   SetFieldSize (field_size) {
     this.field_size = field_size
   }
@@ -343,6 +367,21 @@ export default class FieldComponent extends Vue {
 .dd-field-container.field_hover{
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
+}
+.text-dd-label {
+  color: grey;
+}
+.bg-dd-label {
+  background: transparent;
+}
+.floating-label {
+  position: absolute;
+  z-index: 1000;
+  top: -10px;
+  left: 2.6rem;
+}
+.floating-label-mapper {
+  left: 5.5rem;
 }
 .hide_action{
   opacity: 0 !important;
