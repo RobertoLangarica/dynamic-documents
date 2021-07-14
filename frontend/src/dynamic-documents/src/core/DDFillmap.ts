@@ -1,7 +1,8 @@
 
 export interface IFillmapField {
-    foreign: string
-    destination:string
+    foreign: string;
+    destination:string;
+    name:string;
 }
 
 export interface IFillmap{

@@ -1,13 +1,17 @@
 import { Type } from "class-transformer";
-import { IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 import { EntityWithTimeStampt } from "src/common/entities/entity_with_timestampt.entity";
 import { Column, Entity, Index } from "typeorm";
 
 export class FillmapField {
     @IsString() @IsNotEmpty()
     foreign: string
+    
     @IsUUID() @IsNotEmpty()
     destination:string
+
+    @IsString() @IsOptional()
+    name:string
 }
 
 @Entity('fillmaps')

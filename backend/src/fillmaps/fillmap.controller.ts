@@ -43,10 +43,16 @@ export class FillmapController {
         return this.service.addFillmap(dto)
     }
 
+    @Patch(':id/fields/:field_identifier')
+    removeField(@Param('id', ParseUUIDPipe, ExistsFillmapPipe) id: string, @Param('field_identifier') field_identifier: string) {
+        return this.service.removeFieldFromFillmap(id, field_identifier)
+    }
+
     @Patch(':id')
     modify(@Param('id', ParseUUIDPipe, ExistsFillmapPipe) id: string, @Body(FillmapFieldsValidationPipe) dto: FillmapDto) {
         return this.service.updateFillmap(id, dto)
     }
+
 
     @Delete(':id')
     delete(@Param('id', ParseUUIDPipe, ExistsFillmapPipe) id: string) {

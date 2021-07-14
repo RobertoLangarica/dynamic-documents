@@ -2,18 +2,14 @@
 import api, { APIWrapperResponse } from 'api-client-wrapper'
 import { MutationTree, ActionTree, GetterTree } from 'vuex'
 import { DDDocument } from 'src/dynamic-documents/src/core/DDDocument'
-import { DDTemplate } from 'src/dynamic-documents/src/core/DDTemplate'
 import { DDFieldType } from 'src/dynamic-documents/src/core/DDFieldType'
 import { StateInterface } from '..'
 import { plainToClass } from 'class-transformer'
 import axios from 'axios'
 const FileDownload = require('js-file-download');
-
-api.baseURL = process.env.API_URL!
-
 export interface IDDState {
   documents: DDDocument[],
-  templates: DDTemplate[],
+  templates: DDDocument[],
   types: DDFieldType[],
   transformations:any[],
 }
@@ -27,7 +23,7 @@ const state: IDDState = {
 
 const mutations: MutationTree<IDDState> = {
 
-  templates(state: IDDState, value: DDTemplate[]) {
+  templates(state: IDDState, value: DDDocument[]) {
     state.templates = value
   },
 
@@ -35,7 +31,7 @@ const mutations: MutationTree<IDDState> = {
     state.documents = value
   },
 
-  addTemplate(state: IDDState, value: DDTemplate) {
+  addTemplate(state: IDDState, value: DDDocument) {
     state.templates.push(value)
   },
   addDocument(state: IDDState, value: DDDocument) {
@@ -52,7 +48,7 @@ const mutations: MutationTree<IDDState> = {
     }
   },
 
-  updateTemplate(state: IDDState, value: DDTemplate) {
+  updateTemplate(state: IDDState, value: DDDocument) {
     let ind = state.templates.findIndex(item => item.id === value.id)
     if (ind >= 0) {
       state.templates[ind] = value
@@ -73,7 +69,7 @@ const mutations: MutationTree<IDDState> = {
 
 const getters: GetterTree<IDDState, StateInterface> = {
 
-  template: (state: IDDState) => (id: string): DDTemplate | undefined => {
+  template: (state: IDDState) => (id: string): DDDocument | undefined => {
     return state.templates.find(t => t.id === id)
   },
 
@@ -106,7 +102,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
     let result = await api.get('/templates')
 
     if (result.success) {
-      commit('templates', plainToClass(DDTemplate, result.data.items as DDTemplate[]))
+      commit('templates', plainToClass(DDDocument, result.data.items as DDDocument[]))
     }
     return result
   },
@@ -126,7 +122,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
 
     return (await dispatch('updateDocument', id)).data
   },
-  async getTemplate({ getters, dispatch }, id: string): Promise<DDTemplate | undefined> {
+  async getTemplate({ getters, dispatch }, id: string): Promise<DDDocument | undefined> {
     let result = getters.template(id)
     // If the property fields is missing, then an update is needed
     if (result && result.fields) return result
@@ -143,7 +139,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
 
     return result
   },
-  async updateTemplate({ commit }, id: string): Promise<DDTemplate | undefined> {
+  async updateTemplate({ commit }, id: string): Promise<DDDocument | undefined> {
     console.log('GET', `/templates/${id}`)
     let result = await api.get(`/templates/${id}`)
     if (result.success) {
@@ -171,7 +167,7 @@ const actions: ActionTree<IDDState, StateInterface> = {
     // is_template should be empty
     delete data.is_template
     if(!data.type){
-      // no empty type
+      // empty type
       delete data.type
     }
 
@@ -243,6 +239,18 @@ const actions: ActionTree<IDDState, StateInterface> = {
         resolve(e)
       })
     })
+  },
+  async cloneField({},{document_id, field_id, keep_maps}){
+    let path = `/documents/${document_id}/field/${field_id}?keep_maps=${keep_maps}`
+    console.log('GET', path)
+    
+    let result = await api.get(path)
+    
+    if(result.success){
+      return result.data.items
+    }
+
+    return []
   }
 }
 

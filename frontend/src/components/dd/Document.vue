@@ -1,18 +1,30 @@
 <template>
   <article class="document-container q-pa-md">
-    <h1 v-if="docReady && !refreshing" :contenteditable="isInEditView" @input="e=>name=e.target.innerText">
-      {{ initialName }}
-    </h1>
+    <div class="row title-container" :class="{'justify-between':isInEditView,'justify-start':!isInEditView}" style="max-width:21.5cm;">
+      <h1 class="col" v-if="docReady && !refreshing" :contenteditable="isInEditView" @input="e=>name=e.target.innerText">
+        {{ initialName }}
+      </h1>
+      <template v-if="isInCaptureView && allowAutoCapture">
+        <btn-autocapture :manager="manager" label="Auto capturar documento" />
+      </template>
+    </div>
+
+    <!-- DOCUMENT -->
     <div v-if="docReady" class="dd-fields-container page" :class="{'dd-edit-view': isInEditView, 'dd-capture-view': isInCaptureView, 'dd-print-view': isInPrintView}">
       <field-group-component
         :fields="fields"
         :edit_view="isInEditView"
         :capture_view="isInCaptureView"
         :print_view="isInPrintView"
+        :allowAutoCapture="allowAutoCapture"
+        :manager="manager"
       />
+      <input-field-creation v-if="isInEditView" :autofocus="!fields.length" />
     </div>
+
+    <!-- MENU -->
     <template v-if="docReady">
-      <div v-if="views.length > 0 || showDownload || (!isInPrintView && !creatingNewDocument)" class="fixed-top-right q-py-sm q-px-none bg-white column justify-end shadow-1 q-mt-md view-buttons-container">
+      <div v-if="views.length > 0 || showDownload || (!isInPrintView && !creatingNewDocument)" class="fixed-top-right q-py-sm q-px-none bg-white column justify-end shadow-1 view-buttons-container">
         <q-btn
           flat align="left"
           :color="view.value === currentView ? 'info' : 'grey-7'"
@@ -31,6 +43,13 @@
                flat align="left"
                color="grey-7"
                label="Descargar" icon="download" @click="onDownload" />
+        <q-btn v-if="!isTemplate"
+               flat
+               align="left"
+               label="Links de captura"
+               @click="onShowFilters"
+               icon="link"
+               color="grey-7" />
         <q-btn v-if="!isInPrintView && !creatingNewDocument"
                flat
                align="left"
@@ -38,9 +57,16 @@
                @click="onSaveChanges"
                icon="save"
                :color="isDirty ? 'info' : 'grey-7'" />
+        <q-btn v-if="!isInPrintView && creatingNewDocument"
+               flat
+               align="left"
+               label="Crear"
+               @click="saveAsNew"
+               icon="save"
+               :color="isDirty ? 'info' : 'grey-7'" />
       </div>
     </template>
-    <q-inner-loading :showing="downloading || refreshing" />
+    <q-inner-loading :showing="loading" />
   </article>
 </template>
 
@@ -49,13 +75,16 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
 import IDDView from "src/dynamic-documents/src/core/IDDView";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
+import BtnAutocapture from './Fillmap/BtnAutocapture.vue'
+import InputFieldCreation from './InputFieldCreation.vue'
 
-@Component({})
+@Component({ components: { BtnAutocapture, InputFieldCreation } })
 export default class Document extends Vue {
   @Prop({ type: String, required: false, default: '' }) readonly id!: string;
   @Prop({ type: Boolean, required: false, default: false }) readonly isTemplate!: boolean;
   @Prop({ type: Boolean, required: false, default: false }) readonly isFilter!: boolean;
   @Prop({ type: Boolean, required: false, default: true }) readonly allowDownload!:boolean;
+  @Prop({ type: Boolean, required: false, default: true }) readonly allowAutoCapture!:boolean;
   @Prop({ type: String, required: false, default: '' }) readonly downloadAuthorization!:string;
   @Prop({
     type: Array,
@@ -69,16 +98,14 @@ export default class Document extends Vue {
 
   @Prop({ type: Number, required: false, default: 0 }) readonly initialView!:number;
 
-  debounce: number = 500
   currentView: IDDView = this.initialView
   manager: DocumentEditionManager = {} as any;
   fields: DDField[] = [];
-  docReady = false;
-  refreshing = false;
+  docReady:boolean = false;
+  refreshing:boolean = false;
+  busy:boolean = false;
   creatingNewDocument:boolean = false
   initialName: string = "";
-  downloading:boolean = false;
-  saving:boolean = false;
 
   @Watch('views', { immediate: true })
   onAllowedViewschanged (value:any[], old:any[]) {
@@ -86,6 +113,10 @@ export default class Document extends Vue {
       // Selecting an allowed view
       this.currentView = value.length ? value[0].value : IDDView.PRINT
     }
+  }
+
+  get loading () {
+    return this.busy || this.refreshing
   }
 
   get isDirty () {
@@ -117,17 +148,28 @@ export default class Document extends Vue {
     this.updateDocument({ name: value })// Sending only the data that changed
   }
 
+  beforeMount () {
+    void this.$store.dispatch("getTransformations");
+    void this.$store.dispatch("getTypes");
+
+    this.$root.$on("f-add", this.onFieldAdded.bind(this));
+    this.$root.$on("f-update", this.onFieldUpdated.bind(this));
+    this.$root.$on("f-delete", this.onFieldDeleted.bind(this));
+    this.$root.$on("f-sort_field", this.onSortField.bind(this));
+    this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
+    this.$root.$on("f-copy", this.onCopyField.bind(this));
+    this.$root.$on("f-replicate", this.onReplicateField.bind(this));
+    console.log('Added listeners')
+  }
+
   beforeDestroy () {
     this.$root.$off("f-add");
     this.$root.$off("f-update");
     this.$root.$off("f-delete");
     this.$root.$off("f-sort_field");
     this.$root.$off("f-add_under_sort_index");
-  }
-
-  beforeMount () {
-    void this.$store.dispatch("getTransformations");
-    void this.$store.dispatch("getTypes");
+    this.$root.$off("f-copy");
+    this.$root.$off("f-replicate");
   }
 
   async loadDocument () {
@@ -137,7 +179,7 @@ export default class Document extends Vue {
       return null
     }
 
-    let action = this.isTemplate ? 'getTemplate' : this.isFilter ? 'doc_filters/getFilteredDocument' : 'getDocument'
+    let action = this.isTemplate ? 'getTemplate' : this.isFilter ? 'filtered_docs/getFilteredDocument' : 'getDocument'
     document = await this.$store.dispatch(action, this.id);
 
     if (!document || document.success === false) {
@@ -154,12 +196,6 @@ export default class Document extends Vue {
   }
 
   async mounted () {
-    this.$root.$on("f-add", this.onFieldAdded.bind(this));
-    this.$root.$on("f-update", this.onFieldUpdated.bind(this));
-    this.$root.$on("f-delete", this.onFieldDeleted.bind(this));
-    this.$root.$on("f-sort_field", this.onSortField.bind(this));
-    this.$root.$on("f-add_under_sort_index", this.onFieldInserted.bind(this));
-
     let document = await this.loadDocument()
     this.$emit('loaded_document', document)
 
@@ -167,8 +203,13 @@ export default class Document extends Vue {
     if (!document) {
       // Placeholder name
       this.manager.name = (this.isTemplate ? 'Plantilla' : 'Documento') + ' sin nombre'
+      this.manager.is_template = this.isTemplate
       this.creatingNewDocument = true
+    } else if (this.allowAutoCapture) {
+      // Getting the fillmaps ready (needed by the nested fields)
+      await this.$store.dispatch('fillmaps/getByDoc', this.id)
     }
+
     this.initialName = this.manager.name;
 
     this.fields = this.manager.fields;
@@ -211,9 +252,9 @@ export default class Document extends Vue {
 
   async onSaveChanges () {
     this.$root.$emit('send_message', { message: 'saving', data: { name: this.manager.name } })
-    this.saving = true
+    this.busy = true
     let successfull = await this.manager.saveChanges()
-    this.saving = false
+    this.busy = false
 
     if (successfull) {
       this.$root.$emit('send_message', { message: 'saved' })
@@ -231,13 +272,14 @@ export default class Document extends Vue {
    */
   async saveAsNew () {
     // Letting the manager to know the store so it can save and update anything
+    this.$root.$emit('send_message', { message: 'creating' })
     this.manager.store = this.$store;
     let result:{[key:string]:any} = await this.manager.saveAsNew()
 
     if (result.success) {
-      return result.data
+      this.$root.$emit('send_message', { message: 'created', data: result.data })
     } else {
-      throw new Error('Unable to save the document as a new document')
+      this.$root.$emit('send_message', { message: 'creation_error' })
     }
   }
 
@@ -256,20 +298,55 @@ export default class Document extends Vue {
   }
 
   async onDownload () {
-    this.downloading = true
+    this.busy = true
     await this.$store.dispatch('download', { id: this.manager.id, name: this.manager.name, auth: this.downloadAuthorization })
-    this.downloading = false
+    this.busy = false
+  }
+
+  onShowFilters () {
+    this.$root.$emit('send_message', { message: 'show_filters' })
   }
 
   onPrint () {
     window.print()
+  }
+
+  async onCopyField (field_id:string) {
+    if (!this.manager.canBeCopiedOrReplicated(field_id)) {
+      // can't be copied
+      this.$q.notify({ message: 'Primero debes guardar los cambios!', color: 'secondary' })
+      return
+    }
+
+    this.busy = true
+    let success = await this.manager.copyField(field_id)
+    if (!success) {
+      this.$q.notify({ message: 'Ups! ocurrió un error', color: 'negative' })
+    }
+    this.busy = false
+  }
+
+  async onReplicateField (field_id:string) {
+    if (!this.manager.canBeCopiedOrReplicated(field_id)) {
+      // can't be copied
+      this.$q.notify({ message: 'Primero debes guardar los cambios!', color: 'secondary' })
+      return
+    }
+
+    this.busy = true
+    let success = await this.manager.replicateField(field_id)
+    if (!success) {
+      this.$q.notify({ message: 'Ups! ocurrió un error', color: 'negative' })
+    }
+    this.busy = false
   }
 }
 </script>
 <style lang="scss" scoped>
 .document-container {
   background-color: #eeeeee;
-  height: 100vh;
+  min-height: 100vh;
+  height: auto;
   .add-a-field {
     margin-left: -1rem;
   }
@@ -286,11 +363,12 @@ export default class Document extends Vue {
     box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1);
   }
   .view-buttons-container {
-    width: 12rem;
-    right: -9rem;
+    width: 14rem;
+    right: -11rem;
     transition: right 0.5s;
     border-top-left-radius: 1rem;
     border-bottom-left-radius: 1rem;
+    margin-top: 4.5rem;
   }
   .view-buttons-container:hover {
     right: 0;
@@ -315,5 +393,10 @@ export default class Document extends Vue {
       box-shadow: none;
     }
   }
+}
+
+.title-container{
+  max-width: 21.5cm;
+  margin: 0 auto;
 }
 </style>

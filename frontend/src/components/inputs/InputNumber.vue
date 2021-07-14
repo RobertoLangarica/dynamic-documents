@@ -1,34 +1,41 @@
 <template>
-  <q-input  v-model="formattedValue"
-        @focus="onFocus"
-        @blur="onBlur"
-        v-bind="$attrs"
-        :outlined="!filled && !standout && !borderless"
-        class="nq-input nq-component nq-input-number"
-        :dense="size==='sm' || size==='xs' || $attrs.dense"
-        :input-class="`nq-input-field ${$attrs['input-class'] || ''} size-${size} text-${align}`"
-  />
+  <q-input v-model="formattedValue"
+           @focus="onFocus"
+           @blur="onBlur"
+           v-bind="$attrs"
+           :outlined="!filled && !standout && !borderless"
+           class="nq-input nq-component nq-input-number"
+           :dense="size==='sm' || size==='xs' || $attrs.dense"
+           :input-class="`nq-input-field ${$attrs['input-class'] || ''} size-${size} text-${align}`"
+  >
+    <template v-slot:prepend>
+      <slot name="prepend" />
+    </template>
+    <template v-slot:append>
+      <slot name="append" />
+    </template>
+  </q-input>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import numeral from 'numeral'
-@Component({ components: {  } })
-export default class InputNumber extends Vue{
+@Component({ components: { } })
+export default class InputNumber extends Vue {
   @Prop({ required: false, default: 0 }) value!:number|string
-  @Prop({ required: false, default: '0,0'}) pattern!:string
-  @Prop({ required: false, default: ''}) prefix!:string
-  @Prop({ required: false, default: ''}) suffix!:string
-  @Prop({}) filled!:Boolean
-  @Prop({}) standout!:Boolean
-  @Prop({}) borderless!:Boolean
-  @Prop({ type: String, default: 'md'}) size!:string
-  @Prop({ type: String, default: 'right'}) align!:string
-  
+  @Prop({ required: false, default: '0,0' }) pattern!:string
+  @Prop({ required: false, default: '' }) prefix!:string
+  @Prop({ required: false, default: '' }) suffix!:string
+  @Prop({}) filled!:boolean
+  @Prop({}) standout!:boolean
+  @Prop({}) borderless!:boolean
+  @Prop({ type: String, default: 'md' }) size!:string
+  @Prop({ type: String, default: 'right' }) align!:string
+
   focused:boolean = false
   formattedValue:string|number = 0
 
-  created(){
+  created () {
     this.formattedValue = this.format(this.value)
   }
 
@@ -36,7 +43,7 @@ export default class InputNumber extends Vue{
     this.focused = false
     this.formattedValue = this.format(this.formattedValue)
     let numericValue = this.valueNumber(this.formattedValue)
-    this.$emit('input',numericValue)
+    this.$emit('input', numericValue)
   }
 
   format (value: number|string) {
@@ -51,7 +58,7 @@ export default class InputNumber extends Vue{
     return numeral(value).value()
   }
 
-  onFocus(){
+  onFocus () {
     this.focused = true
     this.formattedValue = this.format(this.value)
     // this.formattedValue = this.formattedNumber(this.value)
@@ -64,6 +71,5 @@ export default class InputNumber extends Vue{
       this.formattedValue = this.format(newValue)
     }
   }
-
 }
 </script>

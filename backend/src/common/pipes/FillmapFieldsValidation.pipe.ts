@@ -31,7 +31,7 @@ export class FillmapFieldsValidationPipe implements PipeTransform {
             }
 
             let fmf = new FillmapField()
-            Object.assign(fmf,{foreign: field.foreign, destination: field.destination})
+            Object.assign(fmf,{foreign: field.foreign, destination: field.destination, name: field.name})
             return fmf
         })
         value.fields = fields
