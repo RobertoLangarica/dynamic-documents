@@ -87,29 +87,43 @@
                 <q-list class="edit-item">
                   <q-item clickable @click.native="SetFieldSize('12')">
                     <q-item-section>
-                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="100%" class="full-width edit-menu">
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="Completo" class="full-width edit-menu">
                         <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '12'?' active':'')" />
-                      </q-btn>
-                    </q-item-section>
-                  </q-item>
-                  <q-item clickable @click.native="SetFieldSize('8')">
-                    <q-item-section>
-                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="66%" class="full-width edit-menu">
-                        <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '8'?' active':'')" />
                       </q-btn>
                     </q-item-section>
                   </q-item>
                   <q-item clickable @click.native="SetFieldSize('6')">
                     <q-item-section>
-                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="50%" class="full-width edit-menu">
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="1/2" class="full-width edit-menu">
                         <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '6'?' active':'')" />
                       </q-btn>
                     </q-item-section>
                   </q-item>
                   <q-item clickable @click.native="SetFieldSize('4')">
                     <q-item-section>
-                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="33%" class="full-width edit-menu">
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="1/3" class="full-width edit-menu">
                         <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '4'?' active':'')" />
+                      </q-btn>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable @click.native="SetFieldSize('8')">
+                    <q-item-section>
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="2/3" class="full-width edit-menu">
+                        <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '8'?' active':'')" />
+                      </q-btn>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable @click.native="SetFieldSize('3')">
+                    <q-item-section>
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="1/4" class="full-width edit-menu">
+                        <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '3'?' active':'')" />
+                      </q-btn>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable @click.native="SetFieldSize('9')">
+                    <q-item-section>
+                      <q-btn align="left" flat dense :ripple="false" icon="radio_button_unchecked" label="3/4" class="full-width edit-menu">
+                        <q-icon name="radio_button_checked" :class="'icon-check'+(widthSize === '9'?' active':'')" />
                       </q-btn>
                     </q-item-section>
                   </q-item>
