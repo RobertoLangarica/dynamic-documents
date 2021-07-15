@@ -1,7 +1,7 @@
 <template>
   <editor-menu-bar class="menubar" :class="{ 'is-hidden':hidden }" :editor="editor" v-slot="{ commands, isActive }">
     <div>
-      <q-btn flat dense class="menubar__button" @click="$emit('embed_field',commands.field_embedded) " size="xs">
+      <q-btn flat dense class="menubar__button" @click="$emit('embed_field',commands.field_embedded) " size="sm">
         <q-icon name="queue" />
         <q-tooltip anchor="top middle" self="bottom middle">
           Agregar Campo
@@ -10,9 +10,9 @@
 
       <div class="divider"></div>
 
-      <q-btn flat dense class="menubar__button" label="Estilo" size="xs" icon-right="arrow_drop_down">
+      <q-btn flat dense class="menubar__button" label="Formato" size="sm" icon-right="arrow_drop_down">
         <q-tooltip anchor="top middle" self="bottom middle">
-          Establecer Estilo del Parrafo
+          Establecer Formato del Parrafo
         </q-tooltip>
         <q-menu fit>
           <q-list class="condense-item">
@@ -34,28 +34,28 @@
 
       <div class="divider"></div>
 
-      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.bold() }" @click="commands.bold" size="xs">
+      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.bold() }" @click="commands.bold" size="sm">
         <q-icon name="format_bold" />
         <q-tooltip anchor="top middle" self="bottom middle">
           Negritas
         </q-tooltip>
       </q-btn>
 
-      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.italic() }" @click="commands.italic" size="xs">
+      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.italic() }" @click="commands.italic" size="sm">
         <q-icon name="format_italic" />
         <q-tooltip anchor="top middle" self="bottom middle">
           Itálica
         </q-tooltip>
       </q-btn>
 
-      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.underline() }" @click="commands.underline" size="xs">
+      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.underline() }" @click="commands.underline" size="sm">
         <q-icon name="format_underline" />
         <q-tooltip anchor="top middle" self="bottom middle">
           Subrayado
         </q-tooltip>
       </q-btn>
 
-      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.strike() }" @click="commands.strike" size="xs">
+      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.strike() }" @click="commands.strike" size="sm">
         <q-icon name="format_strikethrough" />
         <q-tooltip anchor="top middle" self="bottom middle">
           Tachado
@@ -64,14 +64,14 @@
 
       <div class="divider"></div>
 
-      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.bullet_list() }" @click="commands.bullet_list" size="xs">
+      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.bullet_list() }" @click="commands.bullet_list" size="sm">
         <q-icon name="format_list_bulleted" />
         <q-tooltip anchor="top middle" self="bottom middle">
           Lista
         </q-tooltip>
       </q-btn>
 
-      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.ordered_list() }" @click="commands.ordered_list" size="xs">
+      <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.ordered_list() }" @click="commands.ordered_list" size="sm">
         <q-icon name="format_list_numbered" />
         <q-tooltip anchor="top middle" self="bottom middle">
           Lista Numerada
@@ -165,22 +165,22 @@ $color-black:rgb(.3,.3,.3);
     .q-item{
       min-height: 0px;
       padding: 0px;
-      font-size: 10px;
+      font-size: 13px;
     }
     .is-active {
       background-color: rgba(0, 0, 0, 0.1);
     }
     .t1 {
       font-weight:bolder;
-      font-size: 14px;
+      font-size: 21px;
     }
     .t2 {
       font-weight:bold;
-      font-size: 12px;
+      font-size: 18px;
     }
     .t3 {
       font-weight:normal;
-      font-size: 10px;
+      font-size: 15px;
     }
     .normal {
       font-weight:normal;
