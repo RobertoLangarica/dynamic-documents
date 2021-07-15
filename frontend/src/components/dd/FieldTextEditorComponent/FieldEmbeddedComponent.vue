@@ -242,4 +242,7 @@ export default class FieldEmbeddedComponent extends Vue {
     color: white;
   }
 }
+.ProseMirror p {
+  margin: 0;
+}
 </style>
