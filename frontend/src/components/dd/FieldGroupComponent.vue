@@ -174,7 +174,7 @@ onFieldTypeSelected (type:DDFieldType) {
 }
 .dd-fields-container.dd-edit-view {
   .dd-field-container {
-    margin: 1em 0px;
+    margin: 0.1em 0px;
     padding: 8px 0px;
   }
   .nq-select.q-field--outlined.dd-field .q-field__control,
