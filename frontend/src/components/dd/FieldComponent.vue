@@ -31,6 +31,7 @@
         <template v-slot:append>
           <btn-autocapture v-if="showGroupAutocapture" :manager="manager" :group_id="field.id" label="Auto capturar grupo" />
           <div class="row justify-end" v-if="showDeleteReplication"><q-btn icon="delete" round size="sm" color="grey-6" @click="onDelete" /></div>
+          <btn-autocapture v-if="isInCaptureView && allowAutoCapture" :manager="manager" :field_id="field.id" />
         </template>
       </component>
     </div>
@@ -134,9 +135,6 @@
         </q-menu>
       </q-btn>
     </div>
-    <template v-if="isInCaptureView && allowAutoCapture">
-      <btn-autocapture :manager="manager" :field_id="field.id" />
-    </template>
   </div>
 </template>
 
