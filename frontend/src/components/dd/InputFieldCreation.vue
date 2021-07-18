@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-start">
+  <div class="row justify-start add-controls">
     <q-input class="col-12" v-model="text" placeholder="Escribir o" autofocus @blur="onSubmit" @keydown.enter.prevent="onSubmit" />
     <q-btn
       icon="add"
@@ -62,5 +62,8 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .add-btn{
     border-radius: 8px;
+}
+.add-controls {
+  padding: 0 2em
 }
 </style>
