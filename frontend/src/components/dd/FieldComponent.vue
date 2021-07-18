@@ -3,7 +3,7 @@
     <div class="dd-field-controls q-pt-md" :class="{hide_action:isOver!=field.id}" v-if="isInEditView">
       <q-btn icon="drag_indicator" flat round size="md" dense class="cursor-drag" color="grey" />
     </div>
-    <q-input v-if="isInEditView && !isGroup && field.type.component != 'input-paragraph'" v-model="name" label="" color="dd-label" :borderless="true" class="floating-label" :class="{'floating-label-mapper' : (typeof $refs[`${field.id}`] != `undefined`)}"></q-input>
+    <q-input v-if="isInEditView && !isGroup && field.type.component != 'input-paragraph'" v-model="name" label="" color="dd-label" :borderless="true" class="floating-label" :class="{'floating-label-mapper' : (typeof $refs[`${field.id}`] != `undefined`)}" />
     <div class="dd-field-content">
       <div class="row justify-end" v-if="showReplicateButton"><q-btn icon="control_point_duplicate" round size="sm" color="grey-6" @click="onReplicate" /></div>
       <component
@@ -375,6 +375,13 @@ export default class FieldComponent extends Vue {
     border-width: 0px !important;
     border: 0px solid transparent;
     outline:none;
+}
+.dd-input-paragraph.q-field--outlined .q-field__control {
+  padding: 0 0px;
+}
+.q-field--auto-height .q-field__control,
+.q-field--auto-height .q-field__native {
+  min-height: auto !important;
 }
 .dd-field-container.field_hover{
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);

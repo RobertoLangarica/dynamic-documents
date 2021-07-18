@@ -8,7 +8,7 @@
         </q-tooltip>
       </q-btn>
 
-      <div class="divider"></div>
+      <div class="divider" />
 
       <q-btn flat dense class="menubar__button" label="Formato" size="sm" icon-right="arrow_drop_down">
         <q-tooltip anchor="top middle" self="bottom middle">
@@ -32,7 +32,7 @@
         </q-menu>
       </q-btn>
 
-      <div class="divider"></div>
+      <div class="divider" />
 
       <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.bold() }" @click="commands.bold" size="sm">
         <q-icon name="format_bold" />
@@ -62,7 +62,7 @@
         </q-tooltip>
       </q-btn>
 
-      <div class="divider"></div>
+      <div class="divider" />
 
       <q-btn flat dense class="menubar__button" :class="{ 'is-active': isActive.bullet_list() }" @click="commands.bullet_list" size="sm">
         <q-icon name="format_list_bulleted" />
@@ -105,7 +105,9 @@ export default {
 
 <style scoped lang="scss">
 $color-black:rgb(.3,.3,.3);
+.q-field--outlined .q-field__control {
 
+}
 .menubar {
     margin-bottom: 1rem;
     transition: all 0.2s 0.4s, opacity 0.2s 0.4s;
