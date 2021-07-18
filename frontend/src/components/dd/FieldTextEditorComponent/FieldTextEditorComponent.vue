@@ -253,12 +253,6 @@ export default class FieldTextEditorComponent extends Vue {
 }
 </script>
 
-<style>
-.ProseMirror:focus {
-  outline: none;
-}
-</style>
-
 <style scoped lang="scss">
 $color-black: rgb(0.3, 0.3, 0.3);
 $color-white: rgb(1, 1, 1);
