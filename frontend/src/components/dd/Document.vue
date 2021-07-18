@@ -384,6 +384,7 @@ export default class Document extends Vue {
     height: 0px;
   }
   @media print {
+    .title-container,
     .view-buttons-container {
       display: none;
     }
