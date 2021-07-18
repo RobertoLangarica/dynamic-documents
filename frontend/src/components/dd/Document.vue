@@ -362,6 +362,9 @@ export default class Document extends Vue {
     border-radius: 1px;
     box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1);
   }
+  .page.dd-edit-view {
+    padding: 1.5cm 1cm;
+  }
   .view-buttons-container {
     width: 14rem;
     right: -11rem;

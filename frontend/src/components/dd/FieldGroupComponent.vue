@@ -99,7 +99,7 @@ onFieldTypeSelected (type:DDFieldType) {
 .dd-edit-view {
   .dd-field-group .dd-field-group {
     background-color: white;
-    padding: 1rem 0.5em 0.5em 1.75em;
+    padding: 0.5em 0.5em 0.5em 0.5em;
     border: 1px dashed grey;
     border-radius: 0.25rem;
   }
@@ -204,6 +204,9 @@ onFieldTypeSelected (type:DDFieldType) {
     &::before {
       border-style: solid;
     }
+  }
+  .q-field--with-bottom {
+    padding-bottom: 0px;
   }
   .nq-field.q-field--outlined.dd-field .q-field__control {
     background-color: white;
