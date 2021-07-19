@@ -78,10 +78,32 @@
         </q-tooltip>
       </q-btn>
 
-      <q-btn clickable v-close-popup :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'justify' }" @click="commands.aligntext({ align: 'justify' })">justify</q-btn>
-      <q-btn clickable v-close-popup :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'left' }" @click="commands.aligntext({ align: 'left' })">left</q-btn>
-      <q-btn clickable v-close-popup :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'center' }" @click="commands.aligntext({ align: 'center' })">center</q-btn>
-      <q-btn clickable v-close-popup :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'right' }" @click="commands.aligntext({ align: 'right' })">right</q-btn>
+      <div class="divider" />
+
+      <q-btn flat dense class="menubar__button" size="sm" :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'left' }" @click="commands.aligntext({ align: 'left' })">
+        <q-icon name="format_align_left" />
+        <q-tooltip anchor="top middle" self="bottom middle">
+          Alinear a la izquierda
+        </q-tooltip>
+      </q-btn>
+      <q-btn flat dense class="menubar__button" size="sm" :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'center' }" @click="commands.aligntext({ align: 'center' })">
+        <q-icon name="format_align_center" />
+        <q-tooltip anchor="top middle" self="bottom middle">
+          Alinear al centro
+        </q-tooltip>
+      </q-btn>
+      <q-btn flat dense class="menubar__button" size="sm" :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'right' }" @click="commands.aligntext({ align: 'right' })">
+        <q-icon name="format_align_right" />
+        <q-tooltip anchor="top middle" self="bottom middle">
+          Alinear a la derecha
+        </q-tooltip>
+      </q-btn>
+      <q-btn flat dense class="menubar__button" size="sm" :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'justify' }" @click="commands.aligntext({ align: 'justify' })">
+        <q-icon name="format_align_justify" />
+        <q-tooltip anchor="top middle" self="bottom middle">
+          Justificar
+        </q-tooltip>
+      </q-btn>
     </div>
   </editor-menu-bar>
 </template>
