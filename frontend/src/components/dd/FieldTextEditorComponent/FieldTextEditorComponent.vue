@@ -38,6 +38,7 @@ import {
   Underline,
   History
 } from "tiptap-extensions";
+import AlignText from './AlignText/tiptap-aligntext.plugin.js'; 
 import EditorMenu from "./EditorMenu.vue";
 import FieldEmbeded from "./FieldEmbedded";
 import FieldSelectorDialog from "src/components/dd/FieldSelector/FieldSelectorDialog.vue";
@@ -75,6 +76,7 @@ export default class FieldTextEditorComponent extends Vue {
         new Strike(),
         new Underline(),
         new History(),
+        new AlignText(),
         new FieldEmbeded()
       ],
       editable: !this.readonly,
