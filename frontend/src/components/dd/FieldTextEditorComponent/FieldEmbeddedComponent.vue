@@ -247,11 +247,11 @@ export default class FieldEmbeddedComponent extends Vue {
 }
 .dd-edit-view .ProseMirror:not(.ProseMirror-focused)::after {
   content: "¶";
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   display: block;
   height: 1.5rem;
   width: 1.5rem;
-  color: hsl(0, 0, 66%);
+  color: hsl(0, 0, 75%);
 }
 .ProseMirror:focus {
   outline: none;
