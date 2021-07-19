@@ -112,6 +112,10 @@ export class Field {
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
     @Expose()
     show_in_print: boolean
+    
+    @IsOptional() @IsBoolean() @ApiPropertyOptional()
+    @Expose()
+    show_in_edition: boolean
 
     @IsOptional() @IsBoolean() @ApiPropertyOptional()
     @Expose()
@@ -128,4 +132,12 @@ export class Field {
     @IsOptional() @IsNumber() @ApiPropertyOptional()
     @Expose()
     sort_index: number = 0
+
+    @IsOptional() @IsNumber() @ApiPropertyOptional()
+    @Expose()
+    size: string
+
+    @IsOptional() @IsNumber() @ApiPropertyOptional()
+    @Expose()
+    border: number
 }

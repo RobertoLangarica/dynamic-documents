@@ -253,12 +253,6 @@ export default class FieldTextEditorComponent extends Vue {
 }
 </script>
 
-<style>
-.ProseMirror:focus {
-  outline: none;
-}
-</style>
-
 <style scoped lang="scss">
 $color-black: rgb(0.3, 0.3, 0.3);
 $color-white: rgb(1, 1, 1);
@@ -267,8 +261,8 @@ $color-grey: rgb(0.6, 0.6, 0.6);
 .editor {
   position: relative;
   width: 100%;
-  height: 100%;
-  margin: 0 auto 5rem auto;
+  height: auto;
+  margin: 0 auto;
 
   &__content {
     overflow-wrap: break-word;

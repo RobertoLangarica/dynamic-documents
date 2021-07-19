@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const numberToText = (n, params) => {
   let numero = parseInt(n + '')
 

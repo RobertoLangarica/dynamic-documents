@@ -1,47 +1,27 @@
 <template>
-  <div class="dd-field-group">
-    <template v-if="!isFillmap">
-      <draggable v-model="myFields" handle=".cursor-drag" @end="onDragEnded" :animation="200">
-        <field-component
-          v-for="field in myFields"
-          :key="field.id"
-          :field="field"
-          :fields="fields"
-          :isInEditView="edit_view"
-          :isInCaptureView="capture_view"
-          :isInPrintView="print_view"
-          @onShowAddFieldDialog="showAddFieldDialog"
-        />
-      </draggable>
-    </template>
-    <template v-else>
-      <template v-if="fillmap_view_dest">
-        <field-dest v-for="field in myFields"
-                    :key="`dest-${field.id}`"
-                    :field="field"
-                    :fields="fields"
-                    :map_value="field.map_value"
-                    :map_name="field.map_name"
-                    @remove_fill="(data)=>{$emit('remove_fill',data)}"
-        />
-      </template>
-      <template v-else>
-        <field-src v-for="field in myFields"
-                   :key="`src-${field.id}`"
-                   :field="field"
-                   :fields="fields"
-                   @drag_fill="(data)=>{$emit('drag_fill',data)}"
-        />
-      </template>
-    </template>
-    <q-btn v-if="!readonly && !isFillmap"
+  <div class="dd-field-group" :class="{'dd-group-has-border':border!=0}">
+    <draggable v-model="myFields" handle=".cursor-drag" @end="onDragEnded" :animation="200" class="full-width row">
+      <field-component
+        v-for="field in myFields"
+        :key="field.id"
+        :field="field"
+        :fields="fields"
+        :isInEditView="edit_view"
+        :isInCaptureView="capture_view"
+        :isInPrintView="print_view"
+        :allowAutoCapture="allowAutoCapture"
+        :manager="manager"
+        @onShowAddFieldDialog="showAddFieldDialog"
+      />
+    </draggable>
+    <q-btn v-if="!readonly && isGroup"
            icon="add"
            rounded
            flat
            size="md"
            class="cursor-pointer add-a-field"
            color="grey"
-           label="Agregar un elemento"
+           :label="isGroup?'Agregar al grupo':'Agregar un elemento'"
            @click="showAddFieldDialog"
     />
     <div />
@@ -58,6 +38,7 @@ import FieldComponent from "components/dd/FieldComponent.vue";
 import { DDField } from "src/dynamic-documents/src/core/DDField";
 import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 import FieldTypeSelectionDialog from "./FieldTypeSelection/FieldTypeSelectionDialog.vue";
+import { DocumentEditionManager } from "src/dynamic-documents/src/DocumentEditionManager";
 
 @Component({ name: 'field-group-component', components: { draggable, FieldTypeSelectionDialog, 'field-component': FieldComponent } })
 export default class FieldGroupComponent extends Vue {
@@ -66,11 +47,12 @@ export default class FieldGroupComponent extends Vue {
 @Prop({ required: false, default: false }) readonly edit_view!:boolean ;
 @Prop({ required: false, default: false }) readonly capture_view!:boolean ;
 @Prop({ required: false, default: false }) readonly print_view!:boolean ;
-@Prop({ required: false, default: false }) readonly fillmap_view_src!:boolean ;
-@Prop({ required: false, default: false }) readonly fillmap_view_dest!:boolean ;
+@Prop({ required: false, default: 0 }) readonly border!:number ;
+@Prop({ type: Boolean, required: false, default: true }) readonly allowAutoCapture!:boolean;
+@Prop({ required: false, default: () => null }) readonly manager!:DocumentEditionManager ;
 
-get isFillmap () {
-  return this.fillmap_view_dest || this.fillmap_view_src
+get isGroup () {
+  return this.group !== ''
 }
 
 get myFields () {
@@ -117,10 +99,14 @@ onFieldTypeSelected (type:DDFieldType) {
 .dd-edit-view {
   .dd-field-group .dd-field-group {
     background-color: white;
-    padding: 1rem 0.5em 0.5em 1.75em;
-    border: 1px dotted grey;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    border: 1px dashed grey;
     border-radius: 0.25rem;
   }
+}
+.dd-group-has-border{
+  border: 1px solid grey !important;
+  border-radius: 0.25rem;
 }
 
 .dd-fields-container {
@@ -130,7 +116,6 @@ onFieldTypeSelected (type:DDFieldType) {
     position: relative;
     .dd-field-controls {
       display: flex;
-      width: 5em;
       opacity: 0;
       transition: opacity 0.25s;
       justify-content: flex-end;
@@ -149,7 +134,7 @@ onFieldTypeSelected (type:DDFieldType) {
     .dd-field-content {
       flex: 1;
       .dd-field-name {
-        position: absolute;
+        // position: absolute;
         top: -1rem;
         padding-bottom: 0.5rem;
         border-bottom-left-radius: 0;
@@ -189,7 +174,8 @@ onFieldTypeSelected (type:DDFieldType) {
 }
 .dd-fields-container.dd-edit-view {
   .dd-field-container {
-    margin: 1em -1cm 1em -1.75cm;
+    margin: 0.1em 0px;
+    padding: 8px 0px;
   }
   .nq-select.q-field--outlined.dd-field .q-field__control,
   .nq-input.q-field--outlined.dd-field .q-field__control,
@@ -218,6 +204,9 @@ onFieldTypeSelected (type:DDFieldType) {
     &::before {
       border-style: solid;
     }
+  }
+  .q-field--with-bottom {
+    padding-bottom: 0px;
   }
   .nq-field.q-field--outlined.dd-field .q-field__control {
     background-color: white;

@@ -1,24 +1,24 @@
 <template>
-    <q-list separator>
-      <div v-for="category in fieldCategories" :key="category">
-        <q-item-label header>{{ category }}</q-item-label>
-        <q-item
-          clickable
-          v-ripple
-          v-for="(type, index) in typesByCategory(category)"
-          :key="index"
-          @click="onTypeSelected(type)"
-        >
-          <q-item-section top avatar>
-            <q-avatar color="white" text-color="primary" :icon="typeIcon(type.component)" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ type.name }}</q-item-label>
-            <q-item-label caption lines="2">{{ type.description }}.</q-item-label>
-          </q-item-section>
-        </q-item>
-      </div>
-    </q-list>
+  <q-list separator>
+    <div v-for="category in fieldCategories" :key="category">
+      <q-item-label header>{{ category }}</q-item-label>
+      <q-item
+        clickable
+        v-ripple
+        v-for="(type, index) in typesByCategory(category)"
+        :key="index"
+        @click="onTypeSelected(type)"
+      >
+        <q-item-section top avatar>
+          <q-avatar color="white" text-color="primary" :icon="typeIcon(type.component)" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ type.name }}</q-item-label>
+          <q-item-label caption lines="2">{{ type.description }}.</q-item-label>
+        </q-item-section>
+      </q-item>
+    </div>
+  </q-list>
 </template>
 
 <script lang="ts">
@@ -29,37 +29,37 @@ import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 
 @Component({})
 export default class FieldTypeSelection extends mixins(EmbedMixin) {
-   @Prop({type: Array, required: false, default:()=>[]}) categories!:string[]
-   @Prop({type: Array, required: false, default:()=>[]}) types!:DDFieldType[]
+   @Prop({ type: Array, required: false, default: () => [] }) categories!:string[]
+   @Prop({ type: Array, required: false, default: () => [] }) types!:DDFieldType[]
 
   fieldCategories:string[] = []
   fieldtypes:DDFieldType[] = []
 
-  created(){
+  created () {
     this.fieldCategories = this.categories
     this.fieldtypes = this.types
   }
 
   async onMessage (message, data, handled = false) {
-      switch (message) {
-        case 'set_data':
-          handled = true
-          this.fieldCategories = data.categories
-          this.fieldtypes = data.types
-          break;
-        default:
-          if (!handled) {
-            console.log(`Unrecognized event->${message}`)
-          }
-      }
+    switch (message) {
+      case 'set_data':
+        handled = true
+        this.fieldCategories = data.categories
+        this.fieldtypes = data.types
+        break;
+      default:
+        if (!handled) {
+          console.log(`Unrecognized event->${message}`)
+        }
     }
+  }
 
-  get embedded(){
+  get embedded () {
     return this.invisibleDialogs
   }
 
   onTypeSelected (type: DDFieldType) {
-    if(this.embedded){
+    if (this.embedded) {
       this.sendMessage("selected", type);
     } else {
       this.$emit("selected", type);

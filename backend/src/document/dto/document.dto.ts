@@ -5,7 +5,6 @@ import { Type } from "class-transformer"
 import { DocumentVersion } from "./doc_version.dto"
 import { Field } from "src/document/dto/field.dto"
 import { Category } from "src/categories/category.entity"
-import { Fillmap } from "src/fillmaps/fillmap.entity"
 
 export class DocumentDto {
     @IsOptional() @IsUUID() @ApiPropertyOptional()

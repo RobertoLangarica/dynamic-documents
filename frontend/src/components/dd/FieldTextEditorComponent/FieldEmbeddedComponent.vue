@@ -33,7 +33,7 @@ import {
   History
 } from "tiptap-extensions";
 import FieldEmbeded from "./FieldEmbedded";
-import Transforms, {separator as transform_separator} from 'src/transformations'
+import Transforms, { separator as transform_separator } from 'src/transformations'
 
 import TransformationsDialog from "src/components/dd/Transformations/TransformationsDialog.vue";
 
@@ -51,15 +51,12 @@ export default class FieldEmbeddedComponent extends Vue {
   showTransforms = false
   editor: Editor|null = null;
   selected:boolean = false
-  created () {
-    
-  }
 
-  @Watch('field', {immediate: true})
-  onFieldChanged(field){
-    if(!!field){
-      if(field.type.component === EFieldComponentID.INPUT_PARAGRAPH){
-        if(this.editor){
+  @Watch('field', { immediate: true })
+  onFieldChanged (field) {
+    if (field) {
+      if (field.type.component === EFieldComponentID.INPUT_PARAGRAPH) {
+        if (this.editor) {
           this.editor.setContent(field.value);
         } else {
           this.editor = new Editor({
@@ -82,6 +79,7 @@ export default class FieldEmbeddedComponent extends Vue {
       }
     }
   }
+
   @Watch('view.state.selection')
   onSelectionChange (value, old) {
     if (!value.empty) {
@@ -137,7 +135,7 @@ export default class FieldEmbeddedComponent extends Vue {
     this.updateAttrs({ transformations: value });
   }
 
-  get initial_transformations(){
+  get initial_transformations () {
     return this.transformations.split(transform_separator)
   }
 
@@ -151,32 +149,32 @@ export default class FieldEmbeddedComponent extends Vue {
 
   get transformedValue () {
     let appliedTransforms = this.transformations.split(transform_separator)
-    .filter(name=>!!name)
-    .map(name=>{
-      let splitted = name.split(':')
-      let transform = this.deepTransformCopy(this.$store.getters.transformation(splitted[0]))
-      
-      if(splitted.length > 1){
-        // Override input
-        let parameters =  { input:splitted[1] }
-        parameters = Object.assign({},transform.parameters,parameters)
-        Object.assign(transform,{ parameters:parameters })
-      }
+      .filter(name => !!name)
+      .map(name => {
+        let splitted = name.split(':')
+        let transform = this.deepTransformCopy(this.$store.getters.transformation(splitted[0]))
 
-      return transform
-    })
+        if (splitted.length > 1) {
+        // Override input
+          let parameters = { input: splitted[1] }
+          parameters = Object.assign({}, transform.parameters, parameters)
+          Object.assign(transform, { parameters: parameters })
+        }
+
+        return transform
+      })
     return Transforms.apply(appliedTransforms, this.value)
   }
 
-  deepTransformCopy(target){
-      let result = Object.assign({},target)
-      Object.keys(result).forEach(key=>{
-          if(typeof result[key] === 'object'){
-              result[key] = Object.assign({},result[key])
-          }
-      })
+  deepTransformCopy (target) {
+    let result = Object.assign({}, target)
+    Object.keys(result).forEach(key => {
+      if (typeof result[key] === 'object') {
+        result[key] = Object.assign({}, result[key])
+      }
+    })
 
-      return result
+    return result
   }
 
   get isParagraph () {
@@ -243,5 +241,19 @@ export default class FieldEmbeddedComponent extends Vue {
     background-color: #299cb3;
     color: white;
   }
+}
+.ProseMirror p {
+  margin: 0;
+}
+.dd-edit-view .ProseMirror:not(.ProseMirror-focused)::after {
+  content: "¶";
+  font-size: 1.5rem;
+  display: block;
+  height: 1.5rem;
+  width: 1.5rem;
+  color: hsl(0, 0, 66%);
+}
+.ProseMirror:focus {
+  outline: none;
 }
 </style>

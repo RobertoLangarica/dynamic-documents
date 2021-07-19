@@ -4,15 +4,15 @@
       <q-card-section class="col-auto">
         <h5 class="q-my-none">Elige el tipo de campo</h5>
       </q-card-section>
-      
+
       <q-card-section class="col" style="overflow:auto">
-        <field-type-selection :categories="fieldTypesCategories" :types="fieldTypes" @selected="onTypeSelected"/>
+        <field-type-selection :categories="fieldTypesCategories" :types="fieldTypes" @selected="onTypeSelected" />
       </q-card-section>
       <q-card-actions align="center" class="col-auto">
-        <q-btn class="full-width" label="Cancelar" @click="hide" flat color="secondary"/>
+        <q-btn class="full-width" label="Cancelar" @click="hide" flat color="secondary" />
       </q-card-actions>
     </q-card>
-    <span v-else/>
+    <span v-else />
   </q-dialog>
 </template>
 
@@ -23,7 +23,7 @@ import { QDialog } from "quasar";
 import FieldTypeSelection from './FieldTypeSelection.vue'
 import { DDFieldType } from "src/dynamic-documents/src/core/DDFieldType";
 
-@Component( { components:{ FieldTypeSelection } } )
+@Component({ components: { FieldTypeSelection } })
 export default class FieldTypeSelectionDialog extends Vue {
   isOpen = false
   get open () {
@@ -75,7 +75,6 @@ export default class FieldTypeSelectionDialog extends Vue {
   get fieldTypes () {
     return this.$store.getters.fieldTypes
   }
-
 }
 </script>
 

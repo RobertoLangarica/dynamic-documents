@@ -9,6 +9,6 @@ export class ParseBooleanPipe implements PipeTransform {
 
         let v = (value as string).toLocaleLowerCase()
 
-        return !(v === '0' || v === 'false')
+        return (v === '1' || v === 'true')
     }
 }

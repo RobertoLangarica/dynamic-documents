@@ -106,6 +106,7 @@ export default class EmbedMixin extends Vue {
           this.$api.setAuthorization(data.token, '');
           this.authorized = true
           this.sendMessage('authorized')
+          this.afterAuthorization()
           break;
         case 'complete_dialog_action':
         case 'cancel_dialog_action':
@@ -124,6 +125,10 @@ export default class EmbedMixin extends Vue {
       void this.onMessage(message, data, handled)
     }
 
+    afterAuthorization () {
+      // empty for override purposes
+    }
+
     onMessage (message:string, data:{[key:string]:any} = {}, handled = false) {
       if (!handled) {
         console.log(`received => ${message},${data}`)
@@ -140,25 +145,20 @@ export default class EmbedMixin extends Vue {
     }
 
     setAvailableViews (document) {
-      if (!document.status) {
-        // It is a template and templates has no status
-        return
-      }
-
       let status = document.status.name
       if (status === 'closed' || status === 'prevent_changes') {
         this.available_views = this.available_views.filter(v => v.value === IDDView.PRINT)
       }
     }
 
-    onDocReady () {
-      this.sendMessage('dd_ready')
+    async onDocReady () {
+      await this.$nextTick()
+      let el = this.docRef.$el
+      this.sendMessage('dd_resize', { width: Math.max(el.scrollWidth, (el as any).offsetWidth), height: Math.max(el.scrollHeight, (el as any).offsetHeight) })
 
-      this.$nextTick(() => {
-        let el = this.docRef.$el
-        this.sendMessage('dd_resize', { width: Math.max(el.scrollWidth, (el as any).offsetWidth), height: Math.max(el.scrollHeight, (el as any).offsetHeight) })
-        this.ready = true
-      })
+      this.ready = true
+      await this.$nextTick()
+      this.sendMessage('dd_ready')
     }
 
     sendMessage (message:string, data:{[key:string]:any}|any = {}) {

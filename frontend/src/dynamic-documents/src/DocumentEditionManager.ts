@@ -4,8 +4,10 @@ import { DDField } from './core/DDField'
 import { DDCategory } from './core/DDCategory';
 import { StateInterface } from 'src/store';
 import { DDFieldType } from './core/DDFieldType';
-import { DDTemplate } from './core/DDTemplate';
 import { DDDocument } from './core/DDDocument';
+import { IFillmap, IFillmapField } from './core/DDFillmap';
+import { isEmpty } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 
 export class DocumentEditionManager {
   id: string = uuidv4()
@@ -45,7 +47,7 @@ export class DocumentEditionManager {
     } else if (this.isTemplate) {
       action = 'setTemplate'
     } else {
-      action = 'doc_filters/setFilteredDocument'
+      action = 'filtered_docs/setFilteredDocument'
     }
     return action
   }
@@ -67,6 +69,9 @@ export class DocumentEditionManager {
     let documentChanges = this.mergeDocumentChanges()
     let fieldChanges = this.mergeFieldChanges()
     let changes = Object.assign(documentChanges, { id: this.id, fields: fieldChanges })
+
+    // Remove the deleted fields from any fillmap of this document
+    await Promise.all(fieldChanges.filter(f => f.deleted).map(deleted => this.deleteFromFillmaps(deleted)))
 
     let result = await this.store?.dispatch(this.storeAction, changes)
     if (!result.success) {
@@ -104,7 +109,7 @@ export class DocumentEditionManager {
     let changes = Object.keys(merged).map(key => merged[key])
     changes = changes.map(change => {
       if (change.deleted) {
-        return { id: change.id, deleted: true }
+        return { id: change.id, deleted: true, map_id: change.map_id }
       }
 
       return change
@@ -145,6 +150,106 @@ export class DocumentEditionManager {
 
   updateDocument (change) {
     this.documentChanges.push(change)
+  }
+
+  canBeCopiedOrReplicated (field_id:string):boolean {
+    let f = this.changedFields.find(f => f.id === field_id)
+    if (!f) {
+      // A field with no changes could be copied
+      return true;
+    }
+
+    if (f.deleted || f.is_new) {
+      // A deleted field or a new field can't be copied
+      return false
+    }
+
+    return true
+  }
+
+  async replicateField (field_id:string):Promise<boolean> {
+    let cloned = await this.cloneField(field_id, true)
+    if (cloned.length) {
+      let index = this.fields.findIndex(f => f.id === field_id)
+      cloned = cloned.map(f => {
+        f.replicate_with = field_id
+        f.show_in_edition = false
+        f.replication = undefined
+        return f
+      })
+      cloned = this.insertFieldsAt(index + 1, cloned)
+
+      return true
+    }
+
+    return false
+  }
+
+  async copyField (field_id:string):Promise<boolean> {
+    let cloned = await this.cloneField(field_id, true)
+    if (cloned.length) {
+      let index = this.fields.findIndex(f => f.id === field_id)
+      cloned = this.insertFieldsAt(index + 1, cloned)
+
+      return true
+    }
+
+    return false
+  }
+
+  insertFieldsAt (insertIndex:number, fields:DDField[]) {
+    // The existing one goes down
+    for (let i = insertIndex; i < this.fields.length; i++) {
+      let field = this.fields[i]
+      this.updateField({ id: field.id, sort_index: field.sort_index + fields.length })
+    }
+
+    // Sort index
+    fields = fields.map((f:DDField, index:number) => {
+      f.sort_index = insertIndex + index
+      return f
+    })
+
+    // Inserting
+    fields.forEach((field:DDField, index:number) => {
+      this.fields.splice(insertIndex + index, 0, field)
+      this.addAddedField(field)
+    })
+
+    return fields
+  }
+
+  async cloneField (field_id:string, keep_maps:boolean):Promise<DDField[]> {
+    let cloneIndex = this.fields.findIndex(f => f.id === field_id)
+    if (cloneIndex < 0) {
+      // Non existent field
+      return []
+    }
+
+    let toClone = this.fields[cloneIndex]
+
+    let cloned:DDField[] = []
+    // local simple copy?
+    if ((!toClone.dependent || isEmpty(toClone.dependent.on)) && !toClone.use_embedded && !DDField.isGroup(toClone)) {
+      let field = Object.assign({}, toClone, { source_field: toClone.id, id: uuidv4() })
+      if (keep_maps) {
+        // Normal maps behavior
+        if (!toClone.map_id) {
+          field.map_id = toClone.id
+        }
+      } else {
+        // No preervation of any map
+        field.map_id = ''
+      }
+      cloned.push(plainToClass(DDField, field))
+    } else {
+      // Remote copy
+      if (this.store) {
+        cloned = (await this.store.dispatch('cloneField', { document_id: this.id, field_id, keep_maps }))
+          .map(f => plainToClass(DDField, f))
+      }
+    }
+    return cloned
   }
 
   addField (field: DDField) {
@@ -218,13 +323,19 @@ export class DocumentEditionManager {
 
   deleteField (deleted: DDField) {
     let deleteIndex = this.fields.findIndex(f => f.id === deleted.id)
+    if (deleteIndex < 0) {
+      // already deleted in another pass
+      return
+    }
+
     this.fields.splice(deleteIndex, 1)
+    let toDelete:DDField[] = []
 
     // Remove any reference to the deleted field
     this.fields.forEach(field => {
       // Deleting any dependency
       if (field.dependent?.on === deleted.id) {
-        this.updateField({ id: field.id, dependent: null }, field)
+        this.updateField({ id: field.id, dependent: null })
       }
 
       // Deleting any embed
@@ -234,47 +345,76 @@ export class DocumentEditionManager {
           id: field.id,
           embedded_fields: field.embedded_fields.filter(item => item !== deleted.id),
           use_embedded: field.embedded_fields.length > 0
-        }, field)
+        })
       }
 
       // Delete any "replicate with" reference
       if (field.replicate_with === deleted.id) {
-        this.updateField({ id: field.id, replicate_with: '' }, field)
+        toDelete.push(field)
       }
 
-      // If it is a group all the group members are deleted
-      if (DDField.isGroup(deleted)) {
-        if (field.group_by === deleted.id) {
-          this.deleteField(field)
-        }
+      // The group members are deleted
+      if (field.group_by === deleted.id) {
+        toDelete.push(field)
       }
     })
+
+    // Deleting the group memebers or the replicated ones
+    toDelete.forEach(field => this.deleteField(field))
 
     this.addDeletedField(deleted)
   }
 
+  async deleteFromFillmaps (deleted:DDField) {
+    if (!this.store) { return }
+
+    let another = this.fields.find(f => f.map_id === deleted.id || (f.map_id && f.map_id === deleted.map_id) || f.id === deleted.map_id)
+    if (another) {
+      // NO changes for any fillmap since another field needs the same map
+      return;
+    }
+
+    let map_id = deleted.map_id || deleted.id
+    let fillmaps = this.store.getters['fillmaps/byDoc'](this.id)
+    // Find all containing the deleted field
+    fillmaps = fillmaps.filter((fillmap:IFillmap) => {
+      // filtering all the fillmaps containing this field
+      let field = fillmap.fields.find((f:IFillmapField) => map_id === f.destination || map_id === f.foreign)
+      return !!field
+    })
+
+    // delete from all the fillmaps
+    return Promise.all(fillmaps.map((fillmap:IFillmap) => {
+      let index = fillmap.fields.findIndex(f => map_id === f.destination || map_id === f.foreign)
+      if (index >= 0) {
+        return this.store!.dispatch('fillmaps/deleteField', { fillmap_id: fillmap.id, field_identifier: map_id })
+      }
+
+      // Nothing to delete
+      return Promise.resolve()
+    }))
+  }
+
   addDeletedField (field: DDField) {
-    this.updateField({ id: field.id, deleted: true }, field)
+    this.updateField({ id: field.id, deleted: true, map_id: field.map_id })
   }
 
   addAddedField (field:DDField) {
     this.updateField(Object.assign({}, field, { is_new: true }))
   }
 
+  getGroupFields (group_id:string):DDField[] {
+    return this.fields.filter(f => f.group_by === group_id)
+  }
+
   /**
    *
-   * @param change Change represent the properties that are changing, so we notify only the changes and not all the field.
-   * @param fieldRef If provided all the changes will be reflected in this reference
+   * @param change Partial field only with the changing properties, so we notify only the changes and not all the field.
    */
-  updateField (change:DDField | any, fieldRef:DDField | null = null) {
+  updateField (change:DDField | any) {
     if (!change.id) {
       throw new Error('An id should be provided for any field change')
     }
-    if (fieldRef) {
-      // local changes
-      Object.assign(fieldRef, change)
-    }
-
     // list for remote changes
     this.changedFields.push(change)
 
@@ -282,6 +422,14 @@ export class DocumentEditionManager {
     let index = this.fields.findIndex(f => f.id === change.id)
     if (index >= 0) {
       let field = this.fields[index]
+
+      // Removing properties that should'nt be copied
+      change = { ...change };
+      delete change.is_new
+      delete change.deleted
+
+      // local changes
+      Object.assign(field, change)
       this.fields.splice(index, 1)
       this.fields.splice(index, 0, field)
     }
@@ -311,7 +459,7 @@ export class DocumentEditionManager {
     }
   }
 
-  static createFromRemoteObject (remote: DDTemplate | DDDocument): DocumentEditionManager {
+  static createFromRemoteObject (remote: DDDocument): DocumentEditionManager {
     let manager = new DocumentEditionManager()
     Object.assign(manager, remote)
 

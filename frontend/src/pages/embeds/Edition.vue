@@ -1,5 +1,6 @@
 <template>
   <dd-doc v-if="authorized"
+          class="dd"
           ref="doc_creation"
           :isTemplate="isTemplate"
           :id="id"
@@ -27,12 +28,7 @@ export default class Creation extends mixins(EmbedMixin) {
         case 'create':
           handled = true
           /* Saving */
-          try {
-            let document = await (this.$refs.doc_creation as any).saveAsNew()
-            this.sendMessage('created', document)
-          } catch (e) {
-            this.sendMessage('creation_error')
-          }
+          await (this.$refs.doc_creation as any).saveAsNew()
           break;
         case 'save':
           handled = true
@@ -44,6 +40,14 @@ export default class Creation extends mixins(EmbedMixin) {
           /* Refresh */
           await (this.$refs.doc_creation as any).refreshDocument()
           break;
+        case 'set-fillmap-src':
+          handled = true
+          this.$root.$emit('set-fillmap-src', data.sources)
+          break;
+        case 'selected-fillmap-source':
+          handled = true
+          this.$root.$emit('selected-fillmap-source', data)
+          break;
         default:
           if (!handled) {
             console.log(`Unrecognized event->${message}`)
@@ -52,3 +56,9 @@ export default class Creation extends mixins(EmbedMixin) {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+  .dd{
+    border-radius: 6px;
+  }
+</style>

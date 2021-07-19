@@ -12,6 +12,7 @@ import { AllowedStatus } from "src/common/guards/decorators/AllowedStatus"
 import { SplitNamesFromIDsPipe } from "src/common/pipes/SplitNamesFromIDs.pipe"
 import { DocumentStatus } from "./document.config"
 import { AuthGuard } from "src/common/guards/Auth.guard"
+import { ParseBooleanPipe } from "src/common/pipes/ParseBoolean.pipe"
 
 @ApiBearerAuth()
 @ApiTags('Documents')
@@ -38,6 +39,13 @@ export class DocumentController {
     @Post('from-template')
     addFromTemplate(@Body(FieldsValidationPipe, FieldsValueValidationPipe, CategoriesFillPipe) dto: CreateDocumentDto) {
         return this.service.addDocumentFromTemplate(dto)
+    }
+
+    @Get(':id/field/:field_id')
+    @UseGuards(DocumentStatusGuard)
+    @AllowedStatus(DocumentStatus.OPEN, DocumentStatus.ONLY_EDITION)
+    cloneField(@Param('id', ParseUUIDPipe) id: string, @Param('field_id', ParseUUIDPipe) field_id: string, @Query('keep_maps', ParseBooleanPipe) keep_maps:boolean) {
+        return this.service.cloneField(id, field_id, keep_maps)
     }
 
     @Patch(':id')

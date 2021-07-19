@@ -90,15 +90,17 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/no-unsafe-return': 'off',
-    '@typescript-eslint/no-unsafe-member-access': 'warn',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
     '@typescript-eslint/require-await': 'warn',
-    '@typescript-eslint/no-unsafe-call':'warn',
-    '@typescript-eslint/restrict-template-expressions':'warn',
+    '@typescript-eslint/no-unsafe-call':'off',
+    '@typescript-eslint/restrict-template-expressions':'off',
     '@typescript-eslint/restrict-plus-operands':'warn',
     '@typescript-eslint/ban-ts-comment':'off',
     'no-case-declarations':'off',
     '@typescript-eslint/unbound-method':'warn',
+    'dot-notation':'off',
     // allow debugger during development only
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-useless-return': 'off'
   }
 }

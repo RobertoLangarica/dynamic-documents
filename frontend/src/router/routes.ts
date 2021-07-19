@@ -37,12 +37,6 @@ const routes: RouteConfig[] = [
     component: () => import('layouts/ExternalLayout.vue'),
     children: [
       {
-        name: 'template_creation',
-        path: 'template/creation',
-        component: () => import('pages/embeds/Edition.vue'),
-        props: route => ({ isTemplate: true, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, download_auth: route.query.download_auth || '', invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
-      },
-      {
         name: 'template_edition',
         path: 'template/edition/:id',
         component: () => import('pages/embeds/Edition.vue'),
@@ -74,33 +68,9 @@ const routes: RouteConfig[] = [
       },
       {
         name: 'fillmap',
-        path: 'capture/map',
-        component: () => import('pages/embeds/FillmapManager.vue'),
-        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
-      },
-      {
-        name: 'field_type_selection',
-        path: 'field/type/selection',
-        component: () => import('components/dd/FieldTypeSelection/FieldTypeSelection.vue'),
-        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
-      },
-      {
-        name: 'field_config',
-        path: 'field/config',
-        component: () => import('components/dd/FieldConfig/FieldConfig.vue'),
-        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
-      },
-      {
-        name: 'field_selector',
-        path: 'field/selector',
-        component: () => import('components/dd/FieldSelector/FieldSelector.vue'),
-        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
-      },
-      {
-        name: 'field_transforms',
-        path: 'field/transforms',
-        component: () => import('components/dd/Transformations/Transformations.vue'),
-        props: route => ({ need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
+        path: 'capture/map/:document_id/:fillmap_type',
+        component: () => import('src/pages/embeds/FillmapCapture.vue'),
+        props: route => ({ document_id: route.params.document_id, fillmap_type: route.params.fillmap_type, need_auth: route.query.need_auth ? route.query.need_auth === 'true' : false, invisibleDialogs: route.query.invisibleDialogs ? route.query.invisibleDialogs === 'true' : false })
       }
     ]
   },
