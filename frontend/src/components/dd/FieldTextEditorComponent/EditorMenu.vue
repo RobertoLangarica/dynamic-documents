@@ -77,6 +77,11 @@
           Lista Numerada
         </q-tooltip>
       </q-btn>
+
+      <q-btn clickable v-close-popup :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'justify' }" @click="commands.aligntext({ align: 'justify' })">justify</q-btn>
+      <q-btn clickable v-close-popup :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'left' }" @click="commands.aligntext({ align: 'left' })">left</q-btn>
+      <q-btn clickable v-close-popup :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'center' }" @click="commands.aligntext({ align: 'center' })">center</q-btn>
+      <q-btn clickable v-close-popup :class="{ 'is-active': editor.activeMarkAttrs.aligntext.align === 'right' }" @click="commands.aligntext({ align: 'right' })">right</q-btn>
     </div>
   </editor-menu-bar>
 </template>
