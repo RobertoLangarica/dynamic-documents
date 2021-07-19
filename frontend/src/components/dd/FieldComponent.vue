@@ -166,7 +166,7 @@ export default class FieldComponent extends Vue {
   @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
 
   showEditMenu (event) {
-    if (this.$store.state.hoveredElement != this.field.id) {
+    if (this.$store.state.hoveredElement !== this.field.id) {
       this.$store.dispatch('changeHoveredElement', this.field.id)
     }
     event.stopPropagation()
