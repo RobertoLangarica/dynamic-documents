@@ -13,12 +13,10 @@
           </q-date>
         </q-popup-proxy>
       </q-btn>
+      <slot name="append" />
     </template>
     <template v-slot:prepend>
       <slot name="prepend" />
-    </template>
-    <template v-slot:append>
-      <slot name="append" />
     </template>
   </nq-field>
 </template>
