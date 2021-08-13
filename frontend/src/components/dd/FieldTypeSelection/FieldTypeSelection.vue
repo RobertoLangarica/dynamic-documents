@@ -86,6 +86,8 @@ export default class FieldTypeSelection extends mixins(EmbedMixin) {
         return 'timelapse'
       case 'input-text':
         return 'text_fields'
+      case 'input-options':
+        return 'list'
       case 'group':
         return 'category'
       default:
