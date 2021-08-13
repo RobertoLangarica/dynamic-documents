@@ -2,11 +2,10 @@
   <div>
     <br>
     <div v-for="(option, index) in optionList" :key="index" :style="style">
-      <q-radio v-model="optionValue" :label="displayLabel(option)" :val="option.value" id="option" >
-      </q-radio>
-      <q-input v-model="option.label" label="Etiqueta" borderless class="inline-block"></q-input>
-      <q-input v-model="option.value" label="Valor" borderless class="inline-block"></q-input>
-      <q-btn round flat icon="delete" @click="removeOption(index)" />
+      <q-radio v-model="optionValue" :label="displayLabel(option)" :val="option.value" id="option" />
+      <q-input v-if="edit_view" v-model="option.label" label="Etiqueta" borderless class="inline-block"></q-input>
+      <q-input v-if="edit_view" v-model="option.value" label="Valor" borderless class="inline-block"></q-input>
+      <q-btn  v-if="edit_view" round flat icon="delete" @click="removeOption(index)" />
     </div>
     <q-btn v-if="edit_view" round flat icon="add" :disable="readonly" @click="addOption"/>
   </div>
