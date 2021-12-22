@@ -2,72 +2,84 @@
   <div>
     <br>
     <div v-for="(option, index) in optionList" :key="index" :style="style">
-      <q-radio v-model="optionValue" :label="displayLabel(option)" :val="option.value" id="option" />
-      <q-input v-if="edit_view" v-model="option.label" label="Etiqueta" borderless class="inline-block"></q-input>
-      <q-input v-if="edit_view" v-model="option.value" label="Valor" borderless class="inline-block"></q-input>
-      <q-btn  v-if="edit_view" round flat icon="delete" @click="removeOption(index)" />
+      <q-checkbox v-if="isMultipleChoice" v-model="option.value" :label="option.label" @input="emitUpdate" />
+      <q-radio v-else v-model="option.value" :label="option.label" @input="emitUpdate" />
+      <template v-if="edit_view">
+        <q-input v-model="option.label" label="Etiqueta" borderless class="inline-block" @input="emitUpdate" />
+        <q-btn round flat icon="delete" @click="removeOption(index)" />
+      </template>
     </div>
-    <q-btn v-if="edit_view" round flat icon="add" :disable="readonly" @click="addOption"/>
+    <template v-if="edit_view">
+      <q-radio v-model="isMultipleChoice" label="Selección multiple" />
+      <q-btn round flat icon="add" :disable="readonly" @click="addOption" />
+    </template>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
-import numeral from 'numeral'
 
 @Component({ components: { } })
 export default class InputOptions extends Vue {
-  @Prop({ type: Boolean, required: false, default:true }) readonly edit_view!: boolean;
-  @Prop({ required: false, default: 0 }) value!:number|string
-  @Prop({ required: false, default: ()=>[] }) options!:Array<{label,value}>
+  @Prop({ type: Boolean, required: false, default: true }) readonly edit_view!: boolean;
+  @Prop({ required: false, default: '"{"multipleChoice":false, "options":[]}"' }) value!:string; // JSON string
   @Prop({ required: false }) readonly readonly!: boolean;
   @Prop({ type: Boolean, required: false, default: true }) isHorizontal!:boolean;
 
-  focused:boolean = false
-  optionValue:string|number = 0
-  optionList:Array<{label,value}> = []
-  lastValue: number = 0
-  
-  get style(){
-    if(this.isHorizontal && !this.edit_view){
+  optionList:Array<{label, value}> = []
+  multipleChoice:boolean = false
+
+  get style () {
+    if (this.isHorizontal && !this.edit_view) {
       return 'display:inline;'
-    } else if(this.edit_view) {
+    } else if (this.edit_view) {
       return 'display:inline-block;'
     }
     return ''
   }
-  displayLabel(option) {
-    return (this.edit_view)?'':option.label
+
+  displayLabel (option) {
+    return (this.edit_view) ? '' : option.label
   }
 
-  created () {
-    this.optionValue = this.value
+  @Watch('value', { immediate: true })
+  onValueChanged (newValue: string) {
+    let parsed = JSON.parse(newValue);
+    this.multipleChoice = parsed.multipleChoice;
+    this.optionList = parsed.options;
   }
 
-  onBlur () {
-    this.focused = false
+  addOption () {
+    this.optionList.push({ label: 'Opción-' + (this.optionList.length + 1).toString(), value: false })
+    this.emitUpdate()
   }
 
-  valueNumber (value: number|string) {
-    return numeral(value).value()
+  removeOption (index) {
+    this.optionList.splice(index, 1)
+    this.emitUpdate()
   }
 
-  onFocus () {
-    this.focused = true
+  emitUpdate () {
+    let newValue = JSON.stringify({ multipleChoice: this.multipleChoice, options: this.optionList })
+    this.$emit('input', newValue)
   }
 
-  @Watch('value')
-  onValueChanged (newValue: number|string) {
-    if (!this.focused) {
+  get isMultipleChoice () { return this.multipleChoice }
+  set isMultipleChoice (value:boolean) {
+    this.multipleChoice = value;
+
+    if (!value) {
+      // Only one option could be selected
+      let selected = true
+      this.optionList.forEach(option => {
+        if (option.value) {
+          option.value = selected;
+          selected = false;
+        }
+      })
     }
-  }
 
-  addOption(){
-    value:this.lastValue++
-    this.optionList.push({label:'etiqueta '+this.lastValue,value:this.lastValue})
-  }
-  removeOption(index) {
-    this.optionList.splice(index,1)
+    this.emitUpdate();
   }
 }
 </script>
