@@ -3,6 +3,7 @@
     v-model="value"
     v-bind="$attrs"
     :edit_view="edit_view"
+    :hovered="hovered"
   >
     <template v-slot:prepend>
       <slot name="prepend" />
@@ -22,6 +23,10 @@ import InputOptions from './InputOptions.vue'
 export default class InputOptionsWrapper extends Vue {
     @Prop({ required: true }) readonly field!: DDField;
     @Prop({ type: Boolean, required: true }) readonly edit_view!: boolean;
+
+    get hovered () {
+      return this.$store.getters.HoveredElement === this.field.id
+    }
 
     get value () {
       return this.field.value
