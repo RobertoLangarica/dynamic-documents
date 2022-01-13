@@ -38,7 +38,7 @@ const config = (): ConnectionOptions => {
     synchronize: false,
     migrations: process.env.NODE_ENV === 'test' ? ['../database/migrations/*.ts'] : undefined
   }
-  if (process.env.NODE_ENV === 'dev') console.log(config)
+  if (process.env.NODE_ENV === 'dev') console.log(`DBConfig:`,config)
 
   return config;
 }

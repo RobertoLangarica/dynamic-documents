@@ -11,7 +11,7 @@
         :is="getComponent(field.type)"
         :class="`dd-field dd-${field.type.component}`"
         :hint="!isInPrintView ? field.hint : null"
-        :label="isInEditView?'':name"
+        :label="isInEditView ? '':name"
         :readonly="isReadOnly"
         :group="field.id"
         :fields="fields"
@@ -166,7 +166,7 @@ export default class FieldComponent extends Vue {
   @Prop({ type: Number, required: false, default: 500 }) readonly debounce!: number;
 
   showEditMenu (event) {
-    if (this.$store.state.hoveredElement != this.field.id) {
+    if (this.$store.state.hoveredElement !== this.field.id) {
       this.$store.dispatch('changeHoveredElement', this.field.id)
     }
     event.stopPropagation()

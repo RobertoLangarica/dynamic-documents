@@ -23,10 +23,9 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document)
 
   let cors: CorsOptions = { origin: "*" }
-  console.warn("USING: CORS with '*' as origin.")
 
   app.enableCors(cors)
-  console.log(process.env.PORT)
+  
   await app.listen(process.env.PORT || 3000)
 }
 

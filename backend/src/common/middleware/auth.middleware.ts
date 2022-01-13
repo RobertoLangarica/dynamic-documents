@@ -11,17 +11,16 @@ export class AuthMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: Function) {
     // Reads the Authorization header looking dor a Bearer or APIKey token
-    // Is there is a token then a user is retrieved in the body.user property
+    // If there is a token then a user is retrieved at the body.user property
 
     let authorization = req.header('Authorization')
     let splitted: string[] = authorization ? authorization.split(' ') : [];
-
     if (splitted.length < 2) {
       // Bad format, next without user
       next()
       return;
     }
-
+    
     let user;
     if (splitted[0].toLowerCase() == "apikey") {
       // API secret
