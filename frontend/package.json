@@ -35,7 +35,7 @@
     "vuedraggable": "^2.24.0"
   },
   "devDependencies": {
-    "@quasar/app": "^2.1.14",
+    "@quasar/app": "^3.3.3",
     "@types/node": "^10.17.15",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^3.10.0",
